@@ -11,7 +11,9 @@
   --font-mono: "SF Mono", "Roboto Mono", Menlo, monospace;
   --font-heading: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
-  /* Zendesk Garden palette */
+  /* Zendesk Garden palette — kept in sync with src/config/theme.ts (JS-side
+     color access for inline styles / runtime color logic). Update both if a
+     value changes. */
   --color-canvas: #f8f9f9;
   --color-surface-2: #f1f3f5;
   --color-surface-3: #e9ebed;

@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import AuthProvider from "@/components/providers/AuthProvider";
 import { ProjectsProvider } from "@/components/providers/ProjectsProvider";
+import { TimesheetProvider } from "@/components/providers/TimesheetProvider";
+import { APP_NAME } from "@/config/constants";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "TapIn",
+  title: APP_NAME,
   description: "Time Tracker & Attendance Ledger",
 };
 
@@ -17,7 +19,9 @@ export default function RootLayout({
     <html lang="en" className="h-full antialiased">
       <body className="min-h-full flex flex-col">
         <AuthProvider>
-          <ProjectsProvider>{children}</ProjectsProvider>
+          <ProjectsProvider>
+            <TimesheetProvider>{children}</TimesheetProvider>
+          </ProjectsProvider>
         </AuthProvider>
       </body>
     </html>

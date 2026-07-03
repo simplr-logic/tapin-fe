@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "title": "Store Front Upgrade",
+    "company": "Vanguard Retail",
+    "assignee": "VR",
+    "loggedMinutes": 924,
+    "targetHours": 18,
+    "icon": "building"
+  },
+  {
+    "id": 2,
+    "title": "Fleet Routing Optimization",
+    "company": "Meridian Logistics",
+    "assignee": "ML",
+    "loggedMinutes": 690,
+    "targetHours": 10,
+    "icon": "truck"
+  },
+  {
+    "id": 3,
+    "title": "Cloud Migrations",
+    "company": "AxonTech",
+    "assignee": "AP",
+    "loggedMinutes": 726,
+    "targetHours": 14,
+    "icon": "cloud"
+  },
+  {
+    "id": 4,
+    "title": "Ad Campaign Creative",
+    "company": "Optic Media",
+    "assignee": "VM",
+    "loggedMinutes": 432,
+    "targetHours": 8,
+    "icon": "grid"
+  },
+  {
+    "id": 5,
+    "title": "Network Infrastructure",
+    "company": "CoreNet Sys",
+    "assignee": "AP",
+    "loggedMinutes": 72,
+    "targetHours": 6,
+    "icon": "grid"
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "status": "PENDING IN",
+  "streakCount": 5,
+  "streakDays": [
+    { "label": "M", "status": "done" },
+    { "label": "T", "status": "done" },
+    { "label": "W", "status": "current" },
+    { "label": "T", "status": "pending" },
+    { "label": "F", "status": "pending" },
+    { "label": "S", "status": "pending" },
+    { "label": "S", "status": "pending" }
+  ]
+}

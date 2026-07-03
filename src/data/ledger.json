@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "timestamp": "Jun 30 · 02:00 AM",
+    "projectTitle": "Fleet Routing Optimization",
+    "company": "Meridian Logistics",
+    "note": "Optimizing routing algorithm (2.0h)",
+    "icon": "truck"
+  },
+  {
+    "id": 2,
+    "timestamp": "Jun 30 · 12:00 AM",
+    "projectTitle": "Store Front Upgrade",
+    "company": "Vanguard Retail",
+    "note": "Initial development sync (3.5h)",
+    "icon": "building"
+  }
+]
