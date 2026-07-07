@@ -1,8 +1,8 @@
 "use client";
 
+import { LayoutGrid, FolderKanban, History } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutGrid, FolderKanban, History } from "lucide-react";
 
 const NAV_ITEMS = [
   { href: "/", label: "Dashboard", icon: LayoutGrid },
@@ -14,7 +14,7 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden sm:flex w-56 shrink-0 flex-col bg-white border-r border-garden-border py-4 px-3 gap-1">
+    <aside className="hidden md:flex w-56 shrink-0 flex-col bg-white border-r border-garden-border py-4 px-3 gap-1">
       {NAV_ITEMS.map((item) => {
         const isActive = pathname === item.href;
         const Icon = item.icon;

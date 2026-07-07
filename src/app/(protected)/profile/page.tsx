@@ -1,4 +1,5 @@
 import { ShieldCheck, Mail, IdCard, CalendarClock, LogOut } from "lucide-react";
+
 import { auth, signOut } from "@/auth";
 import { ProfileStats } from "@/components/projects/ProfileStats";
 import demoUser from "@/data/demo-user.json";

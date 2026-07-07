@@ -4,12 +4,12 @@ import WeeklyRoster from "@/components/dashboard/WeeklyRosterClient";
 
 export default function Home() {
   return (
-    <div className="flex gap-4 h-full">
-      <aside className="flex flex-col gap-4 w-[320px] shrink-0 overflow-y-auto">
+    <div className="flex flex-col gap-4 md:flex-row md:h-full">
+      <aside className="flex flex-col gap-4 md:w-[320px] md:shrink-0 md:overflow-y-auto">
         <DailyAttendance />
         <TimesheetSubmission />
       </aside>
-      <section className="flex-1 min-w-0 overflow-hidden">
+      <section className="md:flex-1 md:min-w-0 md:overflow-hidden">
         <WeeklyRoster />
       </section>
     </div>

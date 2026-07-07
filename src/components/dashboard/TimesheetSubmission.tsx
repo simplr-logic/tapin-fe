@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { FileText, AlertTriangle, CheckCircle2, History } from "lucide-react";
+import { FileText, CheckCircle2, History } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
+
+import { TimesheetSignOffDialog } from "@/components/dashboard/TimesheetSignOffDialog";
 import { useProjects } from "@/components/providers/ProjectsProvider";
 import { useTimesheets } from "@/components/providers/TimesheetProvider";
-import { TimesheetSignOffDialog } from "@/components/dashboard/TimesheetSignOffDialog";
 import compliance from "@/data/compliance.json";
 
 export default function TimesheetSubmission() {
@@ -45,27 +46,16 @@ export default function TimesheetSubmission() {
       </div>
 
       <div className="px-5 py-4 space-y-4">
-        <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-md bg-surface-2 border border-garden-border p-3.5 space-y-1">
-            <p className="text-[10px] text-ink-subtle uppercase tracking-wide font-medium">
-              Weekly Total
-            </p>
-            <p className="text-2xl font-semibold text-ink tracking-tight">
-              {totalLogged.toFixed(1)}h
-            </p>
-            <p className="text-[10px] text-ink-subtle leading-tight">
-              {totalLogged.toFixed(1)}h of {totalTarget}h allotted
-            </p>
-          </div>
-
-          <div className="rounded-md bg-warning/8 border border-warning/20 p-3.5 space-y-1">
-            <p className="text-[10px] text-warning uppercase tracking-wide font-medium">Alerts</p>
-            <div className="flex items-center gap-1.5">
-              <AlertTriangle className="w-3.5 h-3.5 text-warning shrink-0" />
-              <p className="text-sm font-semibold text-warning">{compliance.alert.label}</p>
-            </div>
-            <p className="text-[10px] text-warning/80 leading-tight">{compliance.alert.status}</p>
-          </div>
+        <div className="rounded-md bg-surface-2 border border-garden-border p-3.5 space-y-1">
+          <p className="text-[10px] text-ink-subtle uppercase tracking-wide font-medium">
+            Weekly Total
+          </p>
+          <p className="text-2xl font-semibold text-ink tracking-tight">
+            {totalLogged.toFixed(1)}h
+          </p>
+          <p className="text-[10px] text-ink-subtle leading-tight">
+            {totalLogged.toFixed(1)}h of {totalTarget}h allotted
+          </p>
         </div>
 
         <div className="space-y-3">
