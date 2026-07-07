@@ -10,6 +10,8 @@ import {
   Trash2,
   Plus,
   FolderKanban,
+  Lock,
+  Unlock,
 } from "lucide-react";
 import { useProjects, type Project } from "@/components/providers/ProjectsProvider";
 import { ProjectFormDialog } from "@/components/projects/ProjectFormDialog";
@@ -82,7 +84,10 @@ export function ProjectsTable() {
             return (
               <div
                 key={project.id}
-                className="px-5 py-3.5 flex items-center gap-4 hover:bg-surface-2/60 transition-colors"
+                className={[
+                  "px-5 py-3.5 flex items-center gap-4 hover:bg-surface-2/60 transition-colors",
+                  project.locked ? "bg-surface-2/40" : "",
+                ].join(" ")}
               >
                 <div
                   className="w-9 h-9 rounded-md flex items-center justify-center shrink-0"
@@ -92,7 +97,15 @@ export function ProjectsTable() {
                 </div>
 
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-ink truncate">{project.title}</p>
+                  <div className="flex items-center gap-1.5">
+                    <p className="text-sm font-semibold text-ink truncate">{project.title}</p>
+                    {project.locked && (
+                      <span className="flex items-center gap-1 text-[9px] font-semibold uppercase tracking-wide text-ink-subtle bg-surface-2 border border-garden-border-strong rounded-full px-1.5 py-0.5 shrink-0">
+                        <Lock className="w-2.5 h-2.5" />
+                        Locked
+                      </span>
+                    )}
+                  </div>
                   <p className="text-[11px] text-ink-muted truncate">
                     {project.company} · Assignee {project.assignee}
                   </p>
@@ -108,6 +121,23 @@ export function ProjectsTable() {
                 </div>
 
                 <div className="flex items-center gap-1.5 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => updateProject(project.id, { locked: !project.locked })}
+                    title={project.locked ? "Unlock project" : "Lock project"}
+                    className={[
+                      "w-8 h-8 rounded-md flex items-center justify-center border transition-colors",
+                      project.locked
+                        ? "text-warning bg-warning/8 border-warning/30 hover:bg-warning/14"
+                        : "text-ink-muted bg-white border-garden-border hover:bg-surface-2 hover:text-ink",
+                    ].join(" ")}
+                  >
+                    {project.locked ? (
+                      <Lock className="w-3.5 h-3.5" />
+                    ) : (
+                      <Unlock className="w-3.5 h-3.5" />
+                    )}
+                  </button>
                   <button
                     type="button"
                     onClick={() => setEditingProject(project)}

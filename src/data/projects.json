@@ -6,7 +6,8 @@
     "assignee": "VR",
     "loggedMinutes": 924,
     "targetHours": 18,
-    "icon": "building"
+    "icon": "building",
+    "locked": false
   },
   {
     "id": 2,
@@ -15,7 +16,8 @@
     "assignee": "ML",
     "loggedMinutes": 690,
     "targetHours": 10,
-    "icon": "truck"
+    "icon": "truck",
+    "locked": false
   },
   {
     "id": 3,
@@ -24,7 +26,8 @@
     "assignee": "AP",
     "loggedMinutes": 726,
     "targetHours": 14,
-    "icon": "cloud"
+    "icon": "cloud",
+    "locked": false
   },
   {
     "id": 4,
@@ -33,7 +36,8 @@
     "assignee": "VM",
     "loggedMinutes": 432,
     "targetHours": 8,
-    "icon": "grid"
+    "icon": "grid",
+    "locked": false
   },
   {
     "id": 5,
@@ -42,6 +46,7 @@
     "assignee": "AP",
     "loggedMinutes": 72,
     "targetHours": 6,
-    "icon": "grid"
+    "icon": "grid",
+    "locked": false
   }
 ]

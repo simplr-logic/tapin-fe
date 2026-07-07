@@ -15,6 +15,10 @@ export interface Project {
   loggedMinutes: number;
   targetHours: number;
   icon: ProjectIcon;
+  // Locked projects stay visible everywhere (roster grid/progress, tables)
+  // but can't be tapped/adjusted — managed from the Projects page, not tied
+  // to which week/period is being viewed.
+  locked: boolean;
 }
 
 export interface Comment {

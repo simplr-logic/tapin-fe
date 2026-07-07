@@ -59,18 +59,23 @@ function ProjectForm({
     e.preventDefault();
     if (!form.title.trim() || !form.company.trim()) return;
 
-    const payload = {
-      title: form.title.trim(),
-      company: form.company.trim(),
-      assignee: form.assignee.trim().slice(0, 3).toUpperCase() || "—",
-      targetHours: Math.max(1, form.targetHours),
-      icon: form.icon,
-    };
-
     if (isEdit && project) {
-      onSave?.(project.id, payload);
+      onSave?.(project.id, {
+        title: form.title.trim(),
+        company: form.company.trim(),
+        assignee: form.assignee.trim().slice(0, 3).toUpperCase() || "—",
+        targetHours: Math.max(1, form.targetHours),
+        icon: form.icon,
+      });
     } else {
-      onCreate?.(payload);
+      onCreate?.({
+        title: form.title.trim(),
+        company: form.company.trim(),
+        assignee: form.assignee.trim().slice(0, 3).toUpperCase() || "—",
+        targetHours: Math.max(1, form.targetHours),
+        icon: form.icon,
+        locked: false,
+      });
     }
     onOpenChange(false);
   }
