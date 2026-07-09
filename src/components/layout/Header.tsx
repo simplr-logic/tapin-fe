@@ -1,8 +1,10 @@
 "use client";
 
-import { Timer, User, LogOut, IdCard } from "lucide-react";
-import { useSession, signOut } from "next-auth/react";
+import { IdCard, LogOut, Timer, User, WifiOff } from "lucide-react";
 import Link from "next/link";
+import { signOut, useSession } from "next-auth/react";
+
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,9 +14,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import demoUser from "@/data/demo-user.json";
 import { APP_NAME } from "@/config/constants";
+import demoUser from "@/data/demo-user.json";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 function getInitials(name: string): string {
   const parts = name.trim().split(/\s+/);
@@ -29,6 +31,7 @@ export default function Header() {
   const { data: session } = useSession();
   const user = session?.user;
   const name = user?.name ?? "Guest";
+  const isOnline = useOnlineStatus();
 
   return (
     <header className="bg-kale sticky top-0 z-20">
@@ -42,6 +45,13 @@ export default function Header() {
           </div>
           <span className="font-semibold text-white tracking-tight text-sm">{APP_NAME}</span>
         </Link>
+
+        {!isOnline && (
+          <span className="flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-white/15 text-white/80 border border-white/20">
+            <WifiOff className="w-3 h-3" />
+            Offline — changes saved locally
+          </span>
+        )}
 
         <DropdownMenu>
           <DropdownMenuTrigger className="flex items-center gap-2 rounded-md pl-1 pr-2 py-1 hover:bg-white/10 transition-colors outline-none shrink-0">

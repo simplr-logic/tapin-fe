@@ -44,7 +44,7 @@ export function RosterControls({
   setTap,
 }: RosterControlsProps) {
   return (
-    <div className="px-5 py-3 border-b border-garden-border space-y-2">
+    <div className="px-3 py-2.5 md:px-5 md:py-3 border-b border-garden-border space-y-2">
       <div className="flex items-center gap-2 text-ink-muted text-xs font-medium tracking-wide uppercase">
         <LayoutGrid className="w-3.5 h-3.5" />
         Project Roster

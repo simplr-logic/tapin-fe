@@ -116,29 +116,16 @@ function ProjectForm({
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <Label className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide mb-1">
-              Company
-            </Label>
-            <Input
-              required
-              value={form.company}
-              onChange={(e) => setForm((f) => ({ ...f, company: e.target.value }))}
-              placeholder="e.g. Vanguard Retail"
-            />
-          </div>
-          <div>
-            <Label className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide mb-1">
-              Assignee
-            </Label>
-            <Input
-              value={form.assignee}
-              onChange={(e) => setForm((f) => ({ ...f, assignee: e.target.value }))}
-              placeholder="e.g. VR"
-              maxLength={3}
-            />
-          </div>
+        <div>
+          <Label className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide mb-1">
+            Company
+          </Label>
+          <Input
+            required
+            value={form.company}
+            onChange={(e) => setForm((f) => ({ ...f, company: e.target.value }))}
+            placeholder="e.g. Vanguard Retail"
+          />
         </div>
 
         <div className="grid grid-cols-2 gap-3">

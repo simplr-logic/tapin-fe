@@ -110,6 +110,28 @@ export function getHeatStyle(pct: number): { bg: string; border: string; pctColo
   return { bg: "bg-surface-2", border: "border-garden-border", pctColor: gardenColors.inkSubtle };
 }
 
+export function getPeriodRange(period: PeriodView, date: Date): { start: string; end: string } {
+  if (period === "day") {
+    const iso = date.toLocaleDateString("en-CA");
+    return { start: iso, end: iso };
+  }
+  if (period === "week") {
+    const start = weekStart(date);
+    const end = weekEnd(start);
+    return { start: start.toLocaleDateString("en-CA"), end: end.toLocaleDateString("en-CA") };
+  }
+  if (period === "month") {
+    const y = date.getFullYear(),
+      m = date.getMonth();
+    return {
+      start: new Date(y, m, 1).toLocaleDateString("en-CA"),
+      end: new Date(y, m + 1, 0).toLocaleDateString("en-CA"),
+    };
+  }
+  const y = date.getFullYear();
+  return { start: `${y}-01-01`, end: `${y}-12-31` };
+}
+
 export function getShortCode(title: string): string {
   const words = title.trim().split(/\s+/);
   if (words.length > 1)

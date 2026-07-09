@@ -3,7 +3,7 @@
 import { useDraggable, useDroppable } from "@dnd-kit/core";
 import { Lock, Palmtree } from "lucide-react";
 
-import { formatTypesSummary, formatSpecialRangeAll } from "./utils";
+import { formatSpecialRangeAll, formatTypesSummary } from "./utils";
 
 import type { TreemapNode } from "./treemap";
 import type { SpecialDay } from "@/components/dashboard/SpecialDayDialog";

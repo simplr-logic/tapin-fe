@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutGrid, FolderKanban, History } from "lucide-react";
+import { FolderKanban, History, LayoutGrid } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 

@@ -8,7 +8,13 @@ import { SpecialDayDialog } from "@/components/dashboard/SpecialDayDialog";
 import { ProjectFormDialog } from "@/components/projects/ProjectFormDialog";
 import { sumLogs, useProjects } from "@/components/providers/ProjectsProvider";
 import { useTimesheets } from "@/components/providers/TimesheetProvider";
-import { MAX_TILE_RATIO, type PeriodView, TAP_MINUTES, type TapUnit } from "@/config/constants";
+import {
+  MAX_TILE_RATIO,
+  type PeriodView,
+  TAP_MINUTES,
+  type TapUnit,
+  TARGET_SCALE,
+} from "@/config/constants";
 
 import { AdjustModal } from "./roster/AdjustModal";
 import { CommentsModal } from "./roster/CommentsModal";
@@ -21,40 +27,11 @@ import { SpecialDaySection } from "./roster/SpecialDaySection";
 import { buildTreeStructure, layoutTree } from "./roster/treemap";
 import { useRosterDrag } from "./roster/useRosterDrag";
 import { useSpecialDays } from "./roster/useSpecialDays";
-import { formatHours, isSamePeriod, weekEnd, weekStart } from "./roster/utils";
+import { formatHours, getPeriodRange, isSamePeriod } from "./roster/utils";
 
 import type { DisplayProject, GridKey, ViewMode } from "./roster/types";
 
-const TARGET_SCALE: Record<PeriodView, number> = {
-  day: 0.2,
-  week: 1,
-  month: 4.33,
-  year: 52,
-};
-
 const toGridKey = (id: number): GridKey => `p-${id}`;
-
-function getPeriodRange(period: PeriodView, date: Date): { start: string; end: string } {
-  if (period === "day") {
-    const iso = date.toLocaleDateString("en-CA");
-    return { start: iso, end: iso };
-  }
-  if (period === "week") {
-    const start = weekStart(date);
-    const end = weekEnd(start);
-    return { start: start.toLocaleDateString("en-CA"), end: end.toLocaleDateString("en-CA") };
-  }
-  if (period === "month") {
-    const y = date.getFullYear(),
-      m = date.getMonth();
-    return {
-      start: new Date(y, m, 1).toLocaleDateString("en-CA"),
-      end: new Date(y, m + 1, 0).toLocaleDateString("en-CA"),
-    };
-  }
-  const y = date.getFullYear();
-  return { start: `${y}-01-01`, end: `${y}-12-31` };
-}
 
 export default function WeeklyRoster({ externalDate }: { externalDate?: Date }) {
   const { projects, comments, ledger, addProject, updateProject, adjustLoggedMinutes, addComment } =
@@ -72,8 +49,8 @@ export default function WeeklyRoster({ externalDate }: { externalDate?: Date }) 
       isMounted.current = true;
       return;
     }
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (externalDate) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedDate(externalDate);
       setPeriod("day");
     }
@@ -238,7 +215,7 @@ export default function WeeklyRoster({ externalDate }: { externalDate?: Date }) 
         tap={tap}
         setTap={setTap}
       />
-      <div className="flex-1 overflow-y-auto p-5 space-y-4">
+      <div className="flex-1 overflow-y-auto p-3 md:p-5 space-y-3 md:space-y-4">
         <RosterActionBar
           totalLogged={totalLogged}
           totalTarget={totalTarget}
@@ -269,7 +246,6 @@ export default function WeeklyRoster({ externalDate }: { externalDate?: Date }) 
         />
         <SpecialDaySection
           specialDays={sd.specialDays}
-          periodLocked={periodLocked}
           onAdd={sd.openAdd}
           onEdit={sd.openEdit}
           onRemove={sd.remove}

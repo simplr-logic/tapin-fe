@@ -29,7 +29,7 @@ export function RosterActionBar({
         : gardenColors.yellow;
 
   return (
-    <div className="flex items-center justify-end gap-3 flex-wrap">
+    <div className="flex items-center justify-between sm:justify-end gap-3 flex-wrap">
       {/* Hours summary + actions */}
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-1.5 text-xs text-ink-muted mr-1">
@@ -48,7 +48,7 @@ export function RosterActionBar({
           className="flex items-center gap-1.5 text-xs border border-garden-border rounded-md px-3 py-1.5 hover:bg-surface-2 transition-colors text-ink-muted font-medium disabled:opacity-40 disabled:hover:bg-transparent disabled:cursor-not-allowed"
         >
           <Palmtree className="w-3.5 h-3.5 text-ink-subtle" />
-          Log Leave
+          Log Off-Day
         </button>
         <button
           onClick={onNewProject}

@@ -45,10 +45,6 @@ export function ProjectProgressRow({
 
   function handleContextMenu(e: React.MouseEvent) {
     e.preventDefault();
-    if (locked) return;
-    setTapping(true);
-    onTap(project.id, -1);
-    setTimeout(() => setTapping(false), 200);
   }
 
   return (
@@ -90,9 +86,7 @@ export function ProjectProgressRow({
                 </span>
               )}
             </div>
-            <p className="text-[11px] text-ink-muted truncate">
-              {project.company} · {project.assignee}
-            </p>
+            <p className="text-[11px] text-ink-muted truncate">{project.company}</p>
           </div>
         </div>
 
@@ -115,7 +109,7 @@ export function ProjectProgressRow({
         <div className="h-2 rounded-full overflow-hidden bg-garden-border">
           <div
             className="h-full rounded-full transition-all duration-300"
-            style={{ width: `${barPct}%`, backgroundColor: style.pctColor }}
+            style={{ width: barPct === 0 ? "3px" : `${barPct}%`, backgroundColor: style.pctColor }}
           />
         </div>
         <div className="flex items-center justify-between text-[11px] text-ink-muted">
@@ -136,9 +130,7 @@ export function ProjectProgressRow({
           ) : (
             <>
               <MousePointerClick className="w-3 h-3 text-white" />
-              <span className="text-[10px] font-semibold text-white">
-                +{tapUnit} · right-click −{tapUnit}
-              </span>
+              <span className="text-[10px] font-semibold text-white">tap to log +{tapUnit}</span>
             </>
           )}
         </div>

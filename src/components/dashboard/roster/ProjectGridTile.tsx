@@ -45,15 +45,8 @@ export function ProjectGridTile({
     setTimeout(() => setTapping(false), 200);
   }
 
-  // Right-click is an accelerator for unlogging the same TAP unit — the
-  // clock button stays the discoverable path, this is just a shortcut for
-  // people who've learned it.
   function handleContextMenu(e: React.MouseEvent) {
     e.preventDefault();
-    if (locked) return;
-    setTapping(true);
-    onTap(project.id, -1);
-    setTimeout(() => setTapping(false), 200);
   }
 
   return (
@@ -175,30 +168,33 @@ export function ProjectGridTile({
             <div className="flex-1 flex flex-col items-center justify-center gap-0.5 min-h-0 py-1">
               <span
                 className="font-semibold tracking-tight tabular-nums leading-none"
-                style={{ color: style.pctColor, fontSize: `${Math.min(34, 18 + node.w / 4)}px` }}
+                style={{
+                  color: style.pctColor,
+                  fontSize: `${Math.min(28, Math.max(13, 13 + node.w / 5))}px`,
+                }}
               >
                 {formatHours(project.loggedMinutes)}
               </span>
-              <span className="text-[10px] text-ink-subtle">
-                logged of {project.targetHours}h target
-              </span>
+              {node.h >= 22 && (
+                <span className="text-[10px] text-ink-subtle truncate max-w-full px-1 text-center">
+                  logged of {project.targetHours}h target
+                </span>
+              )}
             </div>
 
             <div className="space-y-2 pt-2">
-              <div className="flex items-center justify-between gap-1">
-                <CommentButton
-                  project={project}
-
-                  onOpenComments={onOpenComments}
-                  className="w-6 h-6"
-                />
-                <span className="text-[10px] font-medium text-ink-muted">{project.assignee}</span>
-              </div>
-
+              <CommentButton
+                project={project}
+                onOpenComments={onOpenComments}
+                className="w-6 h-6"
+              />
               <div className="h-1 rounded-full overflow-hidden bg-garden-border">
                 <div
                   className="h-full rounded-full transition-all duration-300"
-                  style={{ width: `${barPct}%`, backgroundColor: style.pctColor }}
+                  style={{
+                    width: barPct === 0 ? "3px" : `${barPct}%`,
+                    backgroundColor: style.pctColor,
+                  }}
                 />
               </div>
             </div>
@@ -215,9 +211,7 @@ export function ProjectGridTile({
             ) : (
               <>
                 <MousePointerClick className="w-3 h-3 text-white" />
-                <span className="text-[10px] font-semibold text-white">
-                  +{tapUnit} · right-click −{tapUnit}
-                </span>
+                <span className="text-[10px] font-semibold text-white">tap to log +{tapUnit}</span>
               </>
             )}
           </div>

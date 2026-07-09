@@ -1,7 +1,8 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import demoUser from "@/data/demo-user.json";
+
 import { env } from "@/config/env";
+import demoUser from "@/data/demo-user.json";
 
 // Mock auth — there is no backend yet. A single demo account is accepted here;
 // swap `authorize` for a real API call once one exists. Everything downstream

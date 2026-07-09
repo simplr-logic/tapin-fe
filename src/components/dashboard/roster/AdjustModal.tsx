@@ -5,8 +5,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import { formatHours } from "./utils";
-
 import type { Project } from "@/components/providers/ProjectsProvider";
 
 export function AdjustModal({

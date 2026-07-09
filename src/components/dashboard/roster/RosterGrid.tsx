@@ -66,7 +66,7 @@ export function RosterGrid({
         onDragEnd={onDragEnd}
       >
         {view === "grid" ? (
-          <div className="relative w-full h-[280px] sm:h-[360px] md:h-[440px] rounded-lg border border-garden-border bg-surface-2 overflow-hidden">
+          <div className="relative w-full aspect-square sm:aspect-[4/3] md:aspect-auto md:h-[440px] rounded-lg border border-garden-border bg-surface-2 overflow-hidden">
             {treemapNodes.length === 0 && (
               <div className="absolute inset-0 flex items-center justify-center text-center px-8">
                 <p className="text-xs text-ink-subtle leading-relaxed">
@@ -123,7 +123,7 @@ export function RosterGrid({
       </DndContext>
 
       {/* Legend */}
-      <div className="flex items-center justify-end gap-4 pt-1">
+      <div className="flex items-center flex-wrap justify-start sm:justify-end gap-3 sm:gap-4 pt-1">
         {[
           { label: "Under target", color: gardenColors.yellow },
           { label: "On target", color: gardenColors.success },

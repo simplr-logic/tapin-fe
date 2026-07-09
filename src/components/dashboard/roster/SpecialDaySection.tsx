@@ -8,7 +8,6 @@ import { formatSpecialRange } from "./utils";
 
 interface SpecialDaySectionProps {
   specialDays: SpecialDay[];
-  periodLocked: boolean;
   onAdd: () => void;
   onEdit: (id: number) => void;
   onRemove: (id: number) => void;
@@ -16,7 +15,6 @@ interface SpecialDaySectionProps {
 
 export function SpecialDaySection({
   specialDays,
-  periodLocked,
   onAdd,
   onEdit,
   onRemove,

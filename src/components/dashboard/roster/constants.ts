@@ -1,4 +1,4 @@
-import { Truck, Building2, LayoutGrid, Cloud } from "lucide-react";
+import { Building2, Cloud, LayoutGrid, Truck } from "lucide-react";
 
 import type { GridKey } from "./types";
 

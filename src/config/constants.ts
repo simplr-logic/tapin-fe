@@ -40,3 +40,10 @@ export const PERIOD_SCALE: Record<PeriodView, number> = {
   month: 52 / 12,
   year: 52,
 };
+
+export const TARGET_SCALE: Record<PeriodView, number> = {
+  day: 0.2,
+  week: 1,
+  month: 4.33,
+  year: 52,
+};

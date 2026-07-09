@@ -76,9 +76,7 @@ export const SPECIAL_DAY_TYPES: {
   },
 ];
 
-// Each day in the range is worth a full 8h, except the first day (only the
-// afternoon if it starts at "noon") and the last day (only the morning if it
-// ends at "morning") — the standard half-day-leave accounting pattern.
+// Standard half-day accounting: each day = 8h except first day (4h if starts at "noon") and last (4h if ends at "morning").
 export function computeSpecialDayHours(
   startDate: Date,
   startPeriod: DayPeriod,

@@ -56,18 +56,6 @@ function CheckinDayBtn({ day: _day, modifiers, className, ...props }: DayButtonP
   );
 }
 
-function computeStreak(logs: Record<string, number>): number {
-  let streak = 0;
-  const d = new Date();
-  while (true) {
-    const iso = d.toLocaleDateString("en-CA");
-    if (!(logs[iso] > 0)) break;
-    streak++;
-    d.setDate(d.getDate() - 1);
-  }
-  return streak;
-}
-
 export default function DailyAttendance({
   selectedDate,
   onDaySelect,
@@ -75,7 +63,7 @@ export default function DailyAttendance({
   selectedDate?: Date;
   onDaySelect?: (date: Date) => void;
 }) {
-  const { projects } = useProjects();
+  const { projects, streak } = useProjects();
 
   const logs = useMemo<Record<string, number>>(() => {
     const totals: Record<string, number> = {};
@@ -86,9 +74,6 @@ export default function DailyAttendance({
     }
     return totals;
   }, [projects]);
-
-  const today = new Date().toLocaleDateString("en-CA");
-  const streak = useMemo(() => computeStreak(logs), [logs]);
 
   const calendarModifiers = useMemo(() => {
     const exceeded: Date[] = [];
@@ -111,7 +96,7 @@ export default function DailyAttendance({
           <CalendarIcon className="w-3.5 h-3.5" />
           Calendar
         </div>
-        {streak >= 3 && (
+        {streak >= 1 && (
           <span className="flex items-center gap-1 text-[11px] font-semibold text-warning">
             <Flame className="w-3 h-3" />
             {streak}d streak
@@ -124,7 +109,6 @@ export default function DailyAttendance({
           mode="single"
           selected={selectedDate}
           onSelect={(d) => d && onDaySelect?.(d)}
-          disabled={(date) => date.toLocaleDateString("en-CA") > today}
           modifiers={calendarModifiers}
           components={{ DayButton: CheckinDayBtn }}
           className="w-full"

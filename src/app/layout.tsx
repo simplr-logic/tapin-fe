@@ -1,9 +1,11 @@
-import type { Metadata } from "next";
 import AuthProvider from "@/components/providers/AuthProvider";
 import { ProjectsProvider } from "@/components/providers/ProjectsProvider";
 import { TimesheetProvider } from "@/components/providers/TimesheetProvider";
 import { APP_NAME } from "@/config/constants";
+
 import "./globals.css";
+
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: APP_NAME,
