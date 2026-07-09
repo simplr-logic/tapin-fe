@@ -1,28 +1,47 @@
 "use client";
 
-import { Palmtree, Plane, HeartPulse } from "lucide-react";
+import { Palmtree, Plane } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { gardenColors } from "@/config/theme";
 
 import {
-  toIsoDate,
-  startOfDay,
+  DatePickerField,
   fromIsoDate,
   PeriodToggle,
-  DatePickerField,
+  startOfDay,
+  toIsoDate,
 } from "./SpecialDayHelpers";
 
-export type SpecialDayType = "holiday" | "leave" | "sick";
+export type SpecialDayType = "holiday" | "leave";
 export type DayPeriod = "morning" | "noon";
+
+export const LEAVE_TYPES = [
+  "Annual Leave",
+  "Medical Leave",
+  "Maternity Leave",
+  "Paternity Leave",
+  "Emergency Leave",
+  "Unpaid Leave",
+] as const;
+
+export type LeaveType = (typeof LEAVE_TYPES)[number];
 
 export interface SpecialDay {
   id: number;
   type: SpecialDayType;
+  leaveType?: LeaveType;
   startDate: string;
   startPeriod: DayPeriod;
   endDate: string;
@@ -54,14 +73,6 @@ export const SPECIAL_DAY_TYPES: {
     hex: gardenColors.link,
     activeClass: "bg-link/10 border-link/35 text-link",
     cardClass: "bg-link/6 border-link/20",
-  },
-  {
-    value: "sick",
-    icon: HeartPulse,
-    label: "Sick",
-    hex: gardenColors.error,
-    activeClass: "bg-error/10 border-error/35 text-error",
-    cardClass: "bg-error/6 border-error/20",
   },
 ];
 
@@ -105,6 +116,7 @@ function SpecialDayForm({
   onUpdate: (id: number, input: Omit<SpecialDay, "id">) => void;
 }) {
   const [type, setType] = useState<SpecialDayType>(editing?.type ?? "holiday");
+  const [leaveType, setLeaveType] = useState<LeaveType>(editing?.leaveType ?? "Annual Leave");
   const [startDate, setStartDate] = useState<Date>(() =>
     editing ? fromIsoDate(editing.startDate) : new Date()
   );
@@ -123,6 +135,7 @@ function SpecialDayForm({
     if (!canSave) return;
     const payload = {
       type,
+      ...(type === "leave" ? { leaveType } : {}),
       startDate: toIsoDate(startDate),
       startPeriod,
       endDate: toIsoDate(endDate),
@@ -152,7 +165,7 @@ function SpecialDayForm({
           <Label className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide mb-1">
             Off-day type
           </Label>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             {SPECIAL_DAY_TYPES.map(({ value, icon: Icon, label, activeClass }) => (
               <button
                 key={value}
@@ -171,6 +184,26 @@ function SpecialDayForm({
             ))}
           </div>
         </div>
+
+        {type === "leave" && (
+          <div>
+            <Label className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide mb-1">
+              Leave type
+            </Label>
+            <Select value={leaveType} onValueChange={(v) => setLeaveType(v as LeaveType)}>
+              <SelectTrigger className="h-9 text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {LEAVE_TYPES.map((lt) => (
+                  <SelectItem key={lt} value={lt}>
+                    {lt}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
 
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">

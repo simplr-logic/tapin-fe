@@ -1,6 +1,6 @@
 "use client";
 
-import { Palmtree, Trees, Lightbulb, Pencil, Trash2 } from "lucide-react";
+import { Lightbulb, Palmtree, Pencil, Trash2, Trees } from "lucide-react";
 
 import { SPECIAL_DAY_TYPES, type SpecialDay } from "@/components/dashboard/SpecialDayDialog";
 
@@ -63,7 +63,7 @@ export function SpecialDaySection({
                         className="text-[10px] font-semibold uppercase tracking-wide"
                         style={{ color: typeInfo.hex }}
                       >
-                        {typeInfo.label}
+                        {day.type === "leave" && day.leaveType ? day.leaveType : typeInfo.label}
                       </p>
                       <p className="text-[10px] text-ink-subtle">{formatSpecialRange(day)}</p>
                     </div>
