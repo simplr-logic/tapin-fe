@@ -50,22 +50,24 @@ export function stripTime(d: Date): Date {
   return copy;
 }
 
-// A "week" is a rolling 7-day window starting on whatever date is picked —
-// pick Jul 6 and the window is Jul 6 – Jul 12, not snapped to a calendar
-// Monday.
+// Snaps any date to the Monday of its ISO week (Mon–Sun).
+export function weekStart(d: Date): Date {
+  const copy = stripTime(d);
+  const dow = copy.getDay(); // 0=Sun
+  copy.setDate(copy.getDate() - ((dow + 6) % 7));
+  return copy;
+}
+
 export function weekEnd(start: Date): Date {
   const end = new Date(start);
   end.setDate(end.getDate() + 6);
   return end;
 }
 
-// Picking any date outside the current week/month/year is a read-only
-// projection — there's no real historical backend, only the current week's
-// live data. For "week" that means: does today fall inside the picked
-// 7-day window?
 export function isSamePeriod(a: Date, b: Date, period: PeriodView): boolean {
+  if (period === "day") return a.toLocaleDateString("en-CA") === b.toLocaleDateString("en-CA");
   if (period === "week") {
-    const start = stripTime(a);
+    const start = weekStart(a);
     const end = weekEnd(start);
     const target = stripTime(b);
     return target >= start && target <= end;
@@ -76,8 +78,15 @@ export function isSamePeriod(a: Date, b: Date, period: PeriodView): boolean {
 }
 
 export function getPeriodLabel(period: PeriodView, date: Date): string {
+  if (period === "day")
+    return date.toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
   if (period === "week") {
-    const start = stripTime(date);
+    const start = weekStart(date);
     const end = weekEnd(start);
     return `${shortDate(start)} – ${shortDate(end)}, ${end.getFullYear()}`;
   }
@@ -90,15 +99,14 @@ export function getPeriodLabel(period: PeriodView, date: Date): string {
 // that hue is reserved for Holiday special-day blocks. Projects only ever
 // read as success (on track), open (near/over target), or error (well over).
 export function getHeatStyle(pct: number): { bg: string; border: string; pctColor: string } {
-  if (pct >= 120)
+  if (pct >= 115)
     return { bg: "bg-error/18", border: "border-error/45", pctColor: gardenColors.error };
   if (pct >= 100)
-    return { bg: "bg-error/12", border: "border-error/32", pctColor: gardenColors.error };
-  if (pct >= 85) return { bg: "bg-open/14", border: "border-open/35", pctColor: gardenColors.open };
-  if (pct >= 60)
     return { bg: "bg-success/14", border: "border-success/35", pctColor: gardenColors.success };
-  if (pct >= 30)
-    return { bg: "bg-success/8", border: "border-success/22", pctColor: gardenColors.success };
+  if (pct >= 50)
+    return { bg: "bg-yellow/12", border: "border-yellow/30", pctColor: gardenColors.yellow };
+  if (pct > 0)
+    return { bg: "bg-yellow/6", border: "border-yellow/18", pctColor: gardenColors.yellow };
   return { bg: "bg-surface-2", border: "border-garden-border", pctColor: gardenColors.inkSubtle };
 }
 

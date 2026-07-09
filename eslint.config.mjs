@@ -16,12 +16,25 @@ const eslintConfig = defineConfig([
   {
     plugins: { import: importPlugin },
     rules: {
+      "import/no-unresolved": "error",
+      "import/no-cycle": "error",
+      "import/no-self-import": "error",
+      "import/no-useless-path-segments": "warn",
+      "import/newline-after-import": "warn",
+      "import/no-duplicates": "error",
       "import/order": [
         "error",
         {
           groups: ["builtin", "external", "internal", ["parent", "sibling"], "index", "type"],
           "newlines-between": "always",
           alphabetize: { order: "asc", caseInsensitive: true },
+        },
+      ],
+      "sort-imports": [
+        "error",
+        {
+          ignoreCase: true,
+          ignoreDeclarationSort: true,
         },
       ],
     },

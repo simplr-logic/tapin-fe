@@ -1,8 +1,9 @@
 "use client";
 
+import { CheckCircle2, History } from "lucide-react";
 import { useState } from "react";
-import { History, CheckCircle2 } from "lucide-react";
-import { useTimesheets, type TimesheetRecord } from "@/components/providers/TimesheetProvider";
+
+import { type TimesheetRecord, useTimesheets } from "@/components/providers/TimesheetProvider";
 import { TimesheetDetailDialog } from "@/components/timesheets/TimesheetDetailDialog";
 
 export function TimesheetHistory() {
@@ -23,7 +24,7 @@ export function TimesheetHistory() {
 
       {records.length === 0 ? (
         <div className="px-5 py-10 text-center text-xs text-ink-subtle">
-          No submitted timesheets yet. Certify the current week from the dashboard to archive it
+          No submitted timesheets yet. Submit the current month from the dashboard to archive it
           here.
         </div>
       ) : (
@@ -45,7 +46,7 @@ export function TimesheetHistory() {
                 </div>
 
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-ink truncate">{record.weekLabel}</p>
+                  <p className="text-sm font-semibold text-ink truncate">{record.monthLabel}</p>
                   <p className="text-[11px] text-ink-muted truncate">
                     Signed by {record.submittedBy} ·{" "}
                     {new Date(record.submittedAt).toLocaleDateString("en-US", {
@@ -60,7 +61,7 @@ export function TimesheetHistory() {
                   <span className="text-xs font-semibold text-ink">
                     {record.totalLoggedHours.toFixed(1)}h / {record.totalTargetHours}h
                   </span>
-                  <span className="text-[10px] font-semibold text-success">{pct}% Certified</span>
+                  <span className="text-[10px] font-semibold text-success">{pct}% Submitted</span>
                 </div>
               </button>
             );

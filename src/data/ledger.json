@@ -1,18 +1,98 @@
 [
   {
     "id": 1,
-    "timestamp": "Jun 30 · 02:00 AM",
-    "projectTitle": "Fleet Routing Optimization",
-    "company": "Meridian Logistics",
-    "note": "Optimizing routing algorithm (2.0h)",
-    "icon": "truck"
+    "timestamp": "Jul 7 · 09:30 AM",
+    "projectTitle": "Platform Revamp",
+    "company": "Vanguard Retail",
+    "note": "Morning sprint sync (+1.0h)",
+    "icon": "building"
   },
   {
     "id": 2,
-    "timestamp": "Jun 30 · 12:00 AM",
-    "projectTitle": "Store Front Upgrade",
+    "timestamp": "Jul 6 · 04:45 PM",
+    "projectTitle": "Cloud Migration",
+    "company": "AxonTech",
+    "note": "Database schema review (+2.0h)",
+    "icon": "cloud"
+  },
+  {
+    "id": 3,
+    "timestamp": "Jul 5 · 11:00 AM",
+    "projectTitle": "Fleet Routing Optimization",
+    "company": "Meridian Logistics",
+    "note": "+2.5h — Algorithm tuning session",
+    "icon": "truck"
+  },
+  {
+    "id": 4,
+    "timestamp": "Jul 4 · 02:30 PM",
+    "projectTitle": "Platform Revamp",
     "company": "Vanguard Retail",
-    "note": "Initial development sync (3.5h)",
+    "note": "UI component library integration (+3.0h)",
+    "icon": "building"
+  },
+  {
+    "id": 5,
+    "timestamp": "Jul 3 · 10:15 AM",
+    "projectTitle": "Ad Campaign Analytics",
+    "company": "Optic Media",
+    "note": "Dashboard wireframes (+1.5h)",
+    "icon": "grid"
+  },
+  {
+    "id": 6,
+    "timestamp": "Jul 2 · 03:00 PM",
+    "projectTitle": "Fleet Routing Optimization",
+    "company": "Meridian Logistics",
+    "note": "+1.0h — Route simulation tests",
+    "icon": "truck"
+  },
+  {
+    "id": 7,
+    "timestamp": "Jul 1 · 09:00 AM",
+    "projectTitle": "Network Infrastructure Audit",
+    "company": "CoreNet Systems",
+    "note": "Initial audit scope (+2.0h)",
+    "icon": "building"
+  },
+  {
+    "id": 8,
+    "timestamp": "Jun 30 · 04:00 PM",
+    "projectTitle": "Platform Revamp",
+    "company": "Vanguard Retail",
+    "note": "+3.0h — Sprint retrospective & planning",
+    "icon": "building"
+  },
+  {
+    "id": 9,
+    "timestamp": "Jun 30 · 11:30 AM",
+    "projectTitle": "Cloud Migration",
+    "company": "AxonTech",
+    "note": "Server config migration (+1.5h)",
+    "icon": "cloud"
+  },
+  {
+    "id": 10,
+    "timestamp": "Jun 27 · 03:30 PM",
+    "projectTitle": "Supply Chain Tracker",
+    "company": "Meridian Logistics",
+    "note": "Initial project setup (+1.0h)",
+    "icon": "truck"
+  },
+  {
+    "id": 11,
+    "timestamp": "Jun 26 · 02:00 PM",
+    "projectTitle": "Fleet Routing Optimization",
+    "company": "Meridian Logistics",
+    "note": "−0.5h — Duplicate entry correction",
+    "icon": "truck"
+  },
+  {
+    "id": 12,
+    "timestamp": "Jun 25 · 10:00 AM",
+    "projectTitle": "Platform Revamp",
+    "company": "Vanguard Retail",
+    "note": "+4.0h — Kickoff & requirements gathering",
     "icon": "building"
   }
 ]

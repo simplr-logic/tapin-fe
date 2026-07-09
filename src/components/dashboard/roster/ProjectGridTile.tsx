@@ -4,11 +4,11 @@ import { useDraggable, useDroppable } from "@dnd-kit/core";
 import { Lock, MousePointerClick } from "lucide-react";
 import { useState } from "react";
 
-import { CommentButton, AdjustHoursButton, EditProjectButton } from "./TileButtons";
-import { getPct, formatHours, getHeatStyle, getShortCode } from "./utils";
+import { AdjustHoursButton, CommentButton } from "./TileButtons";
+import { formatHours, getHeatStyle, getPct, getShortCode } from "./utils";
 
 import type { TreemapNode } from "./treemap";
-import type { Project } from "@/components/providers/ProjectsProvider";
+import type { DisplayProject } from "./types";
 import type { TapUnit } from "@/config/constants";
 
 export function ProjectGridTile({
@@ -16,20 +16,16 @@ export function ProjectGridTile({
   project,
   onTap,
   tapUnit,
-  commentCount,
   onOpenComments,
   onOpenAdjust,
-  onOpenEdit,
   locked = false,
 }: {
   node: TreemapNode;
-  project: Project;
+  project: DisplayProject;
   onTap: (id: number, sign: 1 | -1) => void;
   tapUnit: TapUnit;
-  commentCount: number;
   onOpenComments: (id: number) => void;
   onOpenAdjust: (id: number) => void;
-  onOpenEdit: (id: number) => void;
   locked?: boolean;
 }) {
   const [tapping, setTapping] = useState(false);
@@ -129,7 +125,6 @@ export function ProjectGridTile({
                 {formatHours(project.loggedMinutes)}
               </span>
               <div className="flex items-center gap-1">
-                <EditProjectButton project={project} onOpenEdit={onOpenEdit} className="w-5 h-5" />
                 <AdjustHoursButton
                   project={project}
                   onOpenAdjust={onOpenAdjust}
@@ -138,7 +133,7 @@ export function ProjectGridTile({
                 />
                 <CommentButton
                   project={project}
-                  commentCount={commentCount}
+
                   onOpenComments={onOpenComments}
                   className="w-5 h-5"
                 />
@@ -165,7 +160,6 @@ export function ProjectGridTile({
                 <p className="text-[10px] mt-0.5 truncate text-ink-muted">{project.company}</p>
               </div>
               <div className="flex items-center gap-1.5 shrink-0 mt-0.5">
-                <EditProjectButton project={project} onOpenEdit={onOpenEdit} className="w-5 h-5" />
                 <AdjustHoursButton
                   project={project}
                   onOpenAdjust={onOpenAdjust}
@@ -194,7 +188,7 @@ export function ProjectGridTile({
               <div className="flex items-center justify-between gap-1">
                 <CommentButton
                   project={project}
-                  commentCount={commentCount}
+
                   onOpenComments={onOpenComments}
                   className="w-6 h-6"
                 />

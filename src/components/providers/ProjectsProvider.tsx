@@ -1,24 +1,30 @@
 "use client";
 
-import { createContext, useContext, useState, type ReactNode } from "react";
-import projectsSeed from "@/data/projects.json";
-import ledgerSeed from "@/data/ledger.json";
+import { createContext, type ReactNode, useContext, useState } from "react";
+
 import { MAX_LEDGER_ENTRIES } from "@/config/constants";
+import ledgerSeed from "@/data/ledger.json";
+import projectsSeed from "@/data/projects.json";
 
 export type ProjectIcon = "truck" | "building" | "grid" | "cloud";
+
+export interface MonthlyTarget {
+  month: string; // "YYYY-MM"
+  hours: number;
+}
 
 export interface Project {
   id: number;
   title: string;
   company: string;
   assignee: string;
-  loggedMinutes: number;
+  logs: Record<string, number>;
   targetHours: number;
   icon: ProjectIcon;
-  // Locked projects stay visible everywhere (roster grid/progress, tables)
-  // but can't be tapped/adjusted — managed from the Projects page, not tied
-  // to which week/period is being viewed.
   locked: boolean;
+  startDate?: string;
+  endDate?: string;
+  monthlyTargets?: MonthlyTarget[];
 }
 
 export interface Comment {
@@ -27,9 +33,6 @@ export interface Comment {
   timestamp: string;
 }
 
-// Denormalized (title/company/icon captured at the time of the entry) so the
-// ledger reads correctly as a historical record even if a project is later
-// renamed or deleted — an audit trail shouldn't rewrite itself.
 export interface LedgerEntry {
   id: number;
   timestamp: string;
@@ -39,8 +42,14 @@ export interface LedgerEntry {
   note: string;
 }
 
-export type NewProjectInput = Omit<Project, "id" | "loggedMinutes">;
+export type NewProjectInput = Omit<Project, "id" | "logs">;
 export type ProjectPatch = Partial<Omit<Project, "id">>;
+
+export function sumLogs(logs: Record<string, number>, start?: string, end?: string): number {
+  return Object.entries(logs)
+    .filter(([d]) => (!start || d >= start) && (!end || d <= end))
+    .reduce((sum, [, m]) => sum + m, 0);
+}
 
 interface ProjectsContextValue {
   projects: Project[];
@@ -48,19 +57,13 @@ interface ProjectsContextValue {
   ledger: LedgerEntry[];
   addProject: (input: NewProjectInput) => number;
   updateProject: (id: number, patch: ProjectPatch) => void;
-  adjustLoggedMinutes: (id: number, deltaMinutes: number, note?: string) => void;
+  adjustLoggedMinutes: (id: number, deltaMinutes: number, note?: string, date?: string) => void;
   removeProject: (id: number) => void;
   addComment: (id: number, text: string) => void;
 }
 
 const initialProjects: Project[] = projectsSeed as Project[];
 const initialLedger: LedgerEntry[] = ledgerSeed as LedgerEntry[];
-
-function formatHoursShort(minutes: number): string {
-  const h = Math.floor(minutes / 60);
-  const m = Math.floor(minutes % 60);
-  return m > 0 ? `${h}h ${m}m` : `${h}h`;
-}
 
 function nowTimestamp(): string {
   return new Date().toLocaleString("en-US", {
@@ -98,7 +101,7 @@ export function ProjectsProvider({ children }: { children: ReactNode }) {
   function addProject(input: NewProjectInput) {
     const id = nextId;
     setNextId((n) => n + 1);
-    setProjects((prev) => [...prev, { ...input, id, loggedMinutes: 0 }]);
+    setProjects((prev) => [...prev, { ...input, id, logs: {} }]);
     return id;
   }
 
@@ -106,17 +109,24 @@ export function ProjectsProvider({ children }: { children: ReactNode }) {
     setProjects((prev) => prev.map((p) => (p.id === id ? { ...p, ...patch } : p)));
   }
 
-  function adjustLoggedMinutes(id: number, deltaMinutes: number, note?: string) {
+  function adjustLoggedMinutes(id: number, deltaMinutes: number, note?: string, date?: string) {
+    const targetDate = date ?? new Date().toLocaleDateString("en-CA");
     const project = projects.find((p) => p.id === id);
     setProjects((prev) =>
       prev.map((p) =>
-        p.id === id ? { ...p, loggedMinutes: Math.max(0, p.loggedMinutes + deltaMinutes) } : p
+        p.id === id
+          ? {
+              ...p,
+              logs: {
+                ...p.logs,
+                [targetDate]: Math.max(0, (p.logs[targetDate] ?? 0) + deltaMinutes),
+              },
+            }
+          : p
       )
     );
-    if (!project || deltaMinutes === 0) return;
-    const sign = deltaMinutes > 0 ? "+" : "−";
-    const defaultNote = `${sign}${formatHoursShort(Math.abs(deltaMinutes))} ${deltaMinutes > 0 ? "logged" : "unlogged"}`;
-    addLedgerEntry(project, note ?? defaultNote);
+    if (!project || deltaMinutes === 0 || note === undefined) return;
+    addLedgerEntry(project, note);
   }
 
   function removeProject(id: number) {

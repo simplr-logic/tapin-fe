@@ -1,7 +1,8 @@
 "use client";
 
-import { createContext, useContext, useMemo, useSyncExternalStore, type ReactNode } from "react";
-import type { Project } from "@/components/providers/ProjectsProvider";
+import { createContext, type ReactNode, useContext, useMemo, useSyncExternalStore } from "react";
+
+import { type Project, sumLogs } from "@/components/providers/ProjectsProvider";
 
 export interface TimesheetProjectSnapshot {
   id: number;
@@ -13,7 +14,10 @@ export interface TimesheetProjectSnapshot {
 
 export interface TimesheetRecord {
   id: string;
-  weekLabel: string;
+  monthLabel: string; // "July 2026"
+  monthKey: string; // "2026-07"
+  periodStart: string; // "2026-07-01"
+  periodEnd: string; // "2026-07-07" (date of submission)
   submittedAt: string;
   submittedBy: string;
   totalLoggedHours: number;
@@ -23,16 +27,16 @@ export interface TimesheetRecord {
 
 interface TimesheetContextValue {
   records: TimesheetRecord[];
-  currentWeekLabel: string;
-  currentWeekRecord: TimesheetRecord | null;
+  currentMonthLabel: string;
+  currentMonthRecord: TimesheetRecord | null;
+  isMonthSubmitted: (date: Date) => boolean;
   submitTimesheet: (signature: string, projects: Project[]) => void;
+  unsubmitTimesheet: (monthKey: string) => void;
 }
 
 const STORAGE_KEY = "tapin.timesheets";
 // localStorage's native "storage" event only fires in *other* tabs, not the one
-// that made the write — this custom event covers the same-tab case so the
-// provider updates immediately after submitTimesheet, while "storage" still
-// keeps other open tabs in sync.
+// that made the write — this custom event covers the same-tab case.
 const LOCAL_UPDATE_EVENT = "tapin:timesheets-updated";
 
 function readRaw(): string {
@@ -57,30 +61,20 @@ function getSnapshot(): string {
   return readRaw();
 }
 
-// Server has no localStorage — render as if no timesheets are archived yet
-// until the client takes over on first paint.
 function getServerSnapshot(): string {
   return "[]";
 }
 
-function getIsoWeek(date: Date): number {
-  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-  const dayNum = d.getUTCDay() || 7;
-  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-  return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+function toMonthKey(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
 }
 
-/** "Week 27 · Jun 29 – Jul 5, 2026" — the Monday-Sunday cycle containing `date`. */
-export function getWeekLabel(date: Date = new Date()): string {
-  const day = date.getDay();
-  const diffToMonday = (day + 6) % 7;
-  const monday = new Date(date);
-  monday.setDate(date.getDate() - diffToMonday);
-  const sunday = new Date(monday);
-  sunday.setDate(monday.getDate() + 6);
-  const fmt = (d: Date) => d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  return `Week ${getIsoWeek(date)} · ${fmt(monday)} – ${fmt(sunday)}, ${sunday.getFullYear()}`;
+export function getMonthLabel(date: Date = new Date()): string {
+  return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+}
+
+function monthStart(date: Date): string {
+  return new Date(date.getFullYear(), date.getMonth(), 1).toLocaleDateString("en-CA");
 }
 
 const TimesheetContext = createContext<TimesheetContextValue | null>(null);
@@ -95,33 +89,55 @@ export function TimesheetProvider({ children }: { children: ReactNode }) {
     }
   }, [raw]);
 
-  const currentWeekLabel = getWeekLabel();
-  const currentWeekRecord = records.find((r) => r.weekLabel === currentWeekLabel) ?? null;
+  const currentMonthLabel = getMonthLabel();
+  const currentMonthRecord = records.find((r) => r.monthKey === toMonthKey(new Date())) ?? null;
+
+  function isMonthSubmitted(date: Date): boolean {
+    const key = toMonthKey(date);
+    return records.some((r) => r.monthKey === key);
+  }
 
   function submitTimesheet(signature: string, projects: Project[]) {
+    const now = new Date();
+    const start = monthStart(now);
+    const end = now.toLocaleDateString("en-CA");
     const record: TimesheetRecord = {
       id: `ts-${Date.now()}`,
-      weekLabel: currentWeekLabel,
-      submittedAt: new Date().toISOString(),
+      monthLabel: getMonthLabel(now),
+      monthKey: toMonthKey(now),
+      periodStart: start,
+      periodEnd: end,
+      submittedAt: now.toISOString(),
       submittedBy: signature,
-      totalLoggedHours: projects.reduce((sum, p) => sum + p.loggedMinutes / 60, 0),
+      totalLoggedHours: projects.reduce((sum, p) => sum + sumLogs(p.logs, start, end) / 60, 0),
       totalTargetHours: projects.reduce((sum, p) => sum + p.targetHours, 0),
       projects: projects.map((p) => ({
         id: p.id,
         title: p.title,
         company: p.company,
-        loggedMinutes: p.loggedMinutes,
+        loggedMinutes: sumLogs(p.logs, start, end),
         targetHours: p.targetHours,
       })),
     };
-    // Re-signing the same week replaces its record rather than duplicating it.
-    const next = [record, ...records.filter((r) => r.weekLabel !== currentWeekLabel)];
+    const key = toMonthKey(now);
+    const next = [record, ...records.filter((r) => r.monthKey !== key)];
     writeRaw(JSON.stringify(next));
+  }
+
+  function unsubmitTimesheet(monthKey: string) {
+    writeRaw(JSON.stringify(records.filter((r) => r.monthKey !== monthKey)));
   }
 
   return (
     <TimesheetContext.Provider
-      value={{ records, currentWeekLabel, currentWeekRecord, submitTimesheet }}
+      value={{
+        records,
+        currentMonthLabel,
+        currentMonthRecord,
+        isMonthSubmitted,
+        submitTimesheet,
+        unsubmitTimesheet,
+      }}
     >
       {children}
     </TimesheetContext.Provider>

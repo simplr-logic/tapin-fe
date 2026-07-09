@@ -1,11 +1,20 @@
 "use client";
 
-import { FolderKanban, Clock, TrendingUp } from "lucide-react";
-import { useProjects } from "@/components/providers/ProjectsProvider";
+import { Clock, FolderKanban, TrendingUp } from "lucide-react";
+import { useMemo } from "react";
+
+import { sumLogs, useProjects } from "@/components/providers/ProjectsProvider";
 
 export function ProfileStats() {
   const { projects } = useProjects();
-  const totalLogged = projects.reduce((sum, p) => sum + p.loggedMinutes / 60, 0);
+  const { today, weekAgo } = useMemo(() => {
+    const now = new Date();
+    return {
+      today: now.toLocaleDateString("en-CA"),
+      weekAgo: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000).toLocaleDateString("en-CA"),
+    };
+  }, []);
+  const totalLogged = projects.reduce((sum, p) => sum + sumLogs(p.logs, weekAgo, today) / 60, 0);
   const totalTarget = projects.reduce((sum, p) => sum + p.targetHours, 0);
   const pct = totalTarget > 0 ? Math.round((totalLogged / totalTarget) * 100) : 0;
 

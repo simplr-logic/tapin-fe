@@ -6,7 +6,6 @@ import type { Project } from "@/components/providers/ProjectsProvider";
 
 export interface TileActionsProps {
   project: Project;
-  commentCount: number;
   onOpenComments: (id: number) => void;
   onOpenAdjust: (id: number) => void;
   onOpenEdit: (id: number) => void;
@@ -14,7 +13,6 @@ export interface TileActionsProps {
 
 export function CommentButton({
   project,
-  commentCount,
   onOpenComments,
   className,
 }: Omit<TileActionsProps, "onOpenAdjust" | "onOpenEdit"> & { className: string }) {
@@ -25,18 +23,13 @@ export function CommentButton({
         e.stopPropagation();
         onOpenComments(project.id);
       }}
-      title="View / add comments"
+      title="View adjustment notes"
       className={[
-        "relative rounded-md flex items-center justify-center text-white shrink-0 bg-kale hover:bg-kale-hover transition-colors",
+        "rounded-md flex items-center justify-center text-white shrink-0 bg-kale hover:bg-kale-hover transition-colors",
         className,
       ].join(" ")}
     >
       <MessageSquare className="w-3 h-3" />
-      {commentCount > 0 && (
-        <span className="absolute -top-1.5 -right-1.5 min-w-[14px] h-[14px] px-0.5 rounded-full bg-link text-white text-[8px] font-bold flex items-center justify-center leading-none">
-          {commentCount}
-        </span>
-      )}
     </button>
   );
 }

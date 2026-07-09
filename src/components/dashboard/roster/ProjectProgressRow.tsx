@@ -1,27 +1,28 @@
 "use client";
 
 import { useDraggable, useDroppable } from "@dnd-kit/core";
-import { Lock, GripVertical } from "lucide-react";
+import { GripVertical, Lock, MousePointerClick } from "lucide-react";
 import { useState } from "react";
 
 import { PROJECT_ICONS } from "./constants";
-import { CommentButton, AdjustHoursButton, EditProjectButton } from "./TileButtons";
-import { getPct, formatHours, getHeatStyle } from "./utils";
+import { AdjustHoursButton, CommentButton, EditProjectButton } from "./TileButtons";
+import { formatHours, getHeatStyle, getPct } from "./utils";
 
-import type { Project } from "@/components/providers/ProjectsProvider";
+import type { DisplayProject } from "./types";
+import type { TapUnit } from "@/config/constants";
 
 export function ProjectProgressRow({
   project,
   onTap,
-  commentCount,
+  tapUnit,
   onOpenComments,
   onOpenAdjust,
   onOpenEdit,
   locked = false,
 }: {
-  project: Project;
+  project: DisplayProject;
   onTap: (id: number, sign: 1 | -1) => void;
-  commentCount: number;
+  tapUnit: TapUnit;
   onOpenComments: (id: number) => void;
   onOpenAdjust: (id: number) => void;
   onOpenEdit: (id: number) => void;
@@ -65,7 +66,7 @@ export function ProjectProgressRow({
         opacity: draggable.isDragging ? 0.35 : 1,
       }}
       className={[
-        "rounded-lg border bg-white p-4 select-none transition-all hover:border-garden-border-strong touch-none",
+        "relative rounded-lg border bg-white p-4 select-none transition-all hover:border-garden-border-strong touch-none overflow-hidden group",
         locked ? "cursor-default border-dashed" : "cursor-pointer",
         droppable.isOver ? "ring-2 ring-link ring-offset-1 border-link" : "border-garden-border",
       ].join(" ")}
@@ -106,12 +107,7 @@ export function ProjectProgressRow({
             className="w-7 h-7"
             disabled={locked}
           />
-          <CommentButton
-            project={project}
-            commentCount={commentCount}
-            onOpenComments={onOpenComments}
-            className="w-7 h-7"
-          />
+          <CommentButton project={project} onOpenComments={onOpenComments} className="w-7 h-7" />
         </div>
       </div>
 
@@ -127,6 +123,24 @@ export function ProjectProgressRow({
             Logged: <b className="text-ink font-semibold">{formatHours(project.loggedMinutes)}</b>
           </span>
           <span>Target: {project.targetHours}h</span>
+        </div>
+      </div>
+
+      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+        <div className="bg-kale/85 backdrop-blur-[1px] rounded-md px-2 py-1 flex items-center gap-1">
+          {locked ? (
+            <>
+              <Lock className="w-3 h-3 text-white" />
+              <span className="text-[10px] font-semibold text-white">Read-only period</span>
+            </>
+          ) : (
+            <>
+              <MousePointerClick className="w-3 h-3 text-white" />
+              <span className="text-[10px] font-semibold text-white">
+                +{tapUnit} · right-click −{tapUnit}
+              </span>
+            </>
+          )}
         </div>
       </div>
     </div>

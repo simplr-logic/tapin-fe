@@ -1,12 +1,12 @@
 "use client";
 
 import {
-  DndContext,
-  DragOverlay,
   closestCenter,
-  useSensors,
-  type DragStartEvent,
+  DndContext,
   type DragEndEvent,
+  DragOverlay,
+  type DragStartEvent,
+  useSensors,
 } from "@dnd-kit/core";
 
 import { gardenColors } from "@/config/theme";
@@ -17,17 +17,16 @@ import { ProjectProgressRow } from "./ProjectProgressRow";
 import { SpecialDayGridTile } from "./SpecialDayGridTile";
 
 import type { TreemapNode } from "./treemap";
-import type { ViewMode } from "./types";
+import type { DisplayProject, ViewMode } from "./types";
 import type { SpecialDay } from "@/components/dashboard/SpecialDayDialog";
-import type { Project, Comment } from "@/components/providers/ProjectsProvider";
 import type { TapUnit } from "@/config/constants";
 
 interface RosterGridProps {
   view: ViewMode;
   treemapNodes: TreemapNode[];
-  orderedProjects: Project[];
-  projectById: Map<number, Project>;
-  comments: Record<number, Comment[]>;
+  orderedProjects: DisplayProject[];
+  projectById: Map<number, DisplayProject>;
+
   periodLocked: boolean;
   specialDays: SpecialDay[];
   tapUnit: TapUnit;
@@ -46,7 +45,6 @@ export function RosterGrid({
   treemapNodes,
   orderedProjects,
   projectById,
-  comments,
   periodLocked,
   specialDays,
   tapUnit,
@@ -89,10 +87,9 @@ export function RosterGrid({
                     project={project}
                     onTap={onTap}
                     tapUnit={tapUnit}
-                    commentCount={comments[project.id]?.length ?? 0}
+
                     onOpenComments={onOpenComments}
                     onOpenAdjust={onOpenAdjust}
-                    onOpenEdit={onOpenEdit}
                     locked={project.locked || periodLocked}
                   />
                 );
@@ -108,7 +105,8 @@ export function RosterGrid({
                 key={p.id}
                 project={p}
                 onTap={onTap}
-                commentCount={comments[p.id]?.length ?? 0}
+                tapUnit={tapUnit}
+
                 onOpenComments={onOpenComments}
                 onOpenAdjust={onOpenAdjust}
                 onOpenEdit={onOpenEdit}
@@ -127,8 +125,8 @@ export function RosterGrid({
       {/* Legend */}
       <div className="flex items-center justify-end gap-4 pt-1">
         {[
-          { label: "Under target", color: gardenColors.success },
-          { label: "Near target", color: gardenColors.open },
+          { label: "Under target", color: gardenColors.yellow },
+          { label: "On target", color: gardenColors.success },
           { label: "Exceeded", color: gardenColors.error },
         ].map((l) => (
           <div key={l.label} className="flex items-center gap-1.5 text-[10px] text-ink-subtle">

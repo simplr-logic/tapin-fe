@@ -1,5 +1,4 @@
 {
-  "monthly": { "pct": 83, "label": "On Time · June" },
-  "yearly": { "pct": 98, "label": "98% On-Time · 2026" },
-  "alert": { "count": 1, "label": "1 Limit", "status": "Status clean" }
+  "monthly": { "pct": 100, "label": "On Time · June" },
+  "yearly": { "pct": 91, "label": "91% On-Time · 2026" }
 }

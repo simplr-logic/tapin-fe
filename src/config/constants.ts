@@ -26,15 +26,16 @@ export const MAX_LEDGER_ENTRIES = 10;
 // crypto market-cap heatmap), but bounded so the biggest tile is never more
 // than this many times the smallest. Keeps the "size ~ hours" signal without
 // letting one tile dominate or a new/small item shrink to nothing.
-export const MAX_TILE_RATIO = 1.8;
+export const MAX_TILE_RATIO = 3;
 
-export type PeriodView = "week" | "month" | "year";
+export type PeriodView = "day" | "week" | "month" | "year";
 
-// There's no real backend/history yet, so Month/Year views are mocked by
+// There's no real backend/history yet, so Day/Month/Year views are mocked by
 // scaling the current week's logged/target hours by a period factor — same
-// renderer, projected data. Only "week" is live/editable; Month and Year are
+// renderer, projected data. Only "week" is live/editable; all others are
 // read-only (see WeeklyRoster's `locked` handling).
 export const PERIOD_SCALE: Record<PeriodView, number> = {
+  day: 1 / 5, // 1 workday out of 5 per week — 40h week → 8h/day
   week: 1,
   month: 52 / 12,
   year: 52,

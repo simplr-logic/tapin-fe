@@ -28,8 +28,12 @@ You are an expert Next.js Senior Engineer. When generating, refactoring, or revi
 ### 4. Styling & UI Components
 
 - Use Tailwind CSS with clean utility class structures.
-- Prefer UI component scaffolding (such as shadcn/ui) that provides copy-pasteable, accessible primitives over heavy, black-box component libraries.
-- Strictly separate desktop and mobile layout considerations—think through responsive design constraints explicitly before rendering code.
+- **Always use shadcn components** from `src/components/ui/` for all UI primitives. Never use raw HTML `<input>`, `<button>`, `<select>`, or `<textarea>` for standalone interactive controls — wrap them in the appropriate shadcn component.
+- Available shadcn components (all built on **base-ui**, not Radix): `avatar`, `badge`, `button`, `calendar`, `card`, `dialog`, `dropdown-menu`, `input`, `label`, `popover`, `select`, `separator`, `slider`, `textarea`.
+- For date picking: use `DatePickerInput` (`src/components/projects/DatePickerInput.tsx`) — a Calendar+Popover trigger styled to match the shadcn `Input`.
+- For month selection: use the shadcn `Select` with generated month option lists.
+- The design system uses **Zendesk Garden color tokens** as Tailwind classes (`bg-kale`, `text-error`, `border-success/30`). Use `gardenColors.*` from `src/config/theme.ts` only for runtime-computed `style=` props.
+- Strictly separate desktop and mobile layout considerations.
 
 ### 5. Security & State Management
 
@@ -39,8 +43,6 @@ You are an expert Next.js Senior Engineer. When generating, refactoring, or revi
 ### 6. File Size
 
 - **Hard limit: 300 lines per file.** ESLint enforces this via `max-lines`. If a file approaches the limit, split it — extract sub-components, move helpers to a `utils/` module, or break a large provider into smaller hooks.
-
-Before you write any code, explain your implementation plan step-by-step using a brief markdown checklist. Do not truncate code blocks or use placeholders like "// implement later". Provide complete, copy-pasteable files.
 
 ---
 
@@ -75,7 +77,7 @@ Demo login defaults: `demo@tapin.app` / `demo1234`.
 - `layout.tsx` — root layout; wraps entire app in `AuthProvider` → `ProjectsProvider` → `TimesheetProvider`
 - `(protected)/` — route group for authenticated shell; `layout.tsx` renders `Header` + `Sidebar` + `MobileNav` + `<main>`
   - `page.tsx` — dashboard (3 panels: DailyAttendance, TimesheetSubmission, WeeklyRoster)
-  - `projects/page.tsx` — project management table
+  - `projects/page.tsx` — project management table (`ProjectsTable`)
   - `timesheets/page.tsx` — timesheet history
   - `profile/page.tsx` — user profile / stats
 - `login/page.tsx` — credential login form
@@ -95,19 +97,31 @@ All data lives in React state or `localStorage`; there is no API layer:
 | `TimesheetProvider` | `src/components/providers/TimesheetProvider.tsx` | `localStorage` via `useSyncExternalStore`; cross-tab sync via `storage` event + custom `tapin:timesheets-updated` event |
 | `AuthProvider`      | wraps NextAuth `SessionProvider`                 | JWT cookie                                                                                                              |
 
-### Key domain types (all in `ProjectsProvider.tsx`)
+### Key domain types (`src/components/providers/ProjectsProvider.tsx`)
 
-- `Project` — id, title, company, assignee, loggedMinutes, targetHours, icon, locked
+- `Project` — `id`, `title`, `company`, `assignee`, `logs: Record<string, number>` (ISO date → minutes), `targetHours` (weekly, computed from monthly average), `icon`, `locked`, `startDate?`, `endDate?`, `monthlyTargets?: MonthlyTarget[]`
+- `MonthlyTarget` — `{ month: string ("YYYY-MM"), hours: number }`
 - `LedgerEntry` — denormalized audit entry (captures title/company/icon at write time so history is immutable)
-- `TimesheetRecord` — weekly signed-off snapshot stored in localStorage
+- `TimesheetRecord` — monthly signed-off snapshot stored in localStorage
+- `sumLogs(logs, start?, end?)` — helper to sum a project's logs within an optional ISO date range
 
 ### WeeklyRoster (`src/components/dashboard/WeeklyRoster.tsx`)
 
-Largest component (~1750 lines, `'use client'`). Key internals:
+Central orchestrator for the allocation view. Key internals:
 
-- **Treemap layout** — binary-split algorithm (`buildTreeStructure` / `layoutTree`). Slot topology freezes on entry set change; only weights update live to avoid tile jumping.
+- **Period views** — day / week / month / year. Week always snaps to Monday via `weekStart()` in `utils.ts`. Month/Year data is a projection (`targetHours × TARGET_SCALE`), not real history.
+- **RosterControls** — top bar: title row + controls row (period picker, date picker, Today, Grid/Progress toggle, TAP selector).
+- **RosterActionBar** — hours summary + Log Leave + New Project buttons.
+- **Treemap layout** — binary-split algorithm (`buildTreeStructure` / `layoutTree`). Topology always built with equal weights (balanced tree); `layoutTree` handles proportional sizing via live `weightBySlot`.
 - **Drag-and-drop** — `@dnd-kit/core`. Grid view swaps slot assignments; progress view splices list order. PointerSensor uses 8px activation distance so tap-to-log and drag-to-swap don't conflict.
-- **Period locking** — week with submitted timesheet, or any Month/Year granularity, is read-only. Month/Year data is a projection (current week × `PERIOD_SCALE` factor), not real history.
+- **DisplayProject** — `Project & { loggedMinutes: number }` — period-scoped type used throughout roster components.
+- **Day view editing** — tapping in day view logs to `selectedDate`, not today.
+
+### Project form (`src/components/projects/`)
+
+- `ProjectFormDialog.tsx` — create/edit dialog; uses `DatePickerInput` for start/end dates.
+- `DatePickerInput.tsx` — reusable Calendar+Popover date picker styled as shadcn Input.
+- `MonthlyTargetsEditor.tsx` — per-month target hours editor; shown only when both dates are set; always shows ≥ 1 row; uses shadcn `Select` for month and shadcn `Input` with inset suffix for hours.
 
 ### Design system
 
@@ -115,7 +129,7 @@ Zendesk Garden color tokens. Single source of truth: `src/config/theme.ts` (`gar
 
 ### Seed data (`src/data/`)
 
-- `projects.json` — initial project list
+- `projects.json` — initial project list; includes `startDate`, `endDate`, `monthlyTargets`
 - `ledger.json` — initial ledger entries
 - `attendance.json` — static daily attendance display data
 - `compliance.json` — static compliance stats for profile page
@@ -125,5 +139,5 @@ Zendesk Garden color tokens. Single source of truth: `src/config/theme.ts` (`gar
 
 - `TAP_MINUTES` — maps `TapUnit` ("30m" | "1h" | "2h") to minute values
 - `MAX_LEDGER_ENTRIES` — rolling in-memory ledger cap
-- `MAX_TILE_RATIO` — treemap tile size bounds (1 to 1.8×)
-- `PERIOD_SCALE` — multipliers for month/year projections
+- `MAX_TILE_RATIO` — treemap tile size bounds
+- `TARGET_SCALE` — period multipliers for month/year projections (day: 0.2, week: 1, month: 4.33, year: 52)

@@ -1,20 +1,21 @@
 "use client";
 
-import { useState } from "react";
 import {
-  Truck,
   Building2,
   Cloud,
-  LayoutGrid,
-  Pencil,
-  Trash2,
-  Plus,
   FolderKanban,
+  LayoutGrid,
   Lock,
+  Pencil,
+  Plus,
+  Trash2,
+  Truck,
   Unlock,
 } from "lucide-react";
-import { useProjects, type Project } from "@/components/providers/ProjectsProvider";
+import { useState } from "react";
+
 import { ProjectFormDialog } from "@/components/projects/ProjectFormDialog";
+import { type Project, sumLogs, useProjects } from "@/components/providers/ProjectsProvider";
 import { getComplianceColor } from "@/config/theme";
 
 const PROJECT_ICONS = {
@@ -77,7 +78,11 @@ export function ProjectsTable() {
       ) : (
         <div className="divide-y divide-garden-border">
           {projects.map((project) => {
-            const pct = getPct(project.loggedMinutes, project.targetHours);
+            const monthLogged = sumLogs(project.logs);
+            const totalTarget = project.monthlyTargets?.length
+              ? project.monthlyTargets.reduce((s, t) => s + t.hours, 0)
+              : project.targetHours;
+            const pct = getPct(monthLogged, totalTarget);
             const status = getStatusStyle(pct);
             const Icon = PROJECT_ICONS[project.icon];
 
@@ -89,11 +94,8 @@ export function ProjectsTable() {
                   project.locked ? "bg-surface-2/40" : "",
                 ].join(" ")}
               >
-                <div
-                  className="w-9 h-9 rounded-md flex items-center justify-center shrink-0"
-                  style={{ backgroundColor: status.color }}
-                >
-                  <Icon className="w-4 h-4 text-white" />
+                <div className="w-9 h-9 rounded-md flex items-center justify-center shrink-0 bg-surface-2 border border-garden-border">
+                  <Icon className="w-4 h-4 text-ink-muted" />
                 </div>
 
                 <div className="min-w-0 flex-1">
@@ -113,7 +115,7 @@ export function ProjectsTable() {
 
                 <div className="hidden sm:flex flex-col items-end w-28 shrink-0">
                   <span className="text-xs font-semibold text-ink">
-                    {formatHours(project.loggedMinutes)} / {project.targetHours}h
+                    {formatHours(monthLogged)} / {totalTarget}h
                   </span>
                   <span className="text-[10px] font-semibold" style={{ color: status.color }}>
                     {pct}% · {status.label}

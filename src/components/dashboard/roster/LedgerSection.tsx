@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutGrid, ChevronRight, MapPin } from "lucide-react";
+import { ClipboardList } from "lucide-react";
 
 import { gardenColors } from "@/config/theme";
 
@@ -13,75 +13,41 @@ interface LedgerSectionProps {
 }
 
 export function LedgerSection({ ledger }: LedgerSectionProps) {
+  const entries = ledger.slice(0, 10);
+
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-[10px] text-ink-subtle uppercase tracking-wide font-medium">
-          <LayoutGrid className="w-3.5 h-3.5" />
-          Roster Ledger Activity
+          <ClipboardList className="w-3.5 h-3.5" />
+          Recent Adjustments
         </div>
         <span className="text-[10px] font-semibold text-ink-muted bg-surface-2 px-2 py-0.5 rounded-full">
-          {ledger.length} Records
+          {entries.length} of {ledger.length}
         </span>
       </div>
 
-      {ledger.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-garden-border bg-surface-2/50 px-5 py-4 text-center text-xs text-ink-subtle leading-relaxed">
-          No activity yet. Tap a project block or log an adjustment to start the ledger.
+      {entries.length === 0 ? (
+        <div className="rounded-lg border border-dashed border-garden-border bg-surface-2/50 px-4 py-3 text-center text-xs text-ink-subtle">
+          No adjustments yet. Use the adjust panel on any project to log changes here.
         </div>
       ) : (
-        <div className="relative space-y-3">
-          <div className="absolute left-[9px] top-3 bottom-3 w-px bg-garden-border" />
-
-          {ledger.map((entry) => {
+        <div className="rounded-lg border border-garden-border bg-white divide-y divide-garden-border overflow-hidden">
+          {entries.map((entry) => {
             const Icon = PROJECT_ICONS[entry.icon];
             const isDeduction = entry.note.startsWith("−");
             const color = isDeduction ? gardenColors.error : gardenColors.success;
             return (
-              <div key={entry.id} className="relative pl-7">
-                <div
-                  className="absolute left-0 top-3 w-[18px] h-[18px] rounded-full flex items-center justify-center"
-                  style={{ backgroundColor: color }}
-                >
-                  <ChevronRight className="w-2.5 h-2.5 text-white" />
+              <div key={entry.id} className="flex items-center gap-3 px-4 py-3">
+                <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: color }} />
+                <Icon className="w-3.5 h-3.5 text-ink-subtle shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <span className="text-xs font-semibold text-ink">{entry.projectTitle}</span>
+                  <span className="text-xs text-ink-subtle ml-2">{entry.note}</span>
                 </div>
-
-                <div className="rounded-lg border border-garden-border bg-white p-4 space-y-3 hover:border-garden-border-strong transition-colors">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-semibold text-ink-muted uppercase tracking-wide border border-garden-border rounded-md px-2 py-0.5 bg-surface-2">
-                      {isDeduction ? "Roster Hour Deducted" : "Roster Hour Credited"}
-                    </span>
-                    <span className="text-[10px] text-ink-subtle">{entry.timestamp}</span>
-                  </div>
-
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <Icon className="w-3.5 h-3.5 text-ink-subtle shrink-0" />
-                      <span className="text-sm font-semibold text-ink">{entry.projectTitle}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-xs text-ink-subtle pl-5">
-                      <MapPin className="w-3 h-3" />
-                      {entry.company}
-                    </div>
-                  </div>
-
-                  <div
-                    className="flex items-center gap-2.5 rounded-md px-3 py-2"
-                    style={{ backgroundColor: `${color}14`, border: `1px solid ${color}33` }}
-                  >
-                    <div
-                      className="w-4 h-4 rounded-md flex items-center justify-center shrink-0"
-                      style={{ backgroundColor: color }}
-                    >
-                      <span className="text-[8px] text-white font-bold">
-                        {isDeduction ? "−" : "✓"}
-                      </span>
-                    </div>
-                    <span className="text-xs italic" style={{ color }}>
-                      &quot;{entry.note}&quot;
-                    </span>
-                  </div>
-                </div>
+                <span className="text-[11px] text-ink-subtle shrink-0 whitespace-nowrap">
+                  {entry.timestamp}
+                </span>
               </div>
             );
           })}

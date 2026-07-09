@@ -1,240 +1,150 @@
 "use client";
 
-import { CalendarDays, Check, ChevronDown, Flame, ShieldCheck, UserCheck } from "lucide-react";
-import { useMemo, useState } from "react";
-import { useSyncExternalStore } from "react";
+import { CalendarIcon, Flame } from "lucide-react";
+import { useMemo } from "react";
 
+import { useProjects } from "@/components/providers/ProjectsProvider";
 import { Calendar } from "@/components/ui/calendar";
+import { gardenColors } from "@/config/theme";
+import { cn } from "@/lib/utils";
 
-import LiveClock from "./LiveClock";
+import type { DayButtonProps } from "react-day-picker";
 
-const STORAGE_KEY = "tapin.checkins";
-const LOCAL_EVENT = "tapin:checkins-updated";
+const DAILY_TARGET = 480;
+const EXCEEDED_THRESHOLD = Math.round(DAILY_TARGET * 1.15);
 
-function todayIso(): string {
-  return new Date().toLocaleDateString("en-CA");
+const DAY_COLORS = {
+  exceeded: { bg: "rgba(204,51,64,0.18)", text: gardenColors.error },
+  onTarget: { bg: "rgba(3,129,83,0.18)", text: gardenColors.success },
+  underTarget: { bg: "rgba(202,138,4,0.14)", text: gardenColors.yellow },
+  noLog: { bg: gardenColors.surface2, text: gardenColors.inkMuted },
+  today: { bg: gardenColors.surface3, text: gardenColors.ink },
+  disabled: { bg: "transparent", text: gardenColors.inkSubtle },
+} as const;
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function CheckinDayBtn({ day: _day, modifiers, className, ...props }: DayButtonProps) {
+  const palette = modifiers.disabled
+    ? DAY_COLORS.disabled
+    : modifiers.exceeded
+      ? DAY_COLORS.exceeded
+      : modifiers.onTarget
+        ? DAY_COLORS.onTarget
+        : modifiers.underTarget
+          ? DAY_COLORS.underTarget
+          : modifiers.today
+            ? DAY_COLORS.today
+            : DAY_COLORS.noLog;
+
+  return (
+    <button
+      type="button"
+      {...props}
+      style={{ backgroundColor: palette.bg, color: palette.text }}
+      className={cn(
+        "flex aspect-square w-full items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none",
+        modifiers.outside && "opacity-30",
+        modifiers.disabled && "pointer-events-none opacity-30",
+        modifiers.selected
+          ? "ring-2 ring-kale"
+          : modifiers.today
+            ? "ring-1 ring-garden-border"
+            : "",
+        className
+      )}
+    />
+  );
 }
 
-function readRaw(): string {
-  if (typeof window === "undefined") return "[]";
-  return window.localStorage.getItem(STORAGE_KEY) ?? "[]";
-}
-
-function writeRaw(value: string) {
-  window.localStorage.setItem(STORAGE_KEY, value);
-  window.dispatchEvent(new Event(LOCAL_EVENT));
-}
-
-function subscribe(cb: () => void) {
-  window.addEventListener("storage", cb);
-  window.addEventListener(LOCAL_EVENT, cb);
-  return () => {
-    window.removeEventListener("storage", cb);
-    window.removeEventListener(LOCAL_EVENT, cb);
-  };
-}
-
-function getSnapshot() {
-  return readRaw();
-}
-function getServerSnapshot() {
-  return "[]";
-}
-
-function computeStreak(checkins: Set<string>): number {
+function computeStreak(logs: Record<string, number>): number {
   let streak = 0;
   const d = new Date();
   while (true) {
     const iso = d.toLocaleDateString("en-CA");
-    if (!checkins.has(iso)) break;
+    if (!(logs[iso] > 0)) break;
     streak++;
     d.setDate(d.getDate() - 1);
   }
   return streak;
 }
 
-interface WeekDot {
-  iso: string;
-  letter: string;
-  status: "checked" | "today" | "future" | "missed";
-}
+export default function DailyAttendance({
+  selectedDate,
+  onDaySelect,
+}: {
+  selectedDate?: Date;
+  onDaySelect?: (date: Date) => void;
+}) {
+  const { projects } = useProjects();
 
-function getWeekDots(checkins: Set<string>): WeekDot[] {
-  const today = new Date();
-  const todayStr = today.toLocaleDateString("en-CA");
-  const diffToMonday = (today.getDay() + 6) % 7;
-  const monday = new Date(today);
-  monday.setDate(today.getDate() - diffToMonday);
-  const letters = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
-  return Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(monday);
-    d.setDate(monday.getDate() + i);
-    const iso = d.toLocaleDateString("en-CA");
-    const checked = checkins.has(iso);
-    const isToday = iso === todayStr;
-    const isFuture = iso > todayStr;
-    const status: WeekDot["status"] = checked
-      ? "checked"
-      : isToday
-        ? "today"
-        : isFuture
-          ? "future"
-          : "missed";
-    return { iso, letter: letters[i], status };
-  });
-}
-
-export default function DailyAttendance() {
-  const raw = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-  const [calendarOpen, setCalendarOpen] = useState(false);
-
-  const checkins = useMemo<Set<string>>(() => {
-    try {
-      return new Set(JSON.parse(raw) as string[]);
-    } catch {
-      return new Set();
+  const logs = useMemo<Record<string, number>>(() => {
+    const totals: Record<string, number> = {};
+    for (const p of projects) {
+      for (const [date, minutes] of Object.entries(p.logs)) {
+        totals[date] = (totals[date] ?? 0) + minutes;
+      }
     }
-  }, [raw]);
+    return totals;
+  }, [projects]);
 
-  const today = todayIso();
-  const checkedInToday = checkins.has(today);
-  const streak = useMemo(() => computeStreak(checkins), [checkins]);
-  const weekDots = useMemo(() => getWeekDots(checkins), [checkins]);
-  const checkinDates = useMemo(
-    () => Array.from(checkins).map((iso) => new Date(`${iso}T00:00:00`)),
-    [checkins]
-  );
+  const today = new Date().toLocaleDateString("en-CA");
+  const streak = useMemo(() => computeStreak(logs), [logs]);
 
-  function handleCheckIn() {
-    if (checkedInToday) return;
-    const next = [...Array.from(checkins), today].sort();
-    writeRaw(JSON.stringify(next));
-  }
-
-  const dateStr = new Date()
-    .toLocaleDateString("en-US", {
-      weekday: "short",
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    })
-    .toUpperCase();
+  const calendarModifiers = useMemo(() => {
+    const exceeded: Date[] = [];
+    const onTarget: Date[] = [];
+    const underTarget: Date[] = [];
+    for (const [iso, minutes] of Object.entries(logs)) {
+      const date = new Date(`${iso}T00:00:00`);
+      if (isNaN(date.getTime())) continue;
+      if (minutes >= EXCEEDED_THRESHOLD) exceeded.push(date);
+      else if (minutes >= DAILY_TARGET) onTarget.push(date);
+      else underTarget.push(date);
+    }
+    return { exceeded, onTarget, underTarget };
+  }, [logs]);
 
   return (
     <div className="bg-white rounded-lg border border-garden-border shadow-card overflow-hidden">
       <div className="px-5 py-4 border-b border-garden-border flex items-center justify-between">
         <div className="flex items-center gap-2 text-ink-muted text-xs font-medium tracking-wide uppercase">
-          <ShieldCheck className="w-3.5 h-3.5" />
-          Daily Attendance
+          <CalendarIcon className="w-3.5 h-3.5" />
+          Calendar
         </div>
-        <span
-          className={[
-            "text-[10px] font-semibold px-2 py-0.5 rounded-full border tracking-wide",
-            checkedInToday
-              ? "bg-success/10 text-success border-success/25"
-              : "bg-warning/10 text-warning border-warning/25",
-          ].join(" ")}
-        >
-          {checkedInToday ? "CHECKED IN" : "PENDING IN"}
-        </span>
+        {streak >= 3 && (
+          <span className="flex items-center gap-1 text-[11px] font-semibold text-warning">
+            <Flame className="w-3 h-3" />
+            {streak}d streak
+          </span>
+        )}
       </div>
 
-      <div className="px-5 py-6 space-y-5">
-        <div className="text-center space-y-0.5">
-          <p className="text-[10px] text-ink-subtle tracking-widest font-medium">{dateStr}</p>
-          <p className="text-[2.75rem] font-light tracking-tight text-ink font-mono leading-none">
-            <LiveClock />
-          </p>
-        </div>
+      <div className="px-2 py-3">
+        <Calendar
+          mode="single"
+          selected={selectedDate}
+          onSelect={(d) => d && onDaySelect?.(d)}
+          disabled={(date) => date.toLocaleDateString("en-CA") > today}
+          modifiers={calendarModifiers}
+          components={{ DayButton: CheckinDayBtn }}
+          className="w-full"
+        />
+      </div>
 
-        <button
-          onClick={handleCheckIn}
-          disabled={checkedInToday}
-          className={[
-            "w-full h-11 flex items-center justify-center gap-2 rounded-md text-sm font-medium transition-colors shadow-card",
-            checkedInToday
-              ? "bg-success/10 text-success border border-success/30 cursor-default"
-              : "bg-kale hover:bg-kale-hover active:bg-kale-hover text-white",
-          ].join(" ")}
-        >
-          {checkedInToday ? (
-            <>
-              <Check className="w-4 h-4" />
-              Checked In Today
-            </>
-          ) : (
-            <>
-              <UserCheck className="w-4 h-4" />
-              Perform Daily Check-In
-            </>
-          )}
-        </button>
-
-        <div className="space-y-2 pt-1">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] text-ink-subtle tracking-wide uppercase font-medium">
-              This Week
-            </span>
-            {streak >= 3 && (
-              <span className="flex items-center gap-1 text-[11px] font-semibold text-warning">
-                <Flame className="w-3 h-3" />
-                {streak} Day Streak
-              </span>
-            )}
+      <div className="px-5 pb-4 flex items-center justify-center gap-3 flex-wrap">
+        {(
+          [
+            { label: "Under target", bg: DAY_COLORS.underTarget.bg },
+            { label: "On target", bg: DAY_COLORS.onTarget.bg },
+            { label: "Exceeded", bg: DAY_COLORS.exceeded.bg },
+            { label: "No log", bg: DAY_COLORS.noLog.bg },
+          ] as const
+        ).map((l) => (
+          <div key={l.label} className="flex items-center gap-1.5 text-[9px] text-ink-subtle">
+            <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: l.bg }} />
+            {l.label}
           </div>
-          <div className="flex items-center gap-1.5">
-            {weekDots.map((dot) => (
-              <div key={dot.iso} className="flex flex-col items-center gap-1 flex-1">
-                <div
-                  className={[
-                    "w-full aspect-square rounded-md flex items-center justify-center text-[10px] font-semibold transition-all",
-                    dot.status === "checked"
-                      ? "bg-success text-white"
-                      : dot.status === "today"
-                        ? "ring-2 ring-link ring-offset-1 bg-link/10 text-link"
-                        : "bg-surface-2 text-ink-subtle",
-                  ].join(" ")}
-                >
-                  {dot.status === "checked" ? (
-                    <Check className="w-3 h-3" strokeWidth={3} />
-                  ) : (
-                    dot.letter.slice(0, 1)
-                  )}
-                </div>
-                <span className="text-[9px] text-ink-subtle font-medium">
-                  {dot.letter.slice(0, 1)}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setCalendarOpen((o) => !o)}
-          className="w-full flex items-center justify-between text-[10px] font-medium text-ink-muted hover:text-ink transition-colors py-1"
-        >
-          <span className="flex items-center gap-1.5">
-            <CalendarDays className="w-3.5 h-3.5" />
-            View Attendance Calendar
-          </span>
-          <ChevronDown
-            className={["w-3.5 h-3.5 transition-transform", calendarOpen ? "rotate-180" : ""].join(
-              " "
-            )}
-          />
-        </button>
-
-        {calendarOpen && (
-          <div className="-mx-5 border-t border-garden-border pt-3 px-2">
-            <Calendar
-              mode="multiple"
-              selected={checkinDates}
-              onSelect={() => {}}
-              className="mx-auto"
-            />
-          </div>
-        )}
+        ))}
       </div>
     </div>
   );

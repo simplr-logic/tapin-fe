@@ -1,9 +1,11 @@
 "use client";
 
 import { CalendarClock, UserCheck } from "lucide-react";
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import type { TimesheetRecord } from "@/components/providers/TimesheetProvider";
 import { getComplianceColor } from "@/config/theme";
+
+import type { TimesheetRecord } from "@/components/providers/TimesheetProvider";
 
 function formatHours(minutes: number): string {
   const h = Math.floor(minutes / 60);
@@ -27,7 +29,7 @@ export function TimesheetDetailDialog({
               <span className="text-[10px] font-semibold text-link uppercase tracking-wide">
                 Archived Ledger Snapshot
               </span>
-              <DialogTitle>{record.weekLabel}</DialogTitle>
+              <DialogTitle>{record.monthLabel}</DialogTitle>
             </DialogHeader>
 
             <div className="space-y-4">
@@ -48,7 +50,7 @@ export function TimesheetDetailDialog({
               </div>
 
               <div className="rounded-md bg-surface-2 border border-garden-border px-3.5 py-2.5 flex items-center justify-between">
-                <span className="text-xs text-ink-muted">Total Certified</span>
+                <span className="text-xs text-ink-muted">Total Hours</span>
                 <span className="text-sm font-semibold text-ink">
                   {record.totalLoggedHours.toFixed(1)}h / {record.totalTargetHours}h
                 </span>

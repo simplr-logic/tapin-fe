@@ -1,15 +1,20 @@
 "use client";
 
+import { Building2, Cloud, LayoutGrid, Truck } from "lucide-react";
 import { useState } from "react";
-import { Truck, Building2, Cloud, LayoutGrid } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+
+import { DatePickerInput } from "./DatePickerInput";
+import { MonthlyTargetsEditor } from "./MonthlyTargetsEditor";
+
 import type {
+  NewProjectInput,
   Project,
   ProjectIcon,
-  NewProjectInput,
 } from "@/components/providers/ProjectsProvider";
 
 const ICON_OPTIONS: { value: ProjectIcon; icon: typeof Truck; label: string }[] = [
@@ -19,28 +24,34 @@ const ICON_OPTIONS: { value: ProjectIcon; icon: typeof Truck; label: string }[] 
   { value: "grid", icon: LayoutGrid, label: "Grid" },
 ];
 
-const EMPTY_FORM = {
-  title: "",
-  company: "",
-  assignee: "",
-  targetHours: 8,
-  icon: "grid" as ProjectIcon,
-};
-
 function formFromProject(project?: Project | null) {
-  if (!project) return EMPTY_FORM;
+  if (!project) {
+    return {
+      title: "",
+      company: "",
+      assignee: "",
+      icon: "grid" as ProjectIcon,
+      startDate: "",
+      endDate: "",
+      monthlyTargets: [] as { month: string; hours: number }[],
+    };
+  }
+  const monthlyTargets = project.monthlyTargets?.length
+    ? project.monthlyTargets
+    : project.startDate
+      ? [{ month: project.startDate.slice(0, 7), hours: 0 }]
+      : [];
   return {
     title: project.title,
     company: project.company,
     assignee: project.assignee,
-    targetHours: project.targetHours,
     icon: project.icon,
+    startDate: project.startDate ?? "",
+    endDate: project.endDate ?? "",
+    monthlyTargets,
   };
 }
 
-// Keyed by dialog open-state + target project (see the export below) so this
-// remounts fresh every time it opens — the form's initial value is derived once
-// at construction via useState's lazy initializer, no effect-based sync needed.
 function ProjectForm({
   project,
   onOpenChange,
@@ -59,23 +70,26 @@ function ProjectForm({
     e.preventDefault();
     if (!form.title.trim() || !form.company.trim()) return;
 
+    const totalHours = form.monthlyTargets.reduce((s, t) => s + t.hours, 0);
+    const avgMonthly =
+      form.monthlyTargets.length > 0 ? totalHours / form.monthlyTargets.length : 40;
+    const weeklyTarget = Math.max(1, Math.round(avgMonthly / 4.33));
+
+    const base = {
+      title: form.title.trim(),
+      company: form.company.trim(),
+      assignee: form.assignee.trim().slice(0, 3).toUpperCase() || "—",
+      targetHours: weeklyTarget,
+      icon: form.icon,
+      startDate: form.startDate || undefined,
+      endDate: form.endDate || undefined,
+      monthlyTargets: form.monthlyTargets.length > 0 ? form.monthlyTargets : undefined,
+    };
+
     if (isEdit && project) {
-      onSave?.(project.id, {
-        title: form.title.trim(),
-        company: form.company.trim(),
-        assignee: form.assignee.trim().slice(0, 3).toUpperCase() || "—",
-        targetHours: Math.max(1, form.targetHours),
-        icon: form.icon,
-      });
+      onSave?.(project.id, base);
     } else {
-      onCreate?.({
-        title: form.title.trim(),
-        company: form.company.trim(),
-        assignee: form.assignee.trim().slice(0, 3).toUpperCase() || "—",
-        targetHours: Math.max(1, form.targetHours),
-        icon: form.icon,
-        locked: false,
-      });
+      onCreate?.({ ...base, locked: false });
     }
     onOpenChange(false);
   }
@@ -127,23 +141,54 @@ function ProjectForm({
           </div>
         </div>
 
-        <div>
-          <Label className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide mb-1">
-            Target hours (this week)
-          </Label>
-          <Input
-            type="number"
-            min={1}
-            step={1}
-            value={form.targetHours}
-            onChange={(e) =>
-              setForm((f) => ({
-                ...f,
-                targetHours: Math.max(1, Math.floor(Number(e.target.value))),
-              }))
-            }
-          />
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <Label className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide mb-1">
+              Start date
+            </Label>
+            <DatePickerInput
+              value={form.startDate}
+              max={form.endDate || undefined}
+              placeholder="Start date"
+              onChange={(newStart) =>
+                setForm((f) => {
+                  const next = { ...f, startDate: newStart };
+                  if (newStart && f.endDate && f.monthlyTargets.length === 0) {
+                    next.monthlyTargets = [{ month: newStart.slice(0, 7), hours: 0 }];
+                  }
+                  return next;
+                })
+              }
+            />
+          </div>
+          <div>
+            <Label className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide mb-1">
+              End date
+            </Label>
+            <DatePickerInput
+              value={form.endDate}
+              min={form.startDate || undefined}
+              placeholder="End date"
+              onChange={(newEnd) =>
+                setForm((f) => {
+                  const next = { ...f, endDate: newEnd };
+                  if (f.startDate && newEnd && f.monthlyTargets.length === 0) {
+                    next.monthlyTargets = [{ month: f.startDate.slice(0, 7), hours: 0 }];
+                  }
+                  return next;
+                })
+              }
+            />
+          </div>
         </div>
+
+        {form.startDate && form.endDate && (
+          <MonthlyTargetsEditor
+            targets={form.monthlyTargets}
+            startDate={form.startDate}
+            onChange={(monthlyTargets) => setForm((f) => ({ ...f, monthlyTargets }))}
+          />
+        )}
 
         <div>
           <Label className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide mb-1">
@@ -186,7 +231,6 @@ export function ProjectFormDialog({
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  /** When set, the dialog edits this project instead of creating a new one. */
   project?: Project | null;
   onCreate?: (input: NewProjectInput) => void;
   onSave?: (id: number, patch: Partial<Omit<Project, "id">>) => void;

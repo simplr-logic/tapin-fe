@@ -26,6 +26,7 @@ export const gardenColors = {
   inkSubtle: "#87929D",
   success: "#038153",
   warning: "#AD5918",
+  yellow: "#CA8A04",
   error: "#CC3340",
   open: "#E34F32",
 } as const;
@@ -39,7 +40,7 @@ export type GardenColorName = keyof typeof gardenColors;
  * different, denser visual system and intentionally doesn't use this.
  */
 export function getComplianceColor(pct: number): string {
-  if (pct >= 100) return gardenColors.error;
-  if (pct >= 85) return gardenColors.warning;
-  return gardenColors.success;
+  if (pct >= 115) return gardenColors.error;
+  if (pct >= 100) return gardenColors.success;
+  return gardenColors.yellow;
 }
