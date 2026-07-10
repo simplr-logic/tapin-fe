@@ -50,7 +50,7 @@ export function RosterControls({
         Project Roster
       </div>
       <div className="flex items-center justify-between gap-2 flex-wrap">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           {/* Period granularity */}
           <div className="flex items-center rounded-md border border-garden-border bg-surface-2 p-0.5">
             {periodOptions.map((p) => (
@@ -135,7 +135,7 @@ export function RosterControls({
           </button>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           {/* View toggle */}
           <div className="flex items-center rounded-md border border-garden-border bg-surface-2 p-0.5">
             <button

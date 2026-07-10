@@ -31,7 +31,7 @@ export function RosterActionBar({
   return (
     <div className="flex items-center justify-between sm:justify-end gap-3 flex-wrap">
       {/* Hours summary + actions */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-wrap">
         <div className="flex items-center gap-1.5 text-xs text-ink-muted mr-1">
           <Clock className="w-3.5 h-3.5" />
           <span className="font-medium">{totalLogged.toFixed(1)}h</span>
