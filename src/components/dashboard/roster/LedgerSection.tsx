@@ -14,10 +14,10 @@ interface LedgerSectionProps {
 }
 
 export function LedgerSection({ ledger }: LedgerSectionProps) {
-  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
   const entries = ledger.slice(0, 10);
 
-  function toggle(id: string) {
+  function toggle(id: number) {
     setExpandedIds((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
