@@ -8,6 +8,7 @@ import {
   type DragStartEvent,
   useSensors,
 } from "@dnd-kit/core";
+import { useEffect, useRef, useState } from "react";
 
 import { gardenColors } from "@/config/theme";
 
@@ -37,7 +38,6 @@ interface RosterGridProps {
   onTap: (id: number, sign: 1 | -1) => void;
   onOpenComments: (id: number) => void;
   onOpenAdjust: (id: number) => void;
-  onOpenEdit: (id: number) => void;
 }
 
 export function RosterGrid({
@@ -55,8 +55,20 @@ export function RosterGrid({
   onTap,
   onOpenComments,
   onOpenAdjust,
-  onOpenEdit,
 }: RosterGridProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerSize, setContainerSize] = useState({ w: 0, h: 0 });
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      setContainerSize({ w: entry.contentRect.width, h: entry.contentRect.height });
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   return (
     <div className="space-y-2">
       <DndContext
@@ -66,7 +78,10 @@ export function RosterGrid({
         onDragEnd={onDragEnd}
       >
         {view === "grid" ? (
-          <div className="relative w-full aspect-square sm:aspect-[4/3] md:aspect-auto md:h-[440px] rounded-lg border border-garden-border bg-surface-2 overflow-hidden">
+          <div
+            ref={containerRef}
+            className="relative w-full aspect-square sm:aspect-[4/3] lg:aspect-auto lg:h-[440px] rounded-lg border border-garden-border bg-surface-2 overflow-hidden"
+          >
             {treemapNodes.length === 0 && (
               <div className="absolute inset-0 flex items-center justify-center text-center px-8">
                 <p className="text-xs text-ink-subtle leading-relaxed">
@@ -87,7 +102,8 @@ export function RosterGrid({
                     project={project}
                     onTap={onTap}
                     tapUnit={tapUnit}
-
+                    containerWidth={containerSize.w}
+                    containerHeight={containerSize.h}
                     onOpenComments={onOpenComments}
                     onOpenAdjust={onOpenAdjust}
                     locked={project.locked || periodLocked}
@@ -109,7 +125,6 @@ export function RosterGrid({
 
                 onOpenComments={onOpenComments}
                 onOpenAdjust={onOpenAdjust}
-                onOpenEdit={onOpenEdit}
                 locked={p.locked || periodLocked}
               />
             ))}

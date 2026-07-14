@@ -35,6 +35,7 @@ export interface Comment {
   id: number;
   text: string;
   timestamp: string;
+  date?: string;
 }
 
 export interface LedgerEntry {
@@ -202,7 +203,15 @@ export function ProjectsProvider({ children }: { children: ReactNode }) {
   function addComment(id: number, text: string) {
     setComments((prev) => ({
       ...prev,
-      [id]: [...(prev[id] ?? []), { id: Date.now(), text, timestamp: nowTimestamp() }],
+      [id]: [
+        ...(prev[id] ?? []),
+        {
+          id: Date.now(),
+          text,
+          timestamp: nowTimestamp(),
+          date: new Date().toLocaleDateString("en-CA"),
+        },
+      ],
     }));
   }
 

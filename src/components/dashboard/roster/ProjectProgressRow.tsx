@@ -5,7 +5,7 @@ import { GripVertical, Lock, MousePointerClick } from "lucide-react";
 import { useState } from "react";
 
 import { PROJECT_ICONS } from "./constants";
-import { AdjustHoursButton, CommentButton, EditProjectButton } from "./TileButtons";
+import { AdjustHoursButton, CommentButton } from "./TileButtons";
 import { formatHours, getHeatStyle, getPct } from "./utils";
 
 import type { DisplayProject } from "./types";
@@ -17,7 +17,6 @@ export function ProjectProgressRow({
   tapUnit,
   onOpenComments,
   onOpenAdjust,
-  onOpenEdit,
   locked = false,
 }: {
   project: DisplayProject;
@@ -25,7 +24,6 @@ export function ProjectProgressRow({
   tapUnit: TapUnit;
   onOpenComments: (id: number) => void;
   onOpenAdjust: (id: number) => void;
-  onOpenEdit: (id: number) => void;
   locked?: boolean;
 }) {
   const [tapping, setTapping] = useState(false);
@@ -62,7 +60,7 @@ export function ProjectProgressRow({
         opacity: draggable.isDragging ? 0.35 : 1,
       }}
       className={[
-        "relative rounded-lg border bg-white p-4 select-none transition-all hover:border-garden-border-strong touch-none overflow-hidden group",
+        "relative rounded-lg border bg-white px-4 py-3 select-none transition-all hover:border-garden-border-strong touch-none overflow-hidden group",
         locked ? "cursor-default border-dashed" : "cursor-pointer",
         droppable.isOver ? "ring-2 ring-link ring-offset-1 border-link" : "border-garden-border",
       ].join(" ")}
@@ -94,29 +92,31 @@ export function ProjectProgressRow({
           <span className="text-xs font-bold" style={{ color: style.pctColor }}>
             {pct}%
           </span>
-          <EditProjectButton project={project} onOpenEdit={onOpenEdit} className="w-7 h-7" />
-          <AdjustHoursButton
-            project={project}
-            onOpenAdjust={onOpenAdjust}
-            className="w-7 h-7"
-            disabled={locked}
-          />
-          <CommentButton project={project} onOpenComments={onOpenComments} className="w-7 h-7" />
         </div>
       </div>
 
-      <div className="mt-3 space-y-1.5">
-        <div className="h-2 rounded-full overflow-hidden bg-garden-border">
+      <div className="mt-2.5">
+        <div className="h-1.5 rounded-full overflow-hidden bg-garden-border">
           <div
             className="h-full rounded-full transition-all duration-300"
             style={{ width: barPct === 0 ? "3px" : `${barPct}%`, backgroundColor: style.pctColor }}
           />
         </div>
-        <div className="flex items-center justify-between text-[11px] text-ink-muted">
-          <span>
-            Logged: <b className="text-ink font-semibold">{formatHours(project.loggedMinutes)}</b>
+        <div className="flex items-center justify-between mt-2">
+          <span className="text-[11px] text-ink-muted">
+            <b className="text-ink font-semibold">{formatHours(project.loggedMinutes)}</b>
+            <span className="mx-1 text-ink-subtle">/</span>
+            {project.targetHours}h
           </span>
-          <span>Target: {project.targetHours}h</span>
+          <div className="flex items-center gap-0.5" onClick={(e) => e.stopPropagation()}>
+            <AdjustHoursButton
+              project={project}
+              onOpenAdjust={onOpenAdjust}
+              className="w-6 h-6"
+              disabled={locked}
+            />
+            <CommentButton project={project} onOpenComments={onOpenComments} className="w-6 h-6" />
+          </div>
         </div>
       </div>
 

@@ -5,16 +5,9 @@ import { Palmtree } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { SpecialDayDialog } from "@/components/dashboard/SpecialDayDialog";
-import { ProjectFormDialog } from "@/components/projects/ProjectFormDialog";
 import { sumLogs, useProjects } from "@/components/providers/ProjectsProvider";
 import { useTimesheets } from "@/components/providers/TimesheetProvider";
-import {
-  MAX_TILE_RATIO,
-  type PeriodView,
-  TAP_MINUTES,
-  type TapUnit,
-  TARGET_SCALE,
-} from "@/config/constants";
+import { MAX_TILE_RATIO, type PeriodView, TAP_MINUTES, TARGET_SCALE } from "@/config/constants";
 
 import { AdjustModal } from "./roster/AdjustModal";
 import { CommentsModal } from "./roster/CommentsModal";
@@ -27,16 +20,23 @@ import { SpecialDaySection } from "./roster/SpecialDaySection";
 import { buildTreeStructure, layoutTree } from "./roster/treemap";
 import { useRosterDrag } from "./roster/useRosterDrag";
 import { useSpecialDays } from "./roster/useSpecialDays";
-import { formatHours, getPeriodRange, isSamePeriod } from "./roster/utils";
+import { formatHours, getPeriodLabel, getPeriodRange, isSamePeriod } from "./roster/utils";
 
 import type { DisplayProject, GridKey, ViewMode } from "./roster/types";
 
 const toGridKey = (id: number): GridKey => `p-${id}`;
 
-export default function WeeklyRoster({ externalDate }: { externalDate?: Date }) {
-  const { projects, comments, ledger, addProject, updateProject, adjustLoggedMinutes, addComment } =
-    useProjects();
-  const { isMonthSubmitted } = useTimesheets();
+export default function WeeklyRoster({
+  externalDate,
+  externalPeriod,
+  onPeriodChange,
+}: {
+  externalDate?: Date;
+  externalPeriod?: PeriodView;
+  onPeriodChange?: (p: PeriodView) => void;
+}) {
+  const { projects, comments, ledger, adjustLoggedMinutes, addComment } = useProjects();
+  const { isMonthSubmitted, lastMonthSubmitted } = useTimesheets();
 
   const [listOrder, setListOrder] = useState<number[]>([]);
   const [slotAssignment, setSlotAssignment] = useState<GridKey[]>([]);
@@ -49,19 +49,18 @@ export default function WeeklyRoster({ externalDate }: { externalDate?: Date }) 
       isMounted.current = true;
       return;
     }
-    if (externalDate) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setSelectedDate(externalDate);
-      setPeriod("day");
-    }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (externalDate) setSelectedDate(externalDate);
   }, [externalDate]);
+  useEffect(() => {
+    if (!isMounted.current) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (externalPeriod !== undefined) setPeriod(externalPeriod);
+  }, [externalPeriod]);
 
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
-  const [tap, setTap] = useState<TapUnit>("1h");
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [commentModalId, setCommentModalId] = useState<number | null>(null);
   const [adjustModalId, setAdjustModalId] = useState<number | null>(null);
-  const [editProjectId, setEditProjectId] = useState<number | null>(null);
   const [adjustSign, setAdjustSign] = useState<"add" | "subtract">("add");
   const [adjustHours, setAdjustHours] = useState(1);
   const [adjustMinutes, setAdjustMinutes] = useState(0);
@@ -70,7 +69,11 @@ export default function WeeklyRoster({ externalDate }: { externalDate?: Date }) 
   const sd = useSpecialDays();
 
   const isCurrentPeriod = isSamePeriod(selectedDate, new Date(), period);
-  const periodLocked = isMonthSubmitted(selectedDate);
+  const now = new Date();
+  const isSelectedCurrentMonth =
+    selectedDate.getFullYear() === now.getFullYear() && selectedDate.getMonth() === now.getMonth();
+  const periodLocked =
+    isMonthSubmitted(selectedDate) || (isSelectedCurrentMonth && !lastMonthSubmitted);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -80,10 +83,11 @@ export default function WeeklyRoster({ externalDate }: { externalDate?: Date }) 
   function changePeriod(next: PeriodView) {
     setPeriod(next);
     setSelectedDate(new Date());
+    onPeriodChange?.(next);
   }
   function handleTap(id: number, sign: 1 | -1 = 1) {
     const logDate = period === "day" ? selectedDate.toLocaleDateString("en-CA") : undefined;
-    adjustLoggedMinutes(id, sign * TAP_MINUTES[tap], undefined, logDate);
+    adjustLoggedMinutes(id, sign * TAP_MINUTES["1h"], undefined, logDate);
   }
 
   function resetAdjustForm() {
@@ -132,19 +136,20 @@ export default function WeeklyRoster({ externalDate }: { externalDate?: Date }) 
 
   const totalSpecialDayMinutes = sd.specialDays.reduce((sum, d) => sum + d.hours * 60, 0);
 
-  // Anchor weights to per-item average target so 0h projects are equal-sized,
-  // and special day hours scale proportionally (8h vs 16h produce visibly different tiles).
-  const perItemTargetMinutes =
-    displayProjects.length > 0
-      ? displayProjects.reduce((s, p) => s + p.targetHours * 60, 0) / displayProjects.length
-      : 480;
+  // Scale weights so the project with most absolute hours always gets the biggest tile.
+  // sqrt curve gives visible growth on the first tap while keeping ordering correct.
+  const maxLoggedMins = Math.max(
+    1,
+    ...displayProjects.map((p) => p.loggedMinutes),
+    totalSpecialDayMinutes
+  );
   const weightByKey = new Map<GridKey, number>(
     liveKeys.map((key) => {
-      const raw =
+      const logged =
         key === SPECIAL_DAY_AGG_KEY
           ? totalSpecialDayMinutes
           : (projectById.get(Number(key.slice(2)))?.loggedMinutes ?? 0);
-      return [key, Math.max(1, (raw / perItemTargetMinutes) * MAX_TILE_RATIO)];
+      return [key, 1 + Math.sqrt(logged / maxLoggedMins) * (MAX_TILE_RATIO - 1)];
     })
   );
 
@@ -172,7 +177,6 @@ export default function WeeklyRoster({ externalDate }: { externalDate?: Date }) 
     commentModalId !== null ? (realProjectById.get(commentModalId) ?? null) : null;
   const adjustModalProject =
     adjustModalId !== null ? (realProjectById.get(adjustModalId) ?? null) : null;
-  const editProject = editProjectId !== null ? (realProjectById.get(editProjectId) ?? null) : null;
 
   const { activeDragId, handleDragStart, handleDragEnd } = useRosterDrag({
     view,
@@ -210,19 +214,16 @@ export default function WeeklyRoster({ externalDate }: { externalDate?: Date }) 
         setIsDatePickerOpen={setIsDatePickerOpen}
         periodLocked={periodLocked}
         isCurrentPeriod={isCurrentPeriod}
-        view={view}
-        setView={setView}
-        tap={tap}
-        setTap={setTap}
       />
-      <div className="flex-1 overflow-y-auto p-3 md:p-5 space-y-3 md:space-y-4">
+      <div className="flex-1 overflow-y-auto p-3 lg:p-5 space-y-3 lg:space-y-4">
         <RosterActionBar
           totalLogged={totalLogged}
           totalTarget={totalTarget}
           overallPct={overallPct}
           periodLocked={periodLocked}
           onAddSpecialDay={sd.openAdd}
-          onNewProject={() => setIsCreateOpen(true)}
+          view={view}
+          setView={setView}
         />
         <RosterGrid
           view={view}
@@ -231,7 +232,7 @@ export default function WeeklyRoster({ externalDate }: { externalDate?: Date }) 
           projectById={projectById}
           periodLocked={periodLocked}
           specialDays={sd.specialDays}
-          tapUnit={tap}
+          tapUnit="1h"
           activeDragPreview={activeDragPreview}
           sensors={sensors}
           onDragStart={handleDragStart}
@@ -242,7 +243,6 @@ export default function WeeklyRoster({ externalDate }: { externalDate?: Date }) 
             setAdjustModalId(id);
             resetAdjustForm();
           }}
-          onOpenEdit={setEditProjectId}
         />
         <SpecialDaySection
           specialDays={sd.specialDays}
@@ -260,6 +260,9 @@ export default function WeeklyRoster({ externalDate }: { externalDate?: Date }) 
         <CommentsModal
           project={commentModalProject}
           comments={commentModalId !== null ? (comments[commentModalId] ?? []) : []}
+          periodLabel={getPeriodLabel(period, selectedDate)}
+          periodStart={periodStart}
+          periodEnd={periodEnd}
           onClose={() => setCommentModalId(null)}
         />
       )}
@@ -278,13 +281,6 @@ export default function WeeklyRoster({ externalDate }: { externalDate?: Date }) 
           onClose={() => setAdjustModalId(null)}
         />
       )}
-      <ProjectFormDialog open={isCreateOpen} onOpenChange={setIsCreateOpen} onCreate={addProject} />
-      <ProjectFormDialog
-        open={editProject !== null}
-        onOpenChange={(open) => !open && setEditProjectId(null)}
-        project={editProject}
-        onSave={updateProject}
-      />
       <SpecialDayDialog
         open={sd.isOpen}
         onOpenChange={(open) => !open && sd.closeDialog()}

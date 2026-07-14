@@ -8,12 +8,23 @@ import type { Comment, Project } from "@/components/providers/ProjectsProvider";
 export function CommentsModal({
   project,
   comments,
+  periodLabel,
+  periodStart,
+  periodEnd,
   onClose,
 }: {
   project: Project;
   comments: Comment[];
+  periodLabel?: string;
+  periodStart?: string;
+  periodEnd?: string;
   onClose: () => void;
 }) {
+  const filtered = comments.filter(
+    (c) =>
+      !c.date || ((!periodStart || c.date >= periodStart) && (!periodEnd || c.date <= periodEnd))
+  );
+
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent>
@@ -22,15 +33,14 @@ export function CommentsModal({
             Adjustment Notes
           </span>
           <DialogTitle className="truncate max-w-[240px]">{project.title}</DialogTitle>
+          {periodLabel && <p className="text-[11px] text-ink-muted">{periodLabel}</p>}
         </DialogHeader>
 
         <div className="space-y-2 max-h-72 overflow-y-auto">
-          {comments.length === 0 ? (
-            <p className="text-xs text-ink-subtle text-center py-6">
-              No notes yet — added automatically when adjusting hours.
-            </p>
+          {filtered.length === 0 ? (
+            <p className="text-xs text-ink-subtle text-center py-6">No notes for this period.</p>
           ) : (
-            comments.map((c) => (
+            filtered.map((c) => (
               <div
                 key={c.id}
                 className="rounded-md bg-surface-2 border border-garden-border px-3 py-2.5"

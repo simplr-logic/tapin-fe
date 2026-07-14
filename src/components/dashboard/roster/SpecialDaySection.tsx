@@ -1,6 +1,6 @@
 "use client";
 
-import { Lightbulb, Palmtree, Pencil, Trash2, Trees } from "lucide-react";
+import { CalendarDays, Palmtree, Pencil, Trash2 } from "lucide-react";
 
 import { SPECIAL_DAY_TYPES, type SpecialDay } from "@/components/dashboard/SpecialDayDialog";
 
@@ -22,103 +22,121 @@ export function SpecialDaySection({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1.5 text-[10px] text-ink-subtle uppercase tracking-wide font-medium">
-          <Trees className="w-3.5 h-3.5" />
+        <div className="flex items-center gap-2 text-[10px] text-ink-subtle uppercase tracking-wide font-medium">
           <Palmtree className="w-3.5 h-3.5" />
-          Registered Special Day Blocks ({specialDays.length})
+          Special Day Blocks
+          <span className="normal-case tracking-normal text-[10px] font-semibold bg-surface-2 border border-garden-border text-ink-muted px-1.5 py-0.5 rounded-full">
+            {specialDays.length}
+          </span>
         </div>
-        <span className="text-[10px] text-ink-subtle">Counts as non-worked roster hours</span>
+        <span className="text-[10px] text-ink-subtle">Non-worked roster hours</span>
       </div>
 
       {specialDays.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-garden-border bg-surface-2/50 px-5 py-4 text-center text-xs text-ink-subtle leading-relaxed">
-          No public holidays or annual leaves logged for this week.{" "}
-          <span
+        <div className="rounded-lg border border-dashed border-garden-border bg-surface-2/50 px-5 py-6 text-center space-y-1.5">
+          <Palmtree className="w-5 h-5 text-ink-subtle mx-auto" />
+          <p className="text-xs text-ink-subtle">No holidays or leave logged this week.</p>
+          <button
+            type="button"
             onClick={onAdd}
-            className="font-semibold text-link cursor-pointer hover:text-link-hover hover:underline"
+            className="text-xs font-semibold text-link hover:text-link-hover hover:underline"
           >
-            Click &quot;Log Holiday/Leave&quot;
-          </span>{" "}
-          above to register one!
+            Log one now
+          </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
           {specialDays.map((day) => {
             const typeInfo = SPECIAL_DAY_TYPES.find((t) => t.value === day.type)!;
             const Icon = typeInfo.icon;
+            const label = day.type === "leave" && day.leaveType ? day.leaveType : typeInfo.label;
+
             return (
               <div
                 key={day.id}
-                className={["rounded-lg border px-4 py-3 space-y-2", typeInfo.cardClass].join(" ")}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <div className="w-7 h-7 rounded-md bg-white/70 flex items-center justify-center shrink-0">
-                      <Icon className="w-3.5 h-3.5" style={{ color: typeInfo.hex }} />
-                    </div>
-                    <div className="min-w-0">
-                      <p
-                        className="text-[10px] font-semibold uppercase tracking-wide"
-                        style={{ color: typeInfo.hex }}
-                      >
-                        {day.type === "leave" && day.leaveType ? day.leaveType : typeInfo.label}
-                      </p>
-                      <p className="text-[10px] text-ink-subtle">{formatSpecialRange(day)}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1 shrink-0">
-                    <button
-                      type="button"
-                      onClick={() => onEdit(day.id)}
-                      title="Edit hours / dates"
-                      className="w-6 h-6 rounded-md flex items-center justify-center text-ink-subtle hover:text-ink hover:bg-white/70 transition-colors"
-                    >
-                      <Pencil className="w-3 h-3" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => onRemove(day.id)}
-                      title="Delete off-day block"
-                      className="w-6 h-6 rounded-md flex items-center justify-center text-ink-subtle hover:text-error hover:bg-white/70 transition-colors"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </button>
-                  </div>
-                </div>
-
-                {day.notes && (
-                  <p className="text-xs text-ink truncate" title={day.notes}>
-                    {day.notes}
-                  </p>
+                className={["relative rounded-lg border overflow-hidden", typeInfo.cardClass].join(
+                  " "
                 )}
-
+              >
+                {/* colour accent strip */}
                 <div
-                  className="flex items-center justify-between pt-2 border-t"
-                  style={{ borderColor: `${typeInfo.hex}33` }}
-                >
-                  <span className="text-[9px] text-ink-subtle uppercase tracking-wide font-medium">
-                    Roster Credit
-                  </span>
-                  <span className="text-xs font-bold" style={{ color: typeInfo.hex }}>
-                    {day.hours}h
-                  </span>
+                  className="absolute top-0 left-0 right-0 h-0.5"
+                  style={{ backgroundColor: typeInfo.hex }}
+                />
+
+                <div className="px-3.5 pt-3.5 pb-3 space-y-2.5">
+                  {/* top row */}
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div
+                        className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                        style={{ backgroundColor: `${typeInfo.hex}18` }}
+                      >
+                        <Icon className="w-4 h-4" style={{ color: typeInfo.hex }} />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold text-ink leading-tight truncate">
+                          {label}
+                        </p>
+                        <div className="flex items-center gap-1 mt-0.5">
+                          <CalendarDays
+                            className="w-2.5 h-2.5 shrink-0"
+                            style={{ color: typeInfo.hex }}
+                          />
+                          <p className="text-[10px] text-ink-subtle truncate">
+                            {formatSpecialRange(day)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-0.5 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => onEdit(day.id)}
+                        title="Edit"
+                        className="w-6 h-6 rounded-md flex items-center justify-center text-ink-subtle hover:text-ink hover:bg-white/70 transition-colors"
+                      >
+                        <Pencil className="w-3 h-3" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onRemove(day.id)}
+                        title="Delete"
+                        className="w-6 h-6 rounded-md flex items-center justify-center text-ink-subtle hover:text-error hover:bg-white/70 transition-colors"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {day.notes && (
+                    <p className="text-[10px] text-ink-subtle italic truncate" title={day.notes}>
+                      &ldquo;{day.notes}&rdquo;
+                    </p>
+                  )}
+
+                  {/* footer */}
+                  <div
+                    className="flex items-center justify-between pt-2 border-t"
+                    style={{ borderColor: `${typeInfo.hex}28` }}
+                  >
+                    <span className="text-[9px] text-ink-subtle uppercase tracking-wide font-medium">
+                      Roster credit
+                    </span>
+                    <span
+                      className="text-xs font-bold px-2 py-0.5 rounded-full"
+                      style={{ color: typeInfo.hex, backgroundColor: `${typeInfo.hex}15` }}
+                    >
+                      {day.hours}h
+                    </span>
+                  </div>
                 </div>
               </div>
             );
           })}
         </div>
       )}
-
-      <div className="flex items-start gap-2.5 rounded-lg bg-warning/8 border border-warning/20 px-4 py-3">
-        <Lightbulb className="w-3.5 h-3.5 mt-0.5 shrink-0 text-warning" />
-        <p className="text-[11px] text-warning leading-relaxed">
-          <span className="font-semibold">How to log:</span> Click anywhere inside a project tile to
-          log time using the selected TAP unit, or drag a tile onto another to swap their position.
-          Special day blocks (dashed border) are locked — drag to reposition them, but edit or
-          delete them below. Use the pencil to edit project details, the clock to log a custom
-          hour/minute amount or unlog hours, and the message icon to view or add comments.
-        </p>
-      </div>
     </div>
   );
 }

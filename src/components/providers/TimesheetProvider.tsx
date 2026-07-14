@@ -10,6 +10,7 @@ export interface TimesheetProjectSnapshot {
   company: string;
   loggedMinutes: number;
   targetHours: number;
+  logs: Record<string, number>;
 }
 
 export interface TimesheetRecord {
@@ -29,8 +30,10 @@ interface TimesheetContextValue {
   records: TimesheetRecord[];
   currentMonthLabel: string;
   currentMonthRecord: TimesheetRecord | null;
+  lastMonthRecord: TimesheetRecord | null;
+  lastMonthSubmitted: boolean;
   isMonthSubmitted: (date: Date) => boolean;
-  submitTimesheet: (signature: string, projects: Project[]) => void;
+  submitTimesheet: (signature: string, projects: Project[], forDate?: Date) => void;
   unsubmitTimesheet: (monthKey: string) => void;
 }
 
@@ -89,22 +92,29 @@ export function TimesheetProvider({ children }: { children: ReactNode }) {
     }
   }, [raw]);
 
+  const now = new Date();
   const currentMonthLabel = getMonthLabel();
-  const currentMonthRecord = records.find((r) => r.monthKey === toMonthKey(new Date())) ?? null;
+  const currentMonthRecord = records.find((r) => r.monthKey === toMonthKey(now)) ?? null;
+  const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const lastMonthRecord = records.find((r) => r.monthKey === toMonthKey(lastMonthDate)) ?? null;
+  const lastMonthSubmitted = lastMonthRecord !== null;
 
   function isMonthSubmitted(date: Date): boolean {
     const key = toMonthKey(date);
     return records.some((r) => r.monthKey === key);
   }
 
-  function submitTimesheet(signature: string, projects: Project[]) {
-    const now = new Date();
-    const start = monthStart(now);
-    const end = now.toLocaleDateString("en-CA");
+  function submitTimesheet(signature: string, projects: Project[], forDate?: Date) {
+    const target = forDate ?? now;
+    const isCurrentMonth = toMonthKey(target) === toMonthKey(now);
+    const start = monthStart(target);
+    const end = isCurrentMonth
+      ? now.toLocaleDateString("en-CA")
+      : new Date(target.getFullYear(), target.getMonth() + 1, 0).toLocaleDateString("en-CA");
     const record: TimesheetRecord = {
       id: `ts-${Date.now()}`,
-      monthLabel: getMonthLabel(now),
-      monthKey: toMonthKey(now),
+      monthLabel: getMonthLabel(target),
+      monthKey: toMonthKey(target),
       periodStart: start,
       periodEnd: end,
       submittedAt: now.toISOString(),
@@ -117,9 +127,12 @@ export function TimesheetProvider({ children }: { children: ReactNode }) {
         company: p.company,
         loggedMinutes: sumLogs(p.logs, start, end),
         targetHours: p.targetHours,
+        logs: Object.fromEntries(
+          Object.entries(p.logs).filter(([date]) => date >= start && date <= end)
+        ),
       })),
     };
-    const key = toMonthKey(now);
+    const key = toMonthKey(target);
     const next = [record, ...records.filter((r) => r.monthKey !== key)];
     writeRaw(JSON.stringify(next));
   }
@@ -134,6 +147,8 @@ export function TimesheetProvider({ children }: { children: ReactNode }) {
         records,
         currentMonthLabel,
         currentMonthRecord,
+        lastMonthRecord,
+        lastMonthSubmitted,
         isMonthSubmitted,
         submitTimesheet,
         unsubmitTimesheet,
