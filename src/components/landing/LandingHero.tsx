@@ -25,7 +25,7 @@ export default function LandingHero() {
           <Button
             render={<Link href="#signup" />}
             nativeButton={false}
-            className="h-11 min-w-44 rounded-md px-6 text-xs font-semibold uppercase tracking-wide"
+            className="h-11 min-w-44 rounded-md px-6 text-xs font-semibold uppercase tracking-wide focus-visible:ring-3 focus-visible:ring-link/50"
           >
             Start your story
           </Button>
@@ -33,7 +33,7 @@ export default function LandingHero() {
             render={<Link href="#companies" />}
             nativeButton={false}
             variant="outline"
-            className="h-11 min-w-44 rounded-md px-6 text-xs font-semibold uppercase tracking-wide"
+            className="h-11 min-w-44 rounded-md px-6 text-xs font-semibold uppercase tracking-wide focus-visible:ring-3 focus-visible:ring-link/50"
           >
             For teams
           </Button>

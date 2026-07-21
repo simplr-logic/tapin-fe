@@ -7,6 +7,7 @@ import LandingHero from "@/components/landing/LandingHero";
 import LandingPersonalDashboard from "@/components/landing/LandingPersonalDashboard";
 import LandingPricing from "@/components/landing/LandingPricing";
 import LandingShare from "@/components/landing/LandingShare";
+import LandingSkipLink from "@/components/landing/LandingSkipLink";
 import LandingWorkLifeStory from "@/components/landing/LandingWorkLifeStory";
 import SignUpBar from "@/components/landing/SignUpBar";
 import { APP_NAME } from "@/config/constants";
@@ -15,16 +16,19 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: `${APP_NAME} — Every tap is a line in your career story`,
+  description:
+    "Tap to log your work instantly. Your career history stays with you across every job — a personal record that's yours, not your employer's timesheet.",
 };
 
 export default function LandingPage() {
   return (
     <div className="relative min-h-screen flex flex-col bg-linear-to-b from-canvas to-kale-accent/18">
+      <LandingSkipLink />
       <LandingBackground />
 
       <LandingHeader />
 
-      <main className="relative flex-1">
+      <main id="main-content" className="relative flex-1">
         <LandingHero />
         <LandingWorkLifeStory />
         <LandingCheckpoint />
@@ -47,7 +51,7 @@ export default function LandingPage() {
               href="https://www.simplr.com.my"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-link hover:text-link-hover transition-colors duration-100"
+              className="text-link hover:text-link-hover transition-colors duration-100 rounded-sm focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-link/50"
             >
               Simplr Logic Sdn Bhd
             </a>

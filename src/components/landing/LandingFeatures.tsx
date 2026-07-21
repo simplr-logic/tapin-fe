@@ -7,6 +7,8 @@ import LandingFeatureItem from "@/components/landing/LandingFeatureItem";
 const FEATURES = [
   {
     icon: Zap,
+    preview: "tap" as const,
+    iconTone: "link" as const,
     title: "Tap to log time",
     description: "30 minutes, an hour, or two — one tap, no stopwatch, no manual entry.",
     rotate: -1.5,
@@ -16,6 +18,8 @@ const FEATURES = [
   },
   {
     icon: LayoutGrid,
+    preview: "treemap" as const,
+    iconTone: "success" as const,
     title: "See your story take shape",
     description:
       "A live treemap sized by hours logged, so you see where your week — and your career — went.",
@@ -26,6 +30,7 @@ const FEATURES = [
   },
   {
     icon: TimerIcon,
+    iconTone: "warning" as const,
     title: "Built-in Pomodoro focus timer",
     description: "Work in focused sprints with automatic breaks, next to the ledger.",
     rotate: -1.1,
@@ -35,6 +40,7 @@ const FEATURES = [
   },
   {
     icon: ShieldCheck,
+    iconTone: "accent" as const,
     title: "Audit-ready, and yours",
     description:
       "Every log entry keeps its own immutable record — proof for an employer if they need it, a permanent record for you either way.",
@@ -45,6 +51,7 @@ const FEATURES = [
   },
   {
     icon: Smartphone,
+    iconTone: "link" as const,
     title: "Works everywhere",
     description: "Desktop or mobile, same ledger, same tap-to-log flow.",
     rotate: 1.4,
@@ -54,6 +61,7 @@ const FEATURES = [
   },
   {
     icon: Layers,
+    iconTone: "open" as const,
     title: "See your whole career, in one view",
     description:
       "Every job, every personal project, one unified breakdown — filter by date, by employer, or see it all at once. Nobody else gets this view. It's yours alone.",

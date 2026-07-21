@@ -4,11 +4,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { useSyncExternalStore } from "react";
 
+import { landingNavLinkClass } from "@/components/landing/landing-ui";
 import { Button } from "@/components/ui/button";
 import { APP_NAME } from "@/config/constants";
 import { cn } from "@/lib/utils";
 
 const SCROLL_THRESHOLD_PX = 12;
+
+const NAV_LINKS = [
+  { href: "#story", label: "Story" },
+  { href: "#companies", label: "For teams" },
+  { href: "#pricing", label: "Pricing" },
+] as const;
 
 function subscribe(onStoreChange: () => void) {
   window.addEventListener("scroll", onStoreChange, { passive: true });
@@ -35,13 +42,17 @@ export default function LandingHeader() {
     >
       <div
         className={cn(
-          "max-w-6xl mx-auto px-4 md:px-6 flex items-center justify-between transition-[height] duration-[250ms] ease-[cubic-bezier(0.15,0.85,0.35,1)]",
+          "max-w-6xl mx-auto px-4 md:px-6 flex items-center justify-between gap-3 transition-[height] duration-[250ms] ease-[cubic-bezier(0.15,0.85,0.35,1)]",
           scrolled ? "h-12" : "h-16 md:h-[4.5rem]"
         )}
       >
         <Link
           href="/"
-          className="flex items-center gap-3 rounded-md px-2 py-2 -ml-2 min-h-11 hover:bg-surface-2 transition-colors duration-100"
+          aria-label={`${APP_NAME} home`}
+          className={cn(
+            "flex items-center gap-3 rounded-md px-2 py-2 -ml-2 min-h-11 hover:bg-surface-2 transition-colors duration-100",
+            "focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-link/50"
+          )}
         >
           <Image
             src="/logo.svg"
@@ -63,27 +74,35 @@ export default function LandingHeader() {
           </span>
         </Link>
 
-        <div className="flex items-center gap-2 sm:gap-3">
-          <Link
-            href="#pricing"
-            className={cn(
-              "rounded-md px-3 py-2 min-h-11 inline-flex items-center font-medium text-ink-muted hover:text-ink hover:bg-surface-2 transition-colors duration-100",
-              scrolled ? "text-sm" : "text-sm md:text-base"
-            )}
-          >
-            Pricing
-          </Link>
+        <nav
+          aria-label="Landing page sections"
+          className="flex items-center gap-1 sm:gap-2 shrink-0"
+        >
+          {NAV_LINKS.map(({ href, label }) => (
+            <Link
+              key={href}
+              href={href}
+              className={cn(
+                landingNavLinkClass,
+                scrolled ? "text-sm px-2.5 sm:px-3" : "text-sm md:text-base",
+                label === "Story" && "hidden sm:inline-flex",
+                label === "For teams" && "hidden md:inline-flex"
+              )}
+            >
+              {label}
+            </Link>
+          ))}
           <Button
             render={<Link href="/login" />}
             nativeButton={false}
             className={cn(
-              "rounded-md font-semibold uppercase tracking-wide",
+              "rounded-md font-semibold uppercase tracking-wide focus-visible:ring-3 focus-visible:ring-link/50",
               scrolled ? "h-9 min-w-11 px-4 text-xs" : "h-11 min-w-11 px-5 text-xs md:text-sm"
             )}
           >
             Sign in
           </Button>
-        </div>
+        </nav>
       </div>
     </header>
   );

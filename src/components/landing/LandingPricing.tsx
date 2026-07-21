@@ -6,6 +6,7 @@ import {
   landingContainerClass,
   landingSectionClass,
 } from "@/components/landing/landing-ui";
+import LandingWavePath from "@/components/landing/LandingWavePath";
 import { Button } from "@/components/ui/button";
 import { CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -85,9 +86,15 @@ function PricingPlanCard({
 
   return (
     <LandingCard
-      className={cn("flex h-full flex-col", plan === "company" && "border-kale/25 shadow-elevated")}
+      className={cn(
+        "flex h-full flex-col overflow-hidden",
+        plan === "company" && "border-kale/25 shadow-elevated"
+      )}
     >
-      <CardHeader className="px-6 pt-6 pb-0">
+      <div className="px-6 pt-4">
+        <LandingWavePath variant="accent" glow={false} className="h-3 opacity-70" />
+      </div>
+      <CardHeader className="px-6 pt-3 pb-0">
         <div className="flex items-center gap-2.5">
           <span className="flex size-9 items-center justify-center rounded-md bg-surface-2">
             <PlanIcon className="size-4 text-kale" aria-hidden />

@@ -18,6 +18,19 @@ export function LandingCard({ className, ...props }: LandingCardProps) {
   );
 }
 
-export const landingSectionClass = "relative px-4 md:px-6 py-12 md:py-16 scroll-mt-16";
+/** Offset anchored sections below the sticky landing header (up to 4.5rem tall). */
+export const landingSectionClass = "relative px-4 md:px-6 py-12 md:py-16 scroll-mt-[4.5rem]";
 
 export const landingContainerClass = "max-w-6xl mx-auto";
+
+export const landingNavLinkClass = cn(
+  "rounded-md px-3 py-2 min-h-11 inline-flex items-center font-medium",
+  "text-ink-muted hover:text-ink hover:bg-surface-2 transition-colors duration-100",
+  "focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-link/50"
+);
+
+export const landingSkipLinkClass = cn(
+  "sr-only focus:not-sr-only focus:fixed focus:z-[100] focus:top-4 focus:left-4",
+  "rounded-md bg-card px-4 py-2.5 text-sm font-semibold text-ink shadow-elevated",
+  "focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-link/50"
+);

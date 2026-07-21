@@ -145,7 +145,7 @@ export default function LandingShare() {
 
   return (
     <section
-      className="relative border-t border-garden-border bg-card px-4 md:px-6 py-12 md:py-14"
+      className="relative border-t border-garden-border bg-surface-2 px-4 md:px-6 py-12 md:py-14"
       aria-labelledby="landing-share-heading"
     >
       <div className="max-w-2xl mx-auto text-center">

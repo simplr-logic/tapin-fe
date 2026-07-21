@@ -21,7 +21,7 @@
     ]
   },
   "engines": {
-    "node": "24.x"
+    "node": "26.x"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",

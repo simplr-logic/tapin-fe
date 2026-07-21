@@ -107,6 +107,8 @@
   --sidebar-accent-foreground: #2f3941;
   --sidebar-border: #d8dcde;
   --sidebar-ring: #1f73b7;
+
+  --landing-wave-ease: cubic-bezier(0.15, 0.85, 0.35, 1);
 }
 
 @layer base {
@@ -186,6 +188,68 @@
   }
 }
 
+@keyframes landing-checkpoint-pulse {
+  0%,
+  18%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgb(31 115 183 / 0);
+    background-color: rgb(241 243 245 / 0.95);
+  }
+  8% {
+    transform: scale(1.14);
+    box-shadow: 0 0 22px rgb(31 115 183 / 0.38);
+    background-color: rgb(31 115 183 / 0.16);
+  }
+}
+
+@keyframes landing-story-line-draw {
+  0% {
+    stroke-dashoffset: 110;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes landing-hero-tap-fill {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgb(31 115 183 / 0);
+    background-color: rgb(241 243 245 / 0.9);
+  }
+  35% {
+    transform: scale(1.05);
+    box-shadow: 0 0 32px rgb(31 115 183 / 0.42);
+    background-color: rgb(31 115 183 / 0.16);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgb(31 115 183 / 0);
+    background-color: rgb(241 243 245 / 0.9);
+  }
+}
+
+@keyframes landing-hero-ripple {
+  0% {
+    transform: translate(-50%, -50%) scale(0.55);
+    opacity: 0.55;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.35);
+    opacity: 0;
+  }
+}
+
+@keyframes landing-wave-divider-draw {
+  0% {
+    stroke-dashoffset: 320;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
 @layer utilities {
   .shadow-card {
     box-shadow:
@@ -231,6 +295,28 @@
     --landing-text-from: var(--color-ink-muted);
   }
 
+  .landing-checkpoint-pulse {
+    animation: landing-checkpoint-pulse 3.6s cubic-bezier(0.15, 0.85, 0.35, 1) infinite;
+  }
+
+  .landing-story-line-draw {
+    stroke-dasharray: 110;
+    animation: landing-story-line-draw 2.4s cubic-bezier(0.15, 0.85, 0.35, 1) forwards;
+  }
+
+  .landing-hero-tap-fill {
+    animation: landing-hero-tap-fill 420ms cubic-bezier(0.15, 0.85, 0.35, 1);
+  }
+
+  .landing-hero-ripple {
+    animation: landing-hero-ripple 520ms var(--landing-wave-ease) forwards;
+  }
+
+  .landing-wave-divider-draw {
+    stroke-dasharray: 320;
+    animation: landing-wave-divider-draw 1.8s var(--landing-wave-ease) forwards;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .animate-landing-float,
     .animate-landing-float-slow,
@@ -242,8 +328,18 @@
 
     .landing-feature-tap,
     .landing-feature-icon-glow,
-    .landing-feature-text-glow {
+    .landing-feature-text-glow,
+    .landing-checkpoint-pulse,
+    .landing-story-line-draw,
+    .landing-hero-tap-fill,
+    .landing-hero-ripple,
+    .landing-wave-divider-draw {
       animation: none !important;
+    }
+
+    .landing-story-line-draw,
+    .landing-wave-divider-draw {
+      stroke-dashoffset: 0;
     }
   }
 }
