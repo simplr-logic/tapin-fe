@@ -9,6 +9,7 @@ import {
 import LandingWavePath from "@/components/landing/LandingWavePath";
 import { Button } from "@/components/ui/button";
 import { CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { LANDING_PRICING_FAQ, LANDING_TRUST_FAQ } from "@/lib/seo/landing-faq";
 import { cn } from "@/lib/utils";
 
 const INDIVIDUAL_FEATURES = [
@@ -19,12 +20,6 @@ const INDIVIDUAL_FEATURES = [
   "Works everywhere",
 ] as const;
 
-const TRUST_FAQ = {
-  question: "Can my employer see my personal dashboard, streaks, or other jobs?",
-  answer:
-    "No. Your employer sees what's scoped to their company — the hours and projects logged under their employment. Your personal streaks, other jobs, and full career history are visible only to you.",
-} as const;
-
 const COMPANY_FEATURES = [
   "Everything in Individual, for every teammate",
   "Admin dashboard",
@@ -33,23 +28,7 @@ const COMPANY_FEATURES = [
   "No card required",
 ] as const;
 
-const FAQ = [
-  {
-    question: "What happens after the 60-day trial?",
-    answer:
-      "If you haven't subscribed, your company automatically downgrades to individual free accounts — everyone keeps their own history and can keep logging time. You just lose admin/team features until you subscribe. Nothing is deleted, nothing is locked.",
-  },
-  {
-    question: "Will I be charged automatically when the trial ends?",
-    answer:
-      "No. No card is required to start the trial, and there's no auto-charge — you choose to subscribe when you're ready.",
-  },
-  {
-    question: "What will it cost after the trial?",
-    answer:
-      "We haven't finalized company pricing yet — we're piloting with early teams first so it reflects real usage. Trial companies get advance notice and preferred pricing before anything is ever charged.",
-  },
-] as const;
+const FAQ = LANDING_PRICING_FAQ;
 
 function PlanFeatureList({ items }: { items: readonly string[] }) {
   return (
@@ -180,7 +159,7 @@ export default function LandingPricing() {
         <LandingCard className="mt-6">
           <CardContent className="px-6 md:px-8 py-6 md:py-8">
             <dl className="space-y-0">
-              {[TRUST_FAQ, ...FAQ].map(({ question, answer }, index) => (
+              {[LANDING_TRUST_FAQ, ...FAQ].map(({ question, answer }, index) => (
                 <div
                   key={question}
                   className={cn(index > 0 && "border-t border-garden-border pt-6 mt-6")}

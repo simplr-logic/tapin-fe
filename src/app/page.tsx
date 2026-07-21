@@ -8,21 +8,18 @@ import LandingPersonalDashboard from "@/components/landing/LandingPersonalDashbo
 import LandingPricing from "@/components/landing/LandingPricing";
 import LandingShare from "@/components/landing/LandingShare";
 import LandingSkipLink from "@/components/landing/LandingSkipLink";
+import LandingStructuredData from "@/components/landing/LandingStructuredData";
 import LandingWorkLifeStory from "@/components/landing/LandingWorkLifeStory";
 import SignUpBar from "@/components/landing/SignUpBar";
 import { APP_NAME } from "@/config/constants";
+import { buildLandingMetadata } from "@/lib/seo/metadata";
 
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: `${APP_NAME} — Every tap is a line in your career story`,
-  description:
-    "Tap to log your work instantly. Your career history stays with you across every job — a personal record that's yours, not your employer's timesheet.",
-};
+export const metadata = buildLandingMetadata();
 
 export default function LandingPage() {
   return (
     <div className="relative min-h-screen flex flex-col bg-linear-to-b from-canvas to-kale-accent/18">
+      <LandingStructuredData />
       <LandingSkipLink />
       <LandingBackground />
 

@@ -1,0 +1,46 @@
+# Klong
+
+> Klong is a tap-to-log time tracker and personal career ledger. Log work in one tap, keep your history across every job, and give teams accurate timesheets with sign-off and rollups.
+
+## What is Klong?
+
+Klong is a web-based time tracking app for individuals and teams. People log hours against projects with a single tap (30 minutes, one hour, or two hours). The personal work history travels with the user across employers; each employer keeps records scoped to their company.
+
+## Key facts
+
+- Free for individuals, forever.
+- Company teams: free 60-day trial, then per-seat pricing (TBA).
+- No credit card required to start a company trial.
+- No auto-charge when a trial ends.
+- Career history is personal; employer visibility is limited to that company's logged hours and projects.
+- Includes Pomodoro timer, weekly treemap, personal dashboard, team approvals, and timesheet sign-off.
+
+## Frequently asked questions
+
+### Can my employer see my personal dashboard, streaks, or other jobs?
+
+No. Your employer sees what's scoped to their company — the hours and projects logged under their employment. Your personal streaks, other jobs, and full career history are visible only to you.
+
+### What happens after the 60-day trial?
+
+If you haven't subscribed, your company automatically downgrades to individual free accounts — everyone keeps their own history and can keep logging time. You just lose admin/team features until you subscribe. Nothing is deleted, nothing is locked.
+
+### Will I be charged automatically when the trial ends?
+
+No. No card is required to start the trial, and there's no auto-charge — you choose to subscribe when you're ready.
+
+### What will it cost after the trial?
+
+Company pricing is not finalized yet. Trial companies get advance notice and preferred pricing before anything is charged.
+
+## Primary pages
+
+- Homepage: /
+- Sign in: /login
+- For teams section: /#companies
+- Pricing: /#pricing
+- Sign up: /#signup
+
+## Publisher
+
+Simplr Logic Sdn Bhd — https://www.simplr.com.my

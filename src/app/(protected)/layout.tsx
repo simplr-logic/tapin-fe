@@ -4,6 +4,15 @@ import AppShell from "@/components/layout/AppShell";
 import { SessionProvider } from "@/components/providers/SessionProvider";
 import { getMe } from "@/lib/gateway";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
+
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const me = await getMe();
   if (!me) {
