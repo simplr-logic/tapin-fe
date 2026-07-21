@@ -40,7 +40,7 @@ export default function NotFound() {
             className="h-9 text-xs font-semibold gap-1.5"
           >
             <Home className="w-3.5 h-3.5" />
-            Dashboard
+            Home
           </Button>
         </div>
       </div>

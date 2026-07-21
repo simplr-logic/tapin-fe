@@ -50,10 +50,10 @@ export default function Header({ onMenuToggle }: { onMenuToggle?: () => void }) 
             </button>
           )}
           <Link
-            href="/"
+            href="/dashboard"
             className="flex items-center gap-2.5 shrink-0 rounded-md px-1.5 py-1 hover:bg-white/10 transition-colors"
           >
-            <Image src="/logo.svg" alt="Klong" width={28} height={28} className="object-contain" />
+            <Image src="/logo.svg" alt="Klong" width={36} height={36} className="object-contain" />
             <span className="font-semibold text-white tracking-tight text-sm">{APP_NAME}</span>
           </Link>
         </div>

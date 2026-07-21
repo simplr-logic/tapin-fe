@@ -9,13 +9,17 @@ const SESSION_COOKIE_NAME = "klong_session";
 // and is caught by getMe() in (protected)/layout.tsx, which redirects to
 // /login itself.
 function isPublicPath(pathname: string): boolean {
+  // /: marketing landing page, pre-session.
   // /login: the request form itself.
   // /auth/*: magic-link request + Supabase PKCE callback, both pre-session.
   // /emails/link/callback: Supabase PKCE callback for linking a second email —
   // reached from an already-authenticated browser but must not bounce through
   // the login redirect if the cookie is momentarily stale mid-flow.
   return (
-    pathname === "/login" || pathname.startsWith("/auth/") || pathname === "/emails/link/callback"
+    pathname === "/" ||
+    pathname === "/login" ||
+    pathname.startsWith("/auth/") ||
+    pathname === "/emails/link/callback"
   );
 }
 
@@ -30,12 +34,15 @@ export default function proxy(req: NextRequest) {
   }
 
   if (isLoggedIn && pathname === "/login") {
-    return NextResponse.redirect(new URL("/", req.nextUrl));
+    return NextResponse.redirect(new URL("/dashboard", req.nextUrl));
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  // Excludes API routes, Next internals, and any request for a static file in
+  // /public (logo.svg, favicon.ico, ...) — those must never bounce through
+  // the login redirect.
+  matcher: ["/((?!api|_next/static|_next/image|.*\\..*).*)"],
 };

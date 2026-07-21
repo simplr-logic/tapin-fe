@@ -89,7 +89,7 @@ export function PomodoroTimer() {
     configStore.getSnapshot,
     configStore.getSnapshot
   );
-  const { projects, adjustLoggedMinutes } = useProjects();
+  const { projects, adjustLoggedMinutes, addComment } = useProjects();
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const styles = PHASE_STYLES[phase];
@@ -122,6 +122,7 @@ export function PomodoroTimer() {
           ? `Pomodoro: ${tasks.map((t) => t.text).join(", ")} (+${config.workMinutes}m)`
           : `Pomodoro session (+${config.workMinutes}m)`;
       adjustLoggedMinutes(Number(selectedProjectId), config.workMinutes, note);
+      addComment(Number(selectedProjectId), note);
       timerStore.clearTasks();
     }
   }, [
@@ -132,6 +133,7 @@ export function PomodoroTimer() {
     tasks,
     config.workMinutes,
     adjustLoggedMinutes,
+    addComment,
   ]);
 
   const prevSecondsRef = useRef(secondsLeft);
