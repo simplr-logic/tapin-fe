@@ -69,6 +69,9 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  --animate-landing-float: landing-float 5s ease-in-out infinite;
+  --animate-landing-float-slow: landing-float-slow 11s ease-in-out infinite;
 }
 
 :root {
@@ -122,6 +125,67 @@
   }
 }
 
+/* Landing page motion — keyframes outside @layer so they aren't dropped/overridden. */
+@keyframes landing-float {
+  0%,
+  100% {
+    transform: rotate(var(--landing-tilt, 0deg)) translateY(0);
+  }
+  50% {
+    transform: rotate(var(--landing-tilt, 0deg)) translateY(-10px);
+  }
+}
+
+@keyframes landing-float-slow {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(18px, -22px);
+  }
+}
+
+@keyframes landing-feature-tap {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgb(31 115 183 / 0);
+    background-color: rgb(241 243 245 / 0.8);
+  }
+  40% {
+    transform: scale(1.16);
+    box-shadow: 0 0 28px rgb(31 115 183 / 0.38);
+    background-color: rgb(31 115 183 / 0.14);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgb(31 115 183 / 0);
+    background-color: rgb(241 243 245 / 0.8);
+  }
+}
+
+@keyframes landing-feature-icon-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 rgb(31 115 183 / 0));
+  }
+  40% {
+    filter: drop-shadow(0 0 10px rgb(31 115 183 / 0.65));
+  }
+}
+
+@keyframes landing-feature-text-glow {
+  0%,
+  100% {
+    color: var(--landing-text-from);
+    text-shadow: 0 0 0 rgb(31 115 183 / 0);
+  }
+  40% {
+    color: var(--color-link);
+    text-shadow: 0 0 14px rgb(31 115 183 / 0.5);
+  }
+}
+
 @layer utilities {
   .shadow-card {
     box-shadow:
@@ -132,34 +196,54 @@
     box-shadow: 0 4px 12px rgba(47, 57, 65, 0.12);
   }
 
-  @keyframes float {
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-10px);
-    }
+  .animate-landing-float {
+    animation: var(--animate-landing-float);
   }
-  @keyframes float-slow {
-    0%,
-    100% {
-      transform: translate(0, 0);
-    }
-    50% {
-      transform: translate(18px, -22px);
-    }
+  .animate-landing-float-slow {
+    animation: var(--animate-landing-float-slow);
   }
+
+  /* Back-compat with main's landing animation class names. */
   .animate-float {
-    animation: float 5s ease-in-out infinite;
+    animation: var(--animate-landing-float);
   }
   .animate-float-slow {
-    animation: float-slow 11s ease-in-out infinite;
+    animation: var(--animate-landing-float-slow);
   }
+
+  .landing-feature-tap {
+    animation: landing-feature-tap 450ms cubic-bezier(0.15, 0.85, 0.35, 1);
+  }
+
+  .landing-feature-icon-glow {
+    animation: landing-feature-icon-glow 450ms cubic-bezier(0.15, 0.85, 0.35, 1);
+  }
+
+  .landing-feature-text-glow {
+    animation: landing-feature-text-glow 450ms cubic-bezier(0.15, 0.85, 0.35, 1);
+  }
+
+  .landing-feature-title-glow {
+    --landing-text-from: var(--color-ink);
+  }
+
+  .landing-feature-desc-glow {
+    --landing-text-from: var(--color-ink-muted);
+  }
+
   @media (prefers-reduced-motion: reduce) {
+    .animate-landing-float,
+    .animate-landing-float-slow,
     .animate-float,
     .animate-float-slow {
-      animation: none;
+      animation: none !important;
+      transform: rotate(var(--landing-tilt, 0deg)) !important;
+    }
+
+    .landing-feature-tap,
+    .landing-feature-icon-glow,
+    .landing-feature-text-glow {
+      animation: none !important;
     }
   }
 }

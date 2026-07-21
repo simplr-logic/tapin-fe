@@ -5,6 +5,7 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 export default function SignUpBar() {
   const [email, setEmail] = useState("");
@@ -37,24 +38,31 @@ export default function SignUpBar() {
   }
 
   return (
-    <section className="relative px-4 md:px-6 py-20">
-      <div className="max-w-md mx-auto text-center">
-        <h2 className="text-2xl md:text-3xl font-bold text-ink tracking-tight text-balance">
+    <section
+      id="signup"
+      className="relative scroll-mt-16 border-t border-kale-hover bg-kale shadow-elevated"
+      aria-labelledby="landing-signup-heading"
+    >
+      <div className="max-w-xl mx-auto px-4 md:px-6 py-14 md:py-16 text-center">
+        <h2
+          id="landing-signup-heading"
+          className="text-2xl md:text-3xl font-bold text-white tracking-tight text-balance"
+        >
           Ready to get started?
         </h2>
-        <p className="mt-2 text-sm text-ink-muted text-balance">
+        <p className="mt-3 text-sm md:text-base text-white/80 text-balance">
           Sign up in seconds — no password, just your email.
         </p>
 
-        <div className="mt-7">
+        <div className="mt-8">
           {sent ? (
-            <div className="flex items-center justify-center gap-2 text-sm text-ink py-1.5">
-              <Check className="w-4 h-4 text-success shrink-0" />
-              Check <span className="font-medium">{email}</span> for your sign-in link.
+            <div className="inline-flex items-center justify-center gap-2 rounded-lg bg-white/10 px-4 py-3 text-sm text-white">
+              <Check className="w-4 h-4 text-success shrink-0" aria-hidden />
+              Check <span className="font-semibold">{email}</span> for your sign-in link.
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col gap-1.5">
-              <div className="flex items-center gap-2">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-2 text-left">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                 <Input
                   type="email"
                   required
@@ -62,24 +70,27 @@ export default function SignUpBar() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@company.com"
-                  className="flex-1 bg-white"
+                  className="h-11 flex-1 rounded-md border-garden-border-strong bg-white text-ink placeholder:text-ink-subtle"
                   aria-label="Email address"
                 />
                 <Button
                   type="submit"
                   disabled={loading || !email}
-                  className="h-9 px-5 text-xs font-semibold uppercase tracking-wide shrink-0"
+                  className={cn(
+                    "h-11 shrink-0 rounded-md px-6 text-xs font-semibold uppercase tracking-wide",
+                    "bg-white text-kale hover:bg-white/90"
+                  )}
                 >
                   {loading ? "Sending…" : "Sign up"}
                 </Button>
               </div>
               {error ? (
-                <p className="flex items-center gap-1.5 text-[11px] text-error">
-                  <AlertTriangle className="w-3 h-3 shrink-0" />
+                <p className="flex items-center justify-center sm:justify-start gap-1.5 text-xs text-white">
+                  <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-error" aria-hidden />
                   {error}
                 </p>
               ) : (
-                <p className="text-[11px] text-ink-subtle">
+                <p className="text-xs text-white/70 text-center sm:text-left">
                   No password — we&apos;ll email you a one-time link.
                 </p>
               )}
