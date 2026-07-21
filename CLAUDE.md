@@ -7,7 +7,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project
 
 Next.js 16 + React 19 + TypeScript + Tailwind CSS 4 + App Router.
-Folder: `C:\Users\jackh\Desktop\klong`
 
 Time tracker / attendance ledger. Auth is backed by the real Klong gateway
 (`simplr.klong-be`) — Supabase magic-link login via `identity`, no passwords,
@@ -95,10 +94,12 @@ on staged files. Don't bypass with `--no-verify`.
 
 ## Local Setup
 
-Copy `.env.example` to `.env.local`. `GATEWAY_URL` is required — points at the
-running `simplr.klong-be` gateway (defaults to `http://localhost:8080`), used
-by both `next.config.ts`'s rewrites and server-side gateway calls
-(`src/lib/gateway.ts`, see `src/config/env.ts`).
+Copy `deploy/.env.example` to `deploy/.env`. `GATEWAY_URL` is required — points
+at the running `simplr.klong-be` gateway (defaults to `http://localhost:8080`),
+used by both `next.config.ts`'s rewrites and server-side gateway calls
+(`src/lib/gateway.ts`, see `src/config/env.ts`). `npm run dev` / `npm run start`
+load `deploy/.env` via `dotenv-cli` — this is not the Next.js default
+`.env.local` at the project root.
 
 The gateway itself needs `identity` + Redis (+ Supabase CLI) running, and its
 `MAGIC_LINK_REDIRECT_URL` / `EMAIL_LINK_REDIRECT_URL` must point at this app
@@ -175,7 +176,7 @@ opaque session cookie, no NextAuth, no passwords.
 - **Logout**: `useLogout()` (`src/hooks/useLogout.ts`) `POST`s `/me/logout` (same-origin rewrite) so the gateway's cookie-clearing `Set-Cookie` applies directly to the browser, then routes to `/login`.
 - Session/person response shapes are typed in `src/types/session.ts` (mirrors gateway's `meResponse`/`personResponse` — see `simplr.klong-be/gateway/internal/handlers/person_json.go`).
 - `callbackUrl` preservation on redirect-to-login is best-effort only — the gateway's post-login redirect target is currently a fixed configured path (`POST_LOGIN_REDIRECT_PATH`), not per-request, so deep-link return isn't wired end-to-end yet.
-- Company-invite acceptance, domain-claim prompts, email management (add/remove/set-primary), and session-list UI are **not built yet** — see `FE_LOGIN_FLOW_TASKS.md` for the full backlog against `Klong_Login_Flow.docx`.
+- Company-invite acceptance, domain-claim prompts, email management (add/remove/set-primary), and session-list UI are **not built yet** — see `docs/FE_LOGIN_FLOW_TASKS.md` for the full backlog against `Klong_Login_Flow.docx`.
 
 ### State management — client-side only (no backend yet, except auth)
 
