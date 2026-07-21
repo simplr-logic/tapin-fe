@@ -6,7 +6,7 @@ import { AttendanceCalendarContent } from "@/components/dashboard/AttendanceCale
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
-import { getPeriodLabel } from "./utils";
+import { getPeriodLabel, getPeriodRange } from "./utils";
 
 import type { PeriodView } from "@/config/constants";
 
@@ -34,6 +34,7 @@ export function RosterControls({
   isCurrentPeriod,
 }: RosterControlsProps) {
   const periodLabel = getPeriodLabel(period, selectedDate);
+  const weekRange = period === "week" ? getPeriodRange("week", selectedDate) : undefined;
 
   return (
     <div className="px-3 py-2.5 lg:px-5 lg:py-3 border-b border-garden-border space-y-2">
@@ -84,6 +85,7 @@ export function RosterControls({
           <PopoverContent side="bottom" align="start" className="w-auto p-0">
             <AttendanceCalendarContent
               selectedDate={selectedDate}
+              weekRange={weekRange}
               onDaySelect={(d) => {
                 setSelectedDate(d);
                 setIsDatePickerOpen(false);

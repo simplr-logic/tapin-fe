@@ -1,13 +1,20 @@
-import { CalendarClock, IdCard, LogOut, Mail, ShieldCheck } from "lucide-react";
+import { CalendarClock, IdCard, Mail, ShieldCheck } from "lucide-react";
+import { redirect } from "next/navigation";
 
-import { auth, signOut } from "@/auth";
+import { LogoutForm } from "@/components/profile/LogoutForm";
 import { ProfileStats } from "@/components/projects/ProfileStats";
-import demoUser from "@/data/demo-user.json";
+import { getMe } from "@/lib/gateway";
+import { displayName, primaryEmail } from "@/types/session";
 
 export default async function ProfilePage() {
-  const session = await auth();
-  const user = session?.user;
-  const initials = (user?.name ?? "G")
+  const me = await getMe();
+  if (!me) {
+    redirect("/login");
+  }
+  const person = me.person;
+  const name = displayName(person);
+  const email = primaryEmail(person);
+  const initials = name
     .split(/\s+/)
     .slice(0, 2)
     .map((p) => p[0])
@@ -28,9 +35,9 @@ export default async function ProfilePage() {
               {initials}
             </div>
             <div className="min-w-0">
-              <p className="text-base font-semibold text-ink truncate">{user?.name ?? "Guest"}</p>
+              <p className="text-base font-semibold text-ink truncate">{name}</p>
               <span className="inline-block mt-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-link/10 text-link border border-link/25">
-                {user?.role ?? "—"}
+                {person.emails.length} email{person.emails.length === 1 ? "" : "s"}
               </span>
             </div>
           </div>
@@ -39,17 +46,19 @@ export default async function ProfilePage() {
             <div className="px-5 py-3 flex items-center gap-3">
               <Mail className="w-3.5 h-3.5 text-ink-subtle shrink-0" />
               <span className="text-xs text-ink-muted w-24 shrink-0">Email</span>
-              <span className="text-xs text-ink">{user?.email ?? "—"}</span>
+              <span className="text-xs text-ink">{email ?? "—"}</span>
             </div>
             <div className="px-5 py-3 flex items-center gap-3">
               <IdCard className="w-3.5 h-3.5 text-ink-subtle shrink-0" />
-              <span className="text-xs text-ink-muted w-24 shrink-0">Employee ID</span>
-              <span className="text-xs text-ink font-semibold">{demoUser.id}</span>
+              <span className="text-xs text-ink-muted w-24 shrink-0">Person ID</span>
+              <span className="text-xs text-ink font-semibold">{person.id}</span>
             </div>
             <div className="px-5 py-3 flex items-center gap-3">
               <CalendarClock className="w-3.5 h-3.5 text-ink-subtle shrink-0" />
               <span className="text-xs text-ink-muted w-24 shrink-0">Member since</span>
-              <span className="text-xs text-ink">{demoUser.memberSince}</span>
+              <span className="text-xs text-ink">
+                {new Date(person.created_at).toLocaleDateString()}
+              </span>
             </div>
           </div>
         </div>
@@ -60,23 +69,10 @@ export default async function ProfilePage() {
           <div>
             <p className="text-xs font-semibold text-ink">Session</p>
             <p className="text-[11px] text-ink-subtle mt-0.5">
-              Mock profile — backed by NextAuth&apos;s demo credentials provider, no real API yet.
+              Signed in via magic link — backed by the Klong gateway/identity service.
             </p>
           </div>
-          <form
-            action={async () => {
-              "use server";
-              await signOut({ redirectTo: "/login" });
-            }}
-          >
-            <button
-              type="submit"
-              className="h-9 px-4 flex items-center justify-center gap-2 rounded-md bg-white border border-error/40 hover:bg-error/8 text-error text-xs font-semibold uppercase tracking-wide transition-colors"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              Log out
-            </button>
-          </form>
+          <LogoutForm />
         </div>
       </div>
     </div>

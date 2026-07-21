@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import DailyAttendance from "@/components/dashboard/DailyAttendance";
-import { isSamePeriod } from "@/components/dashboard/roster/utils";
+import { getPeriodRange, isSamePeriod } from "@/components/dashboard/roster/utils";
 import TimesheetSubmission from "@/components/dashboard/TimesheetSubmission";
 import WeeklyRoster from "@/components/dashboard/WeeklyRosterClient";
 
@@ -14,10 +14,11 @@ export default function DashboardShell() {
   const [period, setPeriod] = useState<PeriodView>("week");
 
   const isCurrentPeriod = isSamePeriod(selectedDate, new Date(), period);
+  const weekRange = period === "week" ? getPeriodRange("week", selectedDate) : undefined;
 
   function handleDaySelect(date: Date) {
     setSelectedDate(date);
-    setPeriod("day");
+    if (period !== "week") setPeriod("day");
   }
 
   function handleTodayClick() {
@@ -33,15 +34,18 @@ export default function DashboardShell() {
           onPeriodChange={setPeriod}
         />
       </section>
-      <aside className="order-last lg:order-1 hidden lg:flex flex-col gap-4 lg:w-[320px] lg:shrink-0 lg:overflow-y-auto">
-        <DailyAttendance
-          selectedDate={selectedDate}
-          onDaySelect={handleDaySelect}
-          period={period}
-          onPeriodChange={setPeriod}
-          isCurrentPeriod={isCurrentPeriod}
-          onTodayClick={handleTodayClick}
-        />
+      <aside className="order-last lg:order-1 flex flex-col gap-4 lg:w-[320px] lg:shrink-0 lg:overflow-y-auto">
+        <div className="hidden lg:block">
+          <DailyAttendance
+            selectedDate={selectedDate}
+            onDaySelect={handleDaySelect}
+            period={period}
+            onPeriodChange={setPeriod}
+            isCurrentPeriod={isCurrentPeriod}
+            onTodayClick={handleTodayClick}
+            weekRange={weekRange}
+          />
+        </div>
         <TimesheetSubmission />
       </aside>
     </div>

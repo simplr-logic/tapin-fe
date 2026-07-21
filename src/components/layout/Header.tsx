@@ -1,9 +1,10 @@
 "use client";
 
-import { ChevronDown, IdCard, LogOut, Menu, Timer, User, WifiOff } from "lucide-react";
+import { ChevronDown, LogOut, Menu, User, WifiOff } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
-import { signOut, useSession } from "next-auth/react";
 
+import { useKlongSession } from "@/components/providers/SessionProvider";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -15,8 +16,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { APP_NAME } from "@/config/constants";
-import demoUser from "@/data/demo-user.json";
+import { useLogout } from "@/hooks/useLogout";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
+import { displayName, primaryEmail } from "@/types/session";
 
 function getInitials(name: string): string {
   const parts = name.trim().split(/\s+/);
@@ -28,9 +30,10 @@ function getInitials(name: string): string {
 }
 
 export default function Header({ onMenuToggle }: { onMenuToggle?: () => void }) {
-  const { data: session } = useSession();
-  const user = session?.user;
-  const name = user?.name ?? "Guest";
+  const { person } = useKlongSession();
+  const { logout } = useLogout();
+  const name = displayName(person);
+  const email = primaryEmail(person);
   const isOnline = useOnlineStatus();
 
   return (
@@ -50,7 +53,7 @@ export default function Header({ onMenuToggle }: { onMenuToggle?: () => void }) 
             href="/"
             className="flex items-center gap-2.5 shrink-0 rounded-md px-1.5 py-1 hover:bg-white/10 transition-colors"
           >
-            <Timer className="w-4 h-4 text-white/80" />
+            <Image src="/logo.svg" alt="Klong" width={28} height={28} className="object-contain" />
             <span className="font-semibold text-white tracking-tight text-sm">{APP_NAME}</span>
           </Link>
         </div>
@@ -85,28 +88,19 @@ export default function Header({ onMenuToggle }: { onMenuToggle?: () => void }) 
                   <div className="flex flex-col min-w-0">
                     <span className="text-xs font-semibold text-ink truncate">{name}</span>
                     <span className="text-[10px] text-ink-subtle font-normal truncate">
-                      {user?.email ?? "—"}
+                      {email ?? "—"}
                     </span>
                   </div>
                 </div>
               </DropdownMenuLabel>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <div className="flex items-center gap-1.5 px-1.5 py-1 text-sm whitespace-nowrap">
-              <IdCard className="w-3.5 h-3.5 text-ink-muted shrink-0" />
-              <span className="text-ink-muted">Emp ID</span>
-              <span className="ml-auto font-semibold text-ink">{demoUser.id}</span>
-            </div>
-            <DropdownMenuSeparator />
             <DropdownMenuItem render={<Link href="/profile" />}>
               <User className="w-3.5 h-3.5" />
               Profile
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              variant="destructive"
-              onClick={() => signOut({ callbackUrl: "/login" })}
-            >
+            <DropdownMenuItem variant="destructive" onClick={logout}>
               <LogOut className="w-3.5 h-3.5" />
               Log out
             </DropdownMenuItem>

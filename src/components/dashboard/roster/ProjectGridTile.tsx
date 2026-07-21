@@ -1,7 +1,7 @@
 "use client";
 
 import { useDraggable, useDroppable } from "@dnd-kit/core";
-import { Clock, Lock, MessageSquare, MoreHorizontal, MousePointerClick } from "lucide-react";
+import { ClipboardList, Clock, Lock, MoreHorizontal, MousePointerClick } from "lucide-react";
 import { useState } from "react";
 
 import {
@@ -170,8 +170,8 @@ export function ProjectGridTile({
                 Adjust hours
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onOpenComments(project.id)}>
-                <MessageSquare className="w-3.5 h-3.5" />
-                Comments
+                <ClipboardList className="w-3.5 h-3.5" />
+                Worklog
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

@@ -17,6 +17,7 @@ export default function DailyAttendance({
   onPeriodChange,
   isCurrentPeriod,
   onTodayClick,
+  weekRange,
 }: {
   selectedDate?: Date;
   onDaySelect?: (date: Date) => void;
@@ -24,6 +25,7 @@ export default function DailyAttendance({
   onPeriodChange?: (p: PeriodView) => void;
   isCurrentPeriod?: boolean;
   onTodayClick?: () => void;
+  weekRange?: { start: string; end: string };
 }) {
   const { streak } = useProjects();
 
@@ -74,7 +76,11 @@ export default function DailyAttendance({
         )}
       </div>
 
-      <AttendanceCalendarContent selectedDate={selectedDate} onDaySelect={onDaySelect} />
+      <AttendanceCalendarContent
+        selectedDate={selectedDate}
+        onDaySelect={onDaySelect}
+        weekRange={weekRange}
+      />
     </div>
   );
 }

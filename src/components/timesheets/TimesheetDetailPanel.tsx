@@ -242,12 +242,12 @@ export function TimesheetDetailPanel({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
-        <div className="border-b border-garden-border">
+      <div className="flex-1 overflow-y-auto lg:overflow-hidden lg:flex lg:flex-row">
+        <div className="border-b border-garden-border lg:border-b-0 lg:border-r lg:shrink-0 lg:overflow-y-auto">
           <MonthCalendar record={record} selectedDate={selectedDate} onSelect={setSelectedDate} />
         </div>
 
-        <div className="p-5 space-y-3">
+        <div className="p-5 space-y-3 lg:flex-1 lg:overflow-y-auto">
           {dayProjects !== null ? (
             <>
               <div className="flex items-center justify-between">

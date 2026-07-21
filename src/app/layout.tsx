@@ -1,4 +1,3 @@
-import AuthProvider from "@/components/providers/AuthProvider";
 import { ProjectsProvider } from "@/components/providers/ProjectsProvider";
 import { TimesheetProvider } from "@/components/providers/TimesheetProvider";
 import { APP_NAME } from "@/config/constants";
@@ -10,6 +9,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: APP_NAME,
   description: "Time Tracker & Attendance Ledger",
+  icons: { icon: "/logo.svg", apple: "/logo.jpg" },
 };
 
 export default function RootLayout({
@@ -20,11 +20,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full antialiased">
       <body className="min-h-full flex flex-col">
-        <AuthProvider>
-          <ProjectsProvider>
-            <TimesheetProvider>{children}</TimesheetProvider>
-          </ProjectsProvider>
-        </AuthProvider>
+        <ProjectsProvider>
+          <TimesheetProvider>{children}</TimesheetProvider>
+        </ProjectsProvider>
       </body>
     </html>
   );

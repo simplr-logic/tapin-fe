@@ -67,7 +67,7 @@ export function weekEnd(start: Date): Date {
 export function isSamePeriod(a: Date, b: Date, period: PeriodView): boolean {
   if (period === "day") return a.toLocaleDateString("en-CA") === b.toLocaleDateString("en-CA");
   if (period === "week") {
-    const start = weekStart(a);
+    const start = stripTime(a);
     const end = weekEnd(start);
     const target = stripTime(b);
     return target >= start && target <= end;
@@ -86,7 +86,7 @@ export function getPeriodLabel(period: PeriodView, date: Date): string {
       year: "numeric",
     });
   if (period === "week") {
-    const start = weekStart(date);
+    const start = stripTime(date);
     const end = weekEnd(start);
     return `${shortDate(start)} – ${shortDate(end)}, ${end.getFullYear()}`;
   }
@@ -116,7 +116,7 @@ export function getPeriodRange(period: PeriodView, date: Date): { start: string;
     return { start: iso, end: iso };
   }
   if (period === "week") {
-    const start = weekStart(date);
+    const start = stripTime(date);
     const end = weekEnd(start);
     return { start: start.toLocaleDateString("en-CA"), end: end.toLocaleDateString("en-CA") };
   }

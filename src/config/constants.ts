@@ -4,7 +4,7 @@
  * of scattered magic numbers.
  */
 
-export const APP_NAME = "TapIn";
+export const APP_NAME = "Klong";
 
 export type TapUnit = "30m" | "1h" | "2h";
 
@@ -46,4 +46,20 @@ export const TARGET_SCALE: Record<PeriodView, number> = {
   week: 1,
   month: 4.33,
   year: 52,
+};
+
+// Pomodoro timer defaults — edit these to change durations and UX behavior.
+export const POMODORO_CONFIG = {
+  // Durations
+  workMinutes: 25,
+  shortBreakMinutes: 5,
+  longBreakMinutes: 15,
+  sessionsPerLongBreak: 4, // work sessions before a long break
+  // Flow
+  autoStart: false, // auto-start next phase when one ends
+  // UX feedback
+  soundOnComplete: true, // play a beep when a phase ends
+  tickSound: false, // play a subtle click each second
+  notifyOnComplete: true, // browser push notification on phase end
+  showInTabTitle: true, // show "25:00 · Focus" in the browser tab
 };

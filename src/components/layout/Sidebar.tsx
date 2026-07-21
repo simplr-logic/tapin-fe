@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText, FolderKanban, LayoutDashboard, UserCircle } from "lucide-react";
+import { FileText, FolderKanban, LayoutDashboard, Timer, UserCircle } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/projects", label: "Projects", icon: FolderKanban },
   { href: "/timesheets", label: "Timesheets", icon: FileText },
+  { href: "/pomodoro", label: "Pomodoro", icon: Timer },
   { href: "/profile", label: "Profile", icon: UserCircle },
 ];
 

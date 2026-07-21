@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Klong
 
-## Getting Started
+Time tracker and attendance ledger. Log hours against projects, track weekly allocations, and submit monthly timesheets.
 
-First, run the development server:
+## Stack
+
+- **Next.js 16** (App Router) + **React 19** + **TypeScript 5**
+- **Tailwind CSS 4** + **shadcn/ui** (base-ui) — Zendesk Garden design system
+- **NextAuth v5** — mock credential auth (single demo account, no backend)
+- **@dnd-kit/core** — drag-and-drop roster grid
+- Node 26, npm
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local
+# Generate AUTH_SECRET:
+node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+
+npm install
+npm run dev        # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Demo login: `demo@tapin.app` / `demo1234`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Commands
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run dev          # dev server
+npm run build        # production build
+npm run lint         # ESLint
+npm run format       # Prettier
+```
 
-## Learn More
+## Features
 
-To learn more about Next.js, take a look at the following resources:
+- **Dashboard** — daily attendance, weekly roster (grid + progress views), activity log
+- **Projects** — create/edit projects with monthly hour targets and date ranges
+- **Roster** — treemap tile layout; tap to log hours; drag to reorder; adjust/unlog hours
+- **Pomodoro** — focus timer with configurable durations, session tracking, task list, and auto-worklog on session complete
+- **Timesheets** — monthly sign-off with locked historical view
+- **Worklog** — per-project notes log, separate from hour adjustments
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Data
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+All state is client-side only (React context + localStorage). No API or database. To wire a real backend, replace `authorize()` in `src/auth.ts` and the provider implementations in `src/components/providers/`.

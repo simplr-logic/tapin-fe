@@ -1,6 +1,6 @@
 "use client";
 
-import { Clock, MessageSquare, Pencil } from "lucide-react";
+import { ClipboardList, Clock, Pencil } from "lucide-react";
 
 import type { Project } from "@/components/providers/ProjectsProvider";
 
@@ -11,7 +11,7 @@ export interface TileActionsProps {
   onOpenEdit: (id: number) => void;
 }
 
-export function CommentButton({
+export function WorklogButton({
   project,
   onOpenComments,
   className,
@@ -23,13 +23,13 @@ export function CommentButton({
         e.stopPropagation();
         onOpenComments(project.id);
       }}
-      title="View adjustment notes"
+      title="View worklog"
       className={[
         "rounded-md flex items-center justify-center text-white shrink-0 bg-kale hover:bg-kale-hover transition-colors",
         className,
       ].join(" ")}
     >
-      <MessageSquare className="w-3 h-3" />
+      <ClipboardList className="w-3 h-3" />
     </button>
   );
 }

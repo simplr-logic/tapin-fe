@@ -7,10 +7,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project
 
 Next.js 16 + React 19 + TypeScript + Tailwind CSS 4 + App Router.
-Folder: `C:\Users\jackh\Desktop\tapIn`
+Folder: `C:\Users\jackh\Desktop\klong`
 
-Time tracker / attendance ledger. Auth is currently **mock** (NextAuth Credentials
-provider, single demo account, no real backend) — see Auth section below.
+Time tracker / attendance ledger. Auth is backed by the real Klong gateway
+(`simplr.klong-be`) — Supabase magic-link login via `identity`, no passwords,
+no NextAuth — see Auth section below.
 
 > **Non-negotiable for all UI work**: every surface must (1) use a shadcn/ui
 > primitive from `src/components/ui/` for any interactive control — button,
@@ -26,17 +27,17 @@ reviewing code for this project, strictly follow the rules below.
 
 ## Stack
 
-| Layer       | Tech                                 |
-| ----------- | ------------------------------------ |
-| Framework   | Next.js 16 (App Router)              |
-| Language    | TypeScript 5 (strict)                |
-| Styling     | Tailwind CSS 4 + shadcn/ui (base-ui) |
-| Auth        | NextAuth v5 (Credentials, mock)      |
-| Drag & drop | @dnd-kit/core                        |
-| Formatting  | Prettier + eslint-config-prettier    |
-| Git hooks   | Husky + lint-staged (pre-commit)     |
-| Linting     | ESLint 9 + eslint-config-next        |
-| Package mgr | npm                                  |
+| Layer       | Tech                                                             |
+| ----------- | ---------------------------------------------------------------- |
+| Framework   | Next.js 16 (App Router)                                          |
+| Language    | TypeScript 5 (strict)                                            |
+| Styling     | Tailwind CSS 4 + shadcn/ui (base-ui)                             |
+| Auth        | Klong gateway session cookie (magic link, via `simplr.klong-be`) |
+| Drag & drop | @dnd-kit/core                                                    |
+| Formatting  | Prettier + eslint-config-prettier                                |
+| Git hooks   | Husky + lint-staged (pre-commit)                                 |
+| Linting     | ESLint 9 + eslint-config-next                                    |
+| Package mgr | npm                                                              |
 
 ### 1. Architecture & Framework Rules
 
@@ -94,14 +95,16 @@ on staged files. Don't bypass with `--no-verify`.
 
 ## Local Setup
 
-Copy `.env.example` to `.env.local`. `AUTH_SECRET` is required — generate with:
+Copy `.env.example` to `.env.local`. `GATEWAY_URL` is required — points at the
+running `simplr.klong-be` gateway (defaults to `http://localhost:8080`), used
+by both `next.config.ts`'s rewrites and server-side gateway calls
+(`src/lib/gateway.ts`, see `src/config/env.ts`).
 
-```bash
-node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
-```
-
-Demo login defaults: `demo@tapin.app` / `demo1234` — override via `DEMO_USER_EMAIL`/
-`DEMO_USER_PASSWORD` in `.env.local` (see `src/config/env.ts`).
+The gateway itself needs `identity` + Redis (+ Supabase CLI) running, and its
+`MAGIC_LINK_REDIRECT_URL` / `EMAIL_LINK_REDIRECT_URL` must point at this app
+(`http://localhost:3000/auth/callback`, `.../emails/link/callback`) — not at
+the gateway's own port — so the session cookie lands same-origin through the
+rewrite proxy. See `simplr.klong-be/deploy/.env.example`.
 
 ## Design System — Zendesk Garden
 
@@ -152,42 +155,37 @@ before inventing new patterns.
 
 ### Route structure (`src/app/`)
 
-- `layout.tsx` — root layout; wraps entire app in `AuthProvider` → `ProjectsProvider` → `TimesheetProvider`
-- `(protected)/` — route group for authenticated shell; `layout.tsx` renders `Header` + `Sidebar` + `MobileNav` + `<main>`
+- `layout.tsx` — root layout; wraps `ProjectsProvider` → `TimesheetProvider` (no auth provider here — session is fetched per-request inside `(protected)/layout.tsx`, not globally)
+- `(protected)/` — route group for authenticated shell; `layout.tsx` is an async Server Component that calls `getMe()`, redirects to `/login` if unauthenticated, and seeds `SessionProvider` before rendering `Header` + `Sidebar` + `MobileNav` + `<main>`
   - `page.tsx` — dashboard (3 panels: DailyAttendance, TimesheetSubmission, WeeklyRoster)
   - `projects/page.tsx` — project management table (`ProjectsTable`)
   - `timesheets/page.tsx` — timesheet history
   - `profile/page.tsx` — user profile / stats
-- `login/page.tsx` — credential login form
-- `api/auth/[...nextauth]/` — NextAuth route handler
+- `login/page.tsx` — magic-link request form (email only, no password)
 - `not-found.tsx` — custom 404, no app shell
 
-### Auth (`src/auth.ts`)
+### Auth (`src/lib/gateway.ts`, `src/proxy.ts`, `src/components/providers/SessionProvider.tsx`)
 
-Mock credential-only auth via `next-auth@v5` (beta). Single demo account; no real
-backend.
+Real auth via the Klong gateway (`simplr.klong-be`) — Supabase magic link,
+opaque session cookie, no NextAuth, no passwords.
 
-- `src/proxy.ts` gates every route except `/login` and `/api/*` behind a valid
-  session, redirecting to `/login?callbackUrl=<path>` (Next 16 renamed
-  "middleware" → "proxy").
-- Session strategy is JWT; `role` is carried through the `jwt`/`session`
-  callbacks and typed via `src/types/next-auth.d.ts`.
-- To wire a real backend later: replace `authorize()` in `src/auth.ts` with an
-  API call. Everything else (proxy, session shape, the profile dropdown in
-  `Header.tsx`) is already built against the real NextAuth session object, so
-  that should be the only change needed.
-- `AUTH_SECRET` lives in `.env.local` (gitignored) — regenerate with the
-  command above if it ever needs rotating.
+- **Login**: `login/page.tsx` `POST`s to `/auth/magic-link` (same-origin, rewritten to the gateway — see `next.config.ts`). User clicks the emailed link → lands on `GET /auth/callback` (also rewritten) → gateway verifies, sets the `klong_session` HttpOnly cookie, redirects back into the app.
+- **Route protection**: `src/proxy.ts` (Next 16 renamed "middleware" → "proxy") is a cheap cookie-presence check only — redirects to `/login?callbackUrl=<path>` if the `klong_session` cookie is missing. It does **not** validate the session (no network call in proxy); that's the layout's job.
+- **Session resolution**: `(protected)/layout.tsx` calls `getMe()` (`src/lib/gateway.ts`, `react cache()`-deduped, forwards the request's cookies to gateway `GET /me`) — a null result (expired/invalid cookie) redirects to `/login` there. The result seeds `SessionProvider` (`src/components/providers/SessionProvider.tsx`), consumed client-side via `useKlongSession()` (used by `Header.tsx`).
+- **Logout**: `useLogout()` (`src/hooks/useLogout.ts`) `POST`s `/me/logout` (same-origin rewrite) so the gateway's cookie-clearing `Set-Cookie` applies directly to the browser, then routes to `/login`.
+- Session/person response shapes are typed in `src/types/session.ts` (mirrors gateway's `meResponse`/`personResponse` — see `simplr.klong-be/gateway/internal/handlers/person_json.go`).
+- `callbackUrl` preservation on redirect-to-login is best-effort only — the gateway's post-login redirect target is currently a fixed configured path (`POST_LOGIN_REDIRECT_PATH`), not per-request, so deep-link return isn't wired end-to-end yet.
+- Company-invite acceptance, domain-claim prompts, email management (add/remove/set-primary), and session-list UI are **not built yet** — see `FE_LOGIN_FLOW_TASKS.md` for the full backlog against `Klong_Login_Flow.docx`.
 
-### State management — client-side only (no backend yet)
+### State management — client-side only (no backend yet, except auth)
 
-All data lives in React state or `localStorage`; there is no API layer:
+Project/timesheet data lives in React state or `localStorage`; there is no API layer for it yet (auth is the exception — see above):
 
 | Provider            | Location                                         | Persistence                                                                                                             |
 | ------------------- | ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
 | `ProjectsProvider`  | `src/components/providers/ProjectsProvider.tsx`  | React `useState` (resets on refresh); seeds from `src/data/projects.json` + `src/data/ledger.json`                      |
 | `TimesheetProvider` | `src/components/providers/TimesheetProvider.tsx` | `localStorage` via `useSyncExternalStore`; cross-tab sync via `storage` event + custom `tapin:timesheets-updated` event |
-| `AuthProvider`      | wraps NextAuth `SessionProvider`                 | JWT cookie                                                                                                              |
+| `SessionProvider`   | `src/components/providers/SessionProvider.tsx`   | Seeded server-side per request from gateway `GET /me`; `klong_session` HttpOnly cookie is the actual source of truth    |
 
 `useProjects()` from `providers/ProjectsProvider` is the single source of truth
 for project data (dashboard tap-logging and the `/projects` management page
@@ -231,7 +229,6 @@ Central orchestrator for the allocation view. Key internals:
 - `ledger.json` — initial ledger entries
 - `attendance.json` — static daily attendance display data
 - `compliance.json` — static compliance stats for profile page
-- `demo-user.json` — demo user object returned by mock auth
 
 ### Constants (`src/config/constants.ts`)
 
@@ -282,13 +279,7 @@ npm install -D <package>       # dev dep
 
 ## Notes
 
-- Node engine warn: project requires Node ^20.19 or ^22.13; currently on
-  v20.9 — upgrade Node if ESLint issues appear. This also broke
-  `git commit` outright once: `lint-staged`'s `listr2` dependency used
-  `node:util`'s `styleText`, which doesn't exist before Node ~20.12. Pinned
-  `lint-staged` to `15.5.2` (pulls `listr2@8`, Node `>=18`) to keep the
-  pre-commit hook working on v20.9 — bump it back to latest once Node is
-  upgraded, no need to stay pinned forever.
+- Node: v26.5.0 (nvm). `lint-staged` pinned to `15.5.2` — can bump to latest now that Node is current.
 - `AGENTS.md` in root is auto-generated by create-next-app — safe to ignore.
 - Tailwind 4 uses `@tailwindcss/postcss` — no `tailwind.config.js` required by
   default; add one only for theme customization.

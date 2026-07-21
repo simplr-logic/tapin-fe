@@ -7,10 +7,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { SpecialDayDialog } from "@/components/dashboard/SpecialDayDialog";
 import { sumLogs, useProjects } from "@/components/providers/ProjectsProvider";
 import { useTimesheets } from "@/components/providers/TimesheetProvider";
-import { MAX_TILE_RATIO, type PeriodView, TAP_MINUTES, TARGET_SCALE } from "@/config/constants";
+import { type PeriodView, TAP_MINUTES, TARGET_SCALE } from "@/config/constants";
 
 import { AdjustModal } from "./roster/AdjustModal";
-import { CommentsModal } from "./roster/CommentsModal";
 import { PROJECT_ICONS, SPECIAL_DAY_AGG_KEY } from "./roster/constants";
 import { LedgerSection } from "./roster/LedgerSection";
 import { RosterActionBar } from "./roster/RosterActionBar";
@@ -21,6 +20,7 @@ import { buildTreeStructure, layoutTree } from "./roster/treemap";
 import { useRosterDrag } from "./roster/useRosterDrag";
 import { useSpecialDays } from "./roster/useSpecialDays";
 import { formatHours, getPeriodLabel, getPeriodRange, isSamePeriod } from "./roster/utils";
+import { WorklogModal } from "./roster/WorklogModal";
 
 import type { DisplayProject, GridKey, ViewMode } from "./roster/types";
 
@@ -106,12 +106,14 @@ export default function WeeklyRoster({
       : undefined;
     const logDate = period === "day" ? selectedDate.toLocaleDateString("en-CA") : undefined;
     adjustLoggedMinutes(adjustModalId, delta, note, logDate);
-    if (note) addComment(adjustModalId, note);
     setAdjustModalId(null);
     resetAdjustForm();
   }
 
   const { start: periodStart, end: periodEnd } = getPeriodRange(period, selectedDate);
+  const periodSpecialDays = sd.specialDays.filter(
+    (d) => d.startDate <= periodEnd && d.endDate >= periodStart
+  );
   const displayProjects = projects.map((p) => ({
     ...p,
     loggedMinutes: sumLogs(p.logs, periodStart, periodEnd),
@@ -127,34 +129,40 @@ export default function WeeklyRoster({
 
   const liveKeys: GridKey[] = [
     ...displayProjects.map((p) => toGridKey(p.id)),
-    ...(!periodLocked && sd.specialDays.length > 0 ? [SPECIAL_DAY_AGG_KEY] : []),
+    ...(!periodLocked && periodSpecialDays.length > 0 ? [SPECIAL_DAY_AGG_KEY] : []),
   ];
   const isValidSlotAssignment =
     slotAssignment.length === liveKeys.length && liveKeys.every((k) => slotAssignment.includes(k));
-  const effectiveSlots: GridKey[] = isValidSlotAssignment ? slotAssignment : liveKeys;
   const slotsKey = [...liveKeys].sort().join(",");
 
-  const totalSpecialDayMinutes = sd.specialDays.reduce((sum, d) => sum + d.hours * 60, 0);
+  const totalSpecialDayMinutes = periodSpecialDays.reduce((sum, d) => sum + d.hours * 60, 0);
 
-  // Scale weights so the project with most absolute hours always gets the biggest tile.
-  // sqrt curve gives visible growth on the first tap while keeping ordering correct.
-  const maxLoggedMins = Math.max(
-    1,
-    ...displayProjects.map((p) => p.loggedMinutes),
-    totalSpecialDayMinutes
-  );
+  const sortedKeys = useMemo(() => {
+    const minsOf = (k: GridKey) =>
+      k === SPECIAL_DAY_AGG_KEY
+        ? periodSpecialDays.reduce((s, d) => s + d.hours * 60, 0)
+        : (projectById.get(Number(k.slice(2)))?.loggedMinutes ?? 0);
+    return [...liveKeys].sort((a, b) => minsOf(b) - minsOf(a));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slotsKey, periodStart]);
+
+  const effectiveSlots: GridKey[] = isValidSlotAssignment ? slotAssignment : sortedKeys;
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSlotAssignment(sortedKeys);
+  }, [sortedKeys]);
+
   const weightByKey = new Map<GridKey, number>(
     liveKeys.map((key) => {
       const logged =
         key === SPECIAL_DAY_AGG_KEY
           ? totalSpecialDayMinutes
           : (projectById.get(Number(key.slice(2)))?.loggedMinutes ?? 0);
-      return [key, 1 + Math.sqrt(logged / maxLoggedMins) * (MAX_TILE_RATIO - 1)];
+      return [key, Math.max(30, logged)];
     })
   );
 
-  // Build with equal weights so topology is always a balanced binary tree.
-  // layoutTree handles proportional sizing via live weightBySlot.
   const treeStructure = useMemo(() => {
     if (liveKeys.length === 0) return null;
     const items = liveKeys.map((_key, slot) => ({ slot, weight: 1 }));
@@ -204,7 +212,7 @@ export default function WeeklyRoster({
   const overallPct = totalTarget > 0 ? Math.round((totalLogged / totalTarget) * 100) : 0;
 
   return (
-    <div className="bg-white rounded-lg border border-garden-border shadow-card flex flex-col h-full overflow-hidden">
+    <div className="bg-white rounded-lg border border-garden-border shadow-card flex flex-col lg:h-full lg:overflow-hidden">
       <RosterControls
         period={period}
         changePeriod={changePeriod}
@@ -215,7 +223,7 @@ export default function WeeklyRoster({
         periodLocked={periodLocked}
         isCurrentPeriod={isCurrentPeriod}
       />
-      <div className="flex-1 overflow-y-auto p-3 lg:p-5 space-y-3 lg:space-y-4">
+      <div className="lg:flex-1 lg:overflow-y-auto p-3 lg:p-5 space-y-3 lg:space-y-4">
         <RosterActionBar
           totalLogged={totalLogged}
           totalTarget={totalTarget}
@@ -231,7 +239,7 @@ export default function WeeklyRoster({
           orderedProjects={orderedProjects}
           projectById={projectById}
           periodLocked={periodLocked}
-          specialDays={sd.specialDays}
+          specialDays={periodSpecialDays}
           tapUnit="1h"
           activeDragPreview={activeDragPreview}
           sensors={sensors}
@@ -245,7 +253,7 @@ export default function WeeklyRoster({
           }}
         />
         <SpecialDaySection
-          specialDays={sd.specialDays}
+          specialDays={periodSpecialDays}
           onAdd={sd.openAdd}
           onEdit={sd.openEdit}
           onRemove={sd.remove}
@@ -257,12 +265,13 @@ export default function WeeklyRoster({
       </div>
 
       {commentModalProject && (
-        <CommentsModal
+        <WorklogModal
           project={commentModalProject}
           comments={commentModalId !== null ? (comments[commentModalId] ?? []) : []}
           periodLabel={getPeriodLabel(period, selectedDate)}
           periodStart={periodStart}
           periodEnd={periodEnd}
+          onAddEntry={(text) => commentModalId !== null && addComment(commentModalId, text)}
           onClose={() => setCommentModalId(null)}
         />
       )}

@@ -5,7 +5,7 @@ import { GripVertical, Lock, MousePointerClick } from "lucide-react";
 import { useState } from "react";
 
 import { PROJECT_ICONS } from "./constants";
-import { AdjustHoursButton, CommentButton } from "./TileButtons";
+import { AdjustHoursButton, WorklogButton } from "./TileButtons";
 import { formatHours, getHeatStyle, getPct } from "./utils";
 
 import type { DisplayProject } from "./types";
@@ -115,7 +115,7 @@ export function ProjectProgressRow({
               className="w-6 h-6"
               disabled={locked}
             />
-            <CommentButton project={project} onOpenComments={onOpenComments} className="w-6 h-6" />
+            <WorklogButton project={project} onOpenComments={onOpenComments} className="w-6 h-6" />
           </div>
         </div>
       </div>

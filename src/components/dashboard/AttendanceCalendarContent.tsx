@@ -17,7 +17,8 @@ const DAY_COLORS = {
   onTarget: { bg: "rgba(3,129,83,0.18)", text: gardenColors.success },
   underTarget: { bg: "rgba(202,138,4,0.14)", text: gardenColors.yellow },
   noLog: { bg: gardenColors.surface2, text: gardenColors.inkMuted },
-  today: { bg: gardenColors.surface3, text: gardenColors.ink },
+  activeWeek: { bg: "rgba(3,54,61,0.07)", text: gardenColors.ink },
+  today: { bg: "rgba(3,54,61,0.13)", text: gardenColors.ink },
   disabled: { bg: "transparent", text: gardenColors.inkSubtle },
 } as const;
 
@@ -40,22 +41,39 @@ function CheckinDayBtn({ day: _day, modifiers, className, ...props }: DayButtonP
           ? DAY_COLORS.underTarget
           : modifiers.today
             ? DAY_COLORS.today
-            : DAY_COLORS.noLog;
+            : modifiers.activeWeek
+              ? DAY_COLORS.activeWeek
+              : DAY_COLORS.noLog;
+
+  const BAND = "rgba(3,54,61,0.45)";
+  const bandShadow = modifiers.activeWeek
+    ? [
+        `inset 0 2px 0 ${BAND}`,
+        `inset 0 -2px 0 ${BAND}`,
+        ...(modifiers.weekStart ? [`inset 2px 0 0 ${BAND}`] : []),
+        ...(modifiers.weekEnd ? [`inset -2px 0 0 ${BAND}`] : []),
+      ].join(", ")
+    : undefined;
 
   return (
     <button
       type="button"
       {...props}
-      style={{ backgroundColor: palette.bg, color: palette.text }}
+      style={{ backgroundColor: palette.bg, color: palette.text, boxShadow: bandShadow }}
       className={cn(
-        "flex aspect-square w-full items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none",
+        "flex aspect-square w-full items-center justify-center text-sm font-medium transition-colors focus-visible:outline-none",
+        modifiers.activeWeek
+          ? modifiers.weekStart && modifiers.weekEnd
+            ? "rounded-md"
+            : modifiers.weekStart
+              ? "rounded-l-md rounded-r-none"
+              : modifiers.weekEnd
+                ? "rounded-l-none rounded-r-md"
+                : "rounded-none"
+          : "rounded-md",
         modifiers.outside && "opacity-30",
         modifiers.disabled && "pointer-events-none opacity-30",
-        modifiers.selected
-          ? "ring-2 ring-kale"
-          : modifiers.today
-            ? "ring-1 ring-garden-border"
-            : "",
+        modifiers.selected ? "ring-2 ring-kale" : modifiers.today ? "ring-2 ring-kale/50" : "",
         className
       )}
     />
@@ -65,9 +83,11 @@ function CheckinDayBtn({ day: _day, modifiers, className, ...props }: DayButtonP
 export function AttendanceCalendarContent({
   selectedDate,
   onDaySelect,
+  weekRange,
 }: {
   selectedDate?: Date;
   onDaySelect?: (date: Date) => void;
+  weekRange?: { start: string; end: string };
 }) {
   const { projects } = useProjects();
   const [month, setMonth] = useState<Date>(() => selectedDate ?? new Date());
@@ -93,8 +113,21 @@ export function AttendanceCalendarContent({
       else if (minutes >= DAILY_TARGET) onTarget.push(date);
       else underTarget.push(date);
     }
-    return { exceeded, onTarget, underTarget };
-  }, [logs]);
+    const activeWeek: Date[] = [];
+    const weekStart: Date[] = [];
+    const weekEnd: Date[] = [];
+    if (weekRange) {
+      const cur = new Date(`${weekRange.start}T00:00:00`);
+      const end = new Date(`${weekRange.end}T00:00:00`);
+      weekStart.push(new Date(cur));
+      weekEnd.push(new Date(end));
+      while (cur <= end) {
+        activeWeek.push(new Date(cur));
+        cur.setDate(cur.getDate() + 1);
+      }
+    }
+    return { exceeded, onTarget, underTarget, activeWeek, weekStart, weekEnd };
+  }, [logs, weekRange]);
 
   return (
     <>

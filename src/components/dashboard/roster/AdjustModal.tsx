@@ -101,7 +101,7 @@ export function AdjustModal({
 
         <div>
           <Label className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide mb-1">
-            Note (optional, saved as a comment)
+            Note (optional)
           </Label>
           <Input
             type="text"
