@@ -12,11 +12,17 @@ import { cn } from "@/lib/utils";
 
 const INDIVIDUAL_FEATURES = [
   "Tap to log time",
-  "Weekly roster",
+  "Your story, seen your way",
   "Pomodoro timer",
   "Full history, every job",
   "Works everywhere",
 ] as const;
+
+const TRUST_FAQ = {
+  question: "Can my employer see my personal dashboard, streaks, or other jobs?",
+  answer:
+    "No. Your employer sees what's scoped to their company — the hours and projects logged under their employment. Your personal streaks, other jobs, and full career history are visible only to you.",
+} as const;
 
 const COMPANY_FEATURES = [
   "Everything in Individual, for every teammate",
@@ -139,7 +145,7 @@ export default function LandingPricing() {
             plan="individual"
             priceTitle="Free — always"
             features={INDIVIDUAL_FEATURES}
-            ctaLabel="Start clocking"
+            ctaLabel="Start your story"
             ctaVariant="outline"
           />
           <PricingPlanCard
@@ -167,7 +173,7 @@ export default function LandingPricing() {
         <LandingCard className="mt-6">
           <CardContent className="px-6 md:px-8 py-6 md:py-8">
             <dl className="space-y-0">
-              {FAQ.map(({ question, answer }, index) => (
+              {[TRUST_FAQ, ...FAQ].map(({ question, answer }, index) => (
                 <div
                   key={question}
                   className={cn(index > 0 && "border-t border-garden-border pt-6 mt-6")}

@@ -1,23 +1,43 @@
+import Link from "next/link";
+
+import { Button } from "@/components/ui/button";
 import { APP_NAME } from "@/config/constants";
 
 export default function LandingHero() {
   return (
-    <section className="pt-12 md:pt-16 pb-4 px-4 md:px-6" aria-labelledby="landing-hero-heading">
+    <section className="pt-12 md:pt-16 pb-8 px-4 md:px-6" aria-labelledby="landing-hero-heading">
       <div className="relative max-w-3xl mx-auto text-center">
+        <p className="text-sm md:text-base font-medium text-ink-muted tracking-wide text-balance">
+          Your career is bigger than your current job.
+        </p>
         <h1
           id="landing-hero-heading"
-          className="text-4xl md:text-6xl font-bold text-ink tracking-tight text-balance"
+          className="mt-4 text-4xl md:text-6xl font-bold text-ink tracking-tight text-balance"
         >
-          Time tracking that fits in a tap.
+          Every tap is a line in your career story.
         </h1>
-        <p className="mt-5 text-base md:text-lg text-ink-muted max-w-xl mx-auto text-balance">
-          {APP_NAME} is a lightweight attendance ledger for teams who bill by the hour — log time
-          against projects, review the week as a roster, and sign off timesheets without ever
-          opening a spreadsheet.
+        <p className="mt-5 text-base md:text-lg text-ink-muted max-w-xl mx-auto text-balance leading-relaxed">
+          {APP_NAME} logs your work the moment it happens — one tap, no stopwatch, no form. It stays
+          with you for as long as you work, across every job you&apos;ll ever have.
         </p>
-        <p className="mt-4 text-sm text-ink-muted max-w-lg mx-auto text-balance">
-          Change jobs? Your history comes with you — only that employer&apos;s records stay behind.
-        </p>
+
+        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <Button
+            render={<Link href="#signup" />}
+            nativeButton={false}
+            className="h-11 min-w-44 rounded-md px-6 text-xs font-semibold uppercase tracking-wide"
+          >
+            Start your story
+          </Button>
+          <Button
+            render={<Link href="#companies" />}
+            nativeButton={false}
+            variant="outline"
+            className="h-11 min-w-44 rounded-md px-6 text-xs font-semibold uppercase tracking-wide"
+          >
+            For teams
+          </Button>
+        </div>
       </div>
     </section>
   );

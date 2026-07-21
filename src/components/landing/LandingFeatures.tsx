@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  CalendarClock,
-  LayoutGrid,
-  ShieldCheck,
-  Smartphone,
-  Timer as TimerIcon,
-  Zap,
-} from "lucide-react";
+import { Layers, LayoutGrid, ShieldCheck, Smartphone, Timer as TimerIcon, Zap } from "lucide-react";
 
 import LandingFeatureItem from "@/components/landing/LandingFeatureItem";
 
@@ -23,20 +16,12 @@ const FEATURES = [
   },
   {
     icon: LayoutGrid,
-    title: "Weekly roster at a glance",
-    description: "A live treemap sized by hours logged, so you see where the week went.",
+    title: "See your story take shape",
+    description:
+      "A live treemap sized by hours logged, so you see where your week — and your career — went.",
     rotate: 1.2,
     delay: "0.5s",
     duration: "5.5s",
-    featured: false,
-  },
-  {
-    icon: CalendarClock,
-    title: "Sign off timesheets in seconds",
-    description: "Monthly snapshots roll up automatically — review, sign off, done.",
-    rotate: 0.8,
-    delay: "1s",
-    duration: "4.5s",
     featured: false,
   },
   {
@@ -44,8 +29,18 @@ const FEATURES = [
     title: "Built-in Pomodoro focus timer",
     description: "Work in focused sprints with automatic breaks, next to the ledger.",
     rotate: -1.1,
-    delay: "1.5s",
+    delay: "1s",
     duration: "6s",
+    featured: false,
+  },
+  {
+    icon: ShieldCheck,
+    title: "Audit-ready, and yours",
+    description:
+      "Every log entry keeps its own immutable record — proof for an employer if they need it, a permanent record for you either way.",
+    rotate: -0.9,
+    delay: "1.25s",
+    duration: "5.8s",
     featured: false,
   },
   {
@@ -58,12 +53,13 @@ const FEATURES = [
     featured: false,
   },
   {
-    icon: ShieldCheck,
-    title: "Audit-ready history",
-    description: "Every log entry keeps its own immutable record of who, what, when.",
-    rotate: -0.9,
-    delay: "1.25s",
-    duration: "5.8s",
+    icon: Layers,
+    title: "See your whole career, in one view",
+    description:
+      "Every job, every personal project, one unified breakdown — filter by date, by employer, or see it all at once. Nobody else gets this view. It's yours alone.",
+    rotate: 0.6,
+    delay: "1.5s",
+    duration: "5.6s",
     featured: false,
   },
 ] as const;
