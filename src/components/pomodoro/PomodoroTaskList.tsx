@@ -55,14 +55,16 @@ export function PomodoroTaskList({ tasks }: { tasks: PomodoroTask[] }) {
               className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-surface-2 group"
             >
               <span className="text-xs text-ink flex-1 truncate">{task.text}</span>
-              <button
+              <Button
                 type="button"
+                variant="ghost"
+                size="icon-xs"
                 onClick={() => timerStore.removeTask(task.id)}
-                className="text-ink-subtle hover:text-error shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="text-ink-subtle hover:text-error shrink-0 opacity-0 group-hover:opacity-100"
                 title="Remove task"
               >
                 <X className="w-3 h-3" />
-              </button>
+              </Button>
             </li>
           ))}
         </ul>

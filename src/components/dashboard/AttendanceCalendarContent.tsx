@@ -3,8 +3,8 @@
 import { useMemo, useState } from "react";
 
 import { useProjects } from "@/components/providers/ProjectsProvider";
+import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { gardenColors } from "@/config/theme";
 import { cn } from "@/lib/utils";
 
 import type { DayButtonProps } from "react-day-picker";
@@ -12,40 +12,42 @@ import type { DayButtonProps } from "react-day-picker";
 const DAILY_TARGET = 480;
 const EXCEEDED_THRESHOLD = Math.round(DAILY_TARGET * 1.15);
 
-const DAY_COLORS = {
-  exceeded: { bg: "rgba(204,51,64,0.18)", text: gardenColors.error },
-  onTarget: { bg: "rgba(3,129,83,0.18)", text: gardenColors.success },
-  underTarget: { bg: "rgba(202,138,4,0.14)", text: gardenColors.yellow },
-  noLog: { bg: gardenColors.surface2, text: gardenColors.inkMuted },
-  activeWeek: { bg: "rgba(3,54,61,0.07)", text: gardenColors.ink },
-  today: { bg: "rgba(3,54,61,0.13)", text: gardenColors.ink },
-  disabled: { bg: "transparent", text: gardenColors.inkSubtle },
+// Tailwind classes (not inline hex/rgba) so every day cell resolves through
+// the theme-aware color tokens and stays legible in dark mode.
+const DAY_CLASSES = {
+  exceeded: "bg-error/18 text-error",
+  onTarget: "bg-success/18 text-success",
+  underTarget: "bg-yellow/14 text-yellow",
+  noLog: "bg-surface-2 text-ink-muted",
+  activeWeek: "bg-primary/8 text-ink",
+  today: "bg-primary/14 text-ink",
+  disabled: "text-ink-subtle",
 } as const;
 
 export const ATTENDANCE_LEGEND = [
-  { label: "Under target", bg: DAY_COLORS.underTarget.bg },
-  { label: "On target", bg: DAY_COLORS.onTarget.bg },
-  { label: "Exceeded", bg: DAY_COLORS.exceeded.bg },
-  { label: "No log", bg: DAY_COLORS.noLog.bg },
+  { label: "Under target", swatch: "bg-yellow/14" },
+  { label: "On target", swatch: "bg-success/18" },
+  { label: "Exceeded", swatch: "bg-error/18" },
+  { label: "No log", swatch: "bg-surface-2" },
 ] as const;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function CheckinDayBtn({ day: _day, modifiers, className, ...props }: DayButtonProps) {
-  const palette = modifiers.disabled
-    ? DAY_COLORS.disabled
+  const paletteClass = modifiers.disabled
+    ? DAY_CLASSES.disabled
     : modifiers.exceeded
-      ? DAY_COLORS.exceeded
+      ? DAY_CLASSES.exceeded
       : modifiers.onTarget
-        ? DAY_COLORS.onTarget
+        ? DAY_CLASSES.onTarget
         : modifiers.underTarget
-          ? DAY_COLORS.underTarget
+          ? DAY_CLASSES.underTarget
           : modifiers.today
-            ? DAY_COLORS.today
+            ? DAY_CLASSES.today
             : modifiers.activeWeek
-              ? DAY_COLORS.activeWeek
-              : DAY_COLORS.noLog;
+              ? DAY_CLASSES.activeWeek
+              : DAY_CLASSES.noLog;
 
-  const BAND = "rgba(3,54,61,0.45)";
+  const BAND = "color-mix(in srgb, var(--color-primary) 55%, transparent)";
   const bandShadow = modifiers.activeWeek
     ? [
         `inset 0 2px 0 ${BAND}`,
@@ -56,12 +58,14 @@ function CheckinDayBtn({ day: _day, modifiers, className, ...props }: DayButtonP
     : undefined;
 
   return (
-    <button
+    <Button
       type="button"
+      variant="ghost"
       {...props}
-      style={{ backgroundColor: palette.bg, color: palette.text, boxShadow: bandShadow }}
+      style={{ boxShadow: bandShadow }}
       className={cn(
-        "flex aspect-square w-full items-center justify-center text-sm font-medium transition-colors focus-visible:outline-none",
+        "h-auto flex aspect-square w-full items-center justify-center text-sm font-medium transition-colors focus-visible:outline-none",
+        paletteClass,
         modifiers.activeWeek
           ? modifiers.weekStart && modifiers.weekEnd
             ? "rounded-md"
@@ -73,7 +77,11 @@ function CheckinDayBtn({ day: _day, modifiers, className, ...props }: DayButtonP
           : "rounded-md",
         modifiers.outside && "opacity-30",
         modifiers.disabled && "pointer-events-none opacity-30",
-        modifiers.selected ? "ring-2 ring-kale" : modifiers.today ? "ring-2 ring-kale/50" : "",
+        modifiers.selected
+          ? "ring-2 ring-primary"
+          : modifiers.today
+            ? "ring-2 ring-primary/50"
+            : "",
         className
       )}
     />
@@ -150,7 +158,7 @@ export function AttendanceCalendarContent({
       <div className="px-5 pb-4 flex items-center justify-center gap-3 flex-wrap">
         {ATTENDANCE_LEGEND.map((l) => (
           <div key={l.label} className="flex items-center gap-1.5 text-[9px] text-ink-subtle">
-            <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: l.bg }} />
+            <div className={cn("w-3 h-3 rounded-sm", l.swatch)} />
             {l.label}
           </div>
         ))}

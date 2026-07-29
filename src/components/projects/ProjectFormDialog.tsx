@@ -183,20 +183,22 @@ function ProjectForm({
           </Label>
           <div className="flex items-center gap-2">
             {ICON_OPTIONS.map(({ value, icon: Icon, label }) => (
-              <button
+              <Button
                 key={value}
                 type="button"
+                variant="outline"
+                size="icon"
                 title={label}
                 onClick={() => setForm((f) => ({ ...f, icon: value }))}
                 className={[
-                  "w-9 h-9 rounded-md border flex items-center justify-center transition-colors",
+                  "w-9 h-9",
                   form.icon === value
-                    ? "bg-kale text-white border-kale"
-                    : "bg-surface-2 text-ink-muted border-garden-border hover:text-ink",
+                    ? "bg-kale text-white border-kale hover:bg-kale hover:text-white"
+                    : "bg-surface-2 text-ink-muted hover:text-ink",
                 ].join(" ")}
               >
                 <Icon className="w-4 h-4" />
-              </button>
+              </Button>
             ))}
           </div>
         </div>

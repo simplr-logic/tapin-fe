@@ -29,7 +29,7 @@ export function ProfileStats() {
       {stats.map((s) => (
         <div
           key={s.label}
-          className="bg-white rounded-lg border border-garden-border shadow-card p-4"
+          className="bg-card rounded-lg border border-garden-border shadow-card p-4"
         >
           <s.icon className="w-4 h-4 text-ink-subtle mb-2" />
           <p className="text-lg font-semibold text-ink tracking-tight">{s.value}</p>

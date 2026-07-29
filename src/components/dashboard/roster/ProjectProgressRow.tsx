@@ -60,7 +60,7 @@ export function ProjectProgressRow({
         opacity: draggable.isDragging ? 0.35 : 1,
       }}
       className={[
-        "relative rounded-lg border bg-white px-4 py-3 select-none transition-all hover:border-garden-border-strong touch-none overflow-hidden group",
+        "relative rounded-lg border bg-card px-4 py-3 select-none transition-all hover:border-garden-border-strong touch-none overflow-hidden group",
         locked ? "cursor-default border-dashed" : "cursor-pointer",
         droppable.isOver ? "ring-2 ring-link ring-offset-1 border-link" : "border-garden-border",
       ].join(" ")}
@@ -69,8 +69,7 @@ export function ProjectProgressRow({
         <div className="flex items-center gap-3 min-w-0">
           <GripVertical className="w-3.5 h-3.5 text-ink-subtle shrink-0" />
           <div
-            className="w-9 h-9 rounded-md flex items-center justify-center shrink-0"
-            style={{ backgroundColor: style.pctColor }}
+            className={`w-9 h-9 rounded-md flex items-center justify-center shrink-0 ${style.fill}`}
           >
             <Icon className="w-4 h-4 text-white" />
           </div>
@@ -89,17 +88,15 @@ export function ProjectProgressRow({
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          <span className="text-xs font-bold" style={{ color: style.pctColor }}>
-            {pct}%
-          </span>
+          <span className={`text-xs font-bold ${style.text}`}>{pct}%</span>
         </div>
       </div>
 
       <div className="mt-2.5">
         <div className="h-1.5 rounded-full overflow-hidden bg-garden-border">
           <div
-            className="h-full rounded-full transition-all duration-300"
-            style={{ width: barPct === 0 ? "3px" : `${barPct}%`, backgroundColor: style.pctColor }}
+            className={`h-full rounded-full transition-all duration-300 ${style.fill}`}
+            style={{ width: barPct === 0 ? "3px" : `${barPct}%` }}
           />
         </div>
         <div className="flex items-center justify-between mt-2">

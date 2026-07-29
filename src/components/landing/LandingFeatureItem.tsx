@@ -9,6 +9,7 @@ import {
 } from "@/components/landing/landing-motion";
 import LandingFeaturePreview from "@/components/landing/LandingFeaturePreview";
 import LandingTapRipple from "@/components/landing/LandingTapRipple";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 import type { LucideIcon } from "lucide-react";
@@ -109,10 +110,11 @@ export default function LandingFeatureItem({
         } as CSSProperties
       }
     >
-      <button
+      <Button
         type="button"
+        variant="ghost"
         onClick={handleTap}
-        className="group w-full rounded-lg text-left outline-none focus-visible:ring-3 focus-visible:ring-link/50"
+        className="group h-auto w-full items-start justify-start rounded-lg p-0 text-left hover:bg-transparent focus-visible:ring-3 focus-visible:ring-link/50"
       >
         <span className="relative inline-flex">
           <span
@@ -163,7 +165,7 @@ export default function LandingFeatureItem({
         >
           {description}
         </p>
-      </button>
+      </Button>
     </div>
   );
 }

@@ -27,15 +27,15 @@ const PHASE_LABELS: Record<Phase, string> = {
 };
 
 const PHASE_STYLES: Record<Phase, { ring: string; badge: string; digit: string }> = {
-  work: { ring: "ring-kale/50", badge: "bg-kale/8 text-kale", digit: "text-kale" },
+  work: { ring: "ring-primary/50", badge: "bg-primary/8 text-primary", digit: "text-primary" },
   "short-break": {
     ring: "ring-success/50",
     badge: "bg-success/10 text-success",
     digit: "text-success",
   },
   "long-break": {
-    ring: "ring-[#1F73B7]/40",
-    badge: "bg-[#1F73B7]/8 text-link",
+    ring: "ring-link/40",
+    badge: "bg-link/8 text-link",
     digit: "text-link",
   },
 };
@@ -181,7 +181,7 @@ export function PomodoroTimer() {
         </Select>
 
         <div
-          className={`flex items-center justify-center w-72 h-72 rounded-full ring-4 ${styles.ring} bg-white shadow-card`}
+          className={`flex items-center justify-center w-72 h-72 rounded-full ring-4 ${styles.ring} bg-card shadow-card`}
         >
           <span className={`text-7xl font-bold tabular-nums tracking-tight ${styles.digit}`}>
             {fmt(secondsLeft)}

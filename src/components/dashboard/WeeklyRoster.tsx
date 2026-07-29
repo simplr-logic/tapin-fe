@@ -16,10 +16,11 @@ import { RosterActionBar } from "./roster/RosterActionBar";
 import { RosterControls } from "./roster/RosterControls";
 import { RosterGrid } from "./roster/RosterGrid";
 import { SpecialDaySection } from "./roster/SpecialDaySection";
-import { buildTreeStructure, layoutTree } from "./roster/treemap";
+import { computeBoundedWeights, squarify } from "./roster/treemap";
+import { useAdjustModal } from "./roster/useAdjustModal";
 import { useRosterDrag } from "./roster/useRosterDrag";
 import { useSpecialDays } from "./roster/useSpecialDays";
-import { formatHours, getPeriodLabel, getPeriodRange, isSamePeriod } from "./roster/utils";
+import { getPeriodLabel, getPeriodRange, isSamePeriod } from "./roster/utils";
 import { WorklogModal } from "./roster/WorklogModal";
 
 import type { DisplayProject, GridKey, ViewMode } from "./roster/types";
@@ -40,6 +41,10 @@ export default function WeeklyRoster({
 
   const [listOrder, setListOrder] = useState<number[]>([]);
   const [slotAssignment, setSlotAssignment] = useState<GridKey[]>([]);
+  // Reasonable desktop-ish default so the very first paint (before
+  // ResizeObserver reports the real size) doesn't lay out against a 0x0
+  // rect — updates to the real size almost immediately after mount.
+  const [gridSize, setGridSize] = useState({ w: 800, h: 440 });
   const [view, setView] = useState<ViewMode>("grid");
   const [period, setPeriod] = useState<PeriodView>("week");
   const [selectedDate, setSelectedDate] = useState<Date>(() => externalDate ?? new Date());
@@ -60,13 +65,9 @@ export default function WeeklyRoster({
 
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [commentModalId, setCommentModalId] = useState<number | null>(null);
-  const [adjustModalId, setAdjustModalId] = useState<number | null>(null);
-  const [adjustSign, setAdjustSign] = useState<"add" | "subtract">("add");
-  const [adjustHours, setAdjustHours] = useState(1);
-  const [adjustMinutes, setAdjustMinutes] = useState(0);
-  const [adjustNote, setAdjustNote] = useState("");
 
   const sd = useSpecialDays();
+  const adjust = useAdjustModal(adjustLoggedMinutes);
 
   const isCurrentPeriod = isSamePeriod(selectedDate, new Date(), period);
   const now = new Date();
@@ -88,26 +89,6 @@ export default function WeeklyRoster({
   function handleTap(id: number, sign: 1 | -1 = 1) {
     const logDate = period === "day" ? selectedDate.toLocaleDateString("en-CA") : undefined;
     adjustLoggedMinutes(id, sign * TAP_MINUTES["1h"], undefined, logDate);
-  }
-
-  function resetAdjustForm() {
-    setAdjustSign("add");
-    setAdjustHours(1);
-    setAdjustMinutes(0);
-    setAdjustNote("");
-  }
-  function submitAdjust() {
-    if (adjustModalId === null) return;
-    const totalMinutes = adjustHours * 60 + adjustMinutes;
-    const delta = (adjustSign === "add" ? 1 : -1) * totalMinutes;
-    const trimmedNote = adjustNote.trim();
-    const note = trimmedNote
-      ? `${adjustSign === "add" ? "+" : "−"}${formatHours(totalMinutes)} — ${trimmedNote}`
-      : undefined;
-    const logDate = period === "day" ? selectedDate.toLocaleDateString("en-CA") : undefined;
-    adjustLoggedMinutes(adjustModalId, delta, note, logDate);
-    setAdjustModalId(null);
-    resetAdjustForm();
   }
 
   const { start: periodStart, end: periodEnd } = getPeriodRange(period, selectedDate);
@@ -153,38 +134,44 @@ export default function WeeklyRoster({
     setSlotAssignment(sortedKeys);
   }, [sortedKeys]);
 
-  const weightByKey = new Map<GridKey, number>(
-    liveKeys.map((key) => {
-      const logged =
+  const weightByKey = computeBoundedWeights(
+    liveKeys.map((key) => ({
+      key,
+      raw:
         key === SPECIAL_DAY_AGG_KEY
           ? totalSpecialDayMinutes
-          : (projectById.get(Number(key.slice(2)))?.loggedMinutes ?? 0);
-      return [key, Math.max(30, logged)];
-    })
+          : (projectById.get(Number(key.slice(2)))?.loggedMinutes ?? 0),
+    }))
   );
 
-  const treeStructure = useMemo(() => {
-    if (liveKeys.length === 0) return null;
-    const items = liveKeys.map((_key, slot) => ({ slot, weight: 1 }));
-    return buildTreeStructure(items, 100, 100);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slotsKey]);
-
-  const weightBySlot = new Map(
-    effectiveSlots.map((key, slot) => [slot, weightByKey.get(key) ?? 1])
+  // Squarify against the *real* container pixels (not a percentage space),
+  // then normalize back to 0-100 for CSS — the squareness optimization only
+  // means something in real units. effectiveSlots' order is preserved
+  // (drag/sort-derived), which is what keeps tiles from jumping to an
+  // unrelated position when a tap changes their weight.
+  const squarifiedNodes = squarify(
+    effectiveSlots.map((key) => ({ key, weight: weightByKey.get(key) ?? 1 })),
+    0,
+    0,
+    gridSize.w,
+    gridSize.h
   );
-  const treemapNodes = treeStructure
-    ? layoutTree(treeStructure, weightBySlot, 0, 0, 100, 100).map((r) => ({
-        ...r,
-        key: effectiveSlots[r.slot],
-      }))
-    : [];
+  const treemapNodes =
+    gridSize.w > 0 && gridSize.h > 0
+      ? squarifiedNodes.map((n) => ({
+          key: n.key,
+          x: (n.x / gridSize.w) * 100,
+          y: (n.y / gridSize.h) * 100,
+          w: (n.w / gridSize.w) * 100,
+          h: (n.h / gridSize.h) * 100,
+        }))
+      : [];
 
   const realProjectById = new Map(projects.map((p) => [p.id, p]));
   const commentModalProject =
     commentModalId !== null ? (realProjectById.get(commentModalId) ?? null) : null;
   const adjustModalProject =
-    adjustModalId !== null ? (realProjectById.get(adjustModalId) ?? null) : null;
+    adjust.adjustModalId !== null ? (realProjectById.get(adjust.adjustModalId) ?? null) : null;
 
   const { activeDragId, handleDragStart, handleDragEnd } = useRosterDrag({
     view,
@@ -212,7 +199,7 @@ export default function WeeklyRoster({
   const overallPct = totalTarget > 0 ? Math.round((totalLogged / totalTarget) * 100) : 0;
 
   return (
-    <div className="bg-white rounded-lg border border-garden-border shadow-card flex flex-col lg:h-full lg:overflow-hidden">
+    <div className="bg-card rounded-lg border border-garden-border shadow-card flex flex-col lg:h-full lg:overflow-hidden">
       <RosterControls
         period={period}
         changePeriod={changePeriod}
@@ -247,10 +234,8 @@ export default function WeeklyRoster({
           onDragEnd={handleDragEnd}
           onTap={handleTap}
           onOpenComments={setCommentModalId}
-          onOpenAdjust={(id) => {
-            setAdjustModalId(id);
-            resetAdjustForm();
-          }}
+          onOpenAdjust={adjust.open}
+          onContainerResize={setGridSize}
         />
         <SpecialDaySection
           specialDays={periodSpecialDays}
@@ -278,16 +263,18 @@ export default function WeeklyRoster({
       {adjustModalProject && (
         <AdjustModal
           project={adjustModalProject}
-          sign={adjustSign}
-          onSignChange={setAdjustSign}
-          hours={adjustHours}
-          onHoursChange={setAdjustHours}
-          minutes={adjustMinutes}
-          onMinutesChange={setAdjustMinutes}
-          note={adjustNote}
-          onNoteChange={setAdjustNote}
-          onSave={submitAdjust}
-          onClose={() => setAdjustModalId(null)}
+          sign={adjust.adjustSign}
+          onSignChange={adjust.setAdjustSign}
+          hours={adjust.adjustHours}
+          onHoursChange={adjust.setAdjustHours}
+          minutes={adjust.adjustMinutes}
+          onMinutesChange={adjust.setAdjustMinutes}
+          note={adjust.adjustNote}
+          onNoteChange={adjust.setAdjustNote}
+          onSave={() =>
+            adjust.submit(period === "day" ? selectedDate.toLocaleDateString("en-CA") : undefined)
+          }
+          onClose={adjust.close}
         />
       )}
       <SpecialDayDialog

@@ -16,7 +16,9 @@ import { useState } from "react";
 
 import { ProjectFormDialog } from "@/components/projects/ProjectFormDialog";
 import { type Project, sumLogs, useProjects } from "@/components/providers/ProjectsProvider";
-import { getComplianceColor } from "@/config/theme";
+import { Button } from "@/components/ui/button";
+import { getComplianceColorClass } from "@/config/theme";
+import { cn } from "@/lib/utils";
 
 const PROJECT_ICONS = {
   truck: Truck,
@@ -35,9 +37,9 @@ function formatHours(minutes: number): string {
   return m > 0 ? `${h}h ${m}m` : `${h}h`;
 }
 
-function getStatusStyle(pct: number): { color: string; label: string } {
+function getStatusStyle(pct: number): { colorClass: string; label: string } {
   const label = pct >= 100 ? "Exceeded" : pct >= 85 ? "Near target" : "Under target";
-  return { color: getComplianceColor(pct), label };
+  return { colorClass: getComplianceColorClass(pct), label };
 }
 
 export function ProjectsTable() {
@@ -46,7 +48,7 @@ export function ProjectsTable() {
   const [editingProject, setEditingProject] = useState<Project | null>(null);
 
   return (
-    <div className="bg-white rounded-lg border border-garden-border shadow-card overflow-hidden">
+    <div className="bg-card rounded-lg border border-garden-border shadow-card overflow-hidden">
       <div className="px-5 py-4 border-b border-garden-border flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-2 text-ink-muted text-xs font-medium tracking-wide uppercase">
           <FolderKanban className="w-3.5 h-3.5" />
@@ -55,24 +57,27 @@ export function ProjectsTable() {
             {projects.length}
           </span>
         </div>
-        <button
+        <Button
+          type="button"
           onClick={() => setIsCreateOpen(true)}
-          className="flex items-center gap-1.5 text-xs bg-kale hover:bg-kale-hover text-white rounded-md px-3 py-1.5 transition-colors font-medium shadow-card"
+          className="h-auto gap-1.5 text-xs px-3 py-1.5 font-medium shadow-card"
         >
           <Plus className="w-3.5 h-3.5" />
           New Project
-        </button>
+        </Button>
       </div>
 
       {projects.length === 0 ? (
         <div className="px-5 py-10 text-center text-xs text-ink-subtle">
           No projects yet.{" "}
-          <span
-            className="font-semibold text-link cursor-pointer hover:underline"
+          <Button
+            type="button"
+            variant="link"
             onClick={() => setIsCreateOpen(true)}
+            className="h-auto p-0 text-xs font-semibold text-link"
           >
             Create one
-          </span>{" "}
+          </Button>{" "}
           to get started.
         </div>
       ) : (
@@ -117,49 +122,54 @@ export function ProjectsTable() {
                   <span className="text-xs font-semibold text-ink">
                     {formatHours(monthLogged)} / {totalTarget}h
                   </span>
-                  <span className="text-[10px] font-semibold" style={{ color: status.color }}>
+                  <span className={cn("text-[10px] font-semibold", status.colorClass)}>
                     {pct}% · {status.label}
                   </span>
                 </div>
 
                 <div className="flex items-center gap-1.5 shrink-0">
-                  <button
+                  <Button
                     type="button"
+                    variant="outline"
+                    size="icon"
                     onClick={() => updateProject(project.id, { locked: !project.locked })}
                     title={project.locked ? "Unlock project" : "Lock project"}
-                    className={[
-                      "w-8 h-8 rounded-md flex items-center justify-center border transition-colors",
+                    className={cn(
                       project.locked
                         ? "text-warning bg-warning/8 border-warning/30 hover:bg-warning/14"
-                        : "text-ink-muted bg-white border-garden-border hover:bg-surface-2 hover:text-ink",
-                    ].join(" ")}
+                        : "text-ink-muted bg-card hover:bg-surface-2 hover:text-ink"
+                    )}
                   >
                     {project.locked ? (
                       <Lock className="w-3.5 h-3.5" />
                     ) : (
                       <Unlock className="w-3.5 h-3.5" />
                     )}
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="button"
+                    variant="outline"
+                    size="icon"
                     onClick={() => setEditingProject(project)}
                     title="Edit project"
-                    className="w-8 h-8 rounded-md flex items-center justify-center text-ink-muted bg-white border border-garden-border hover:bg-surface-2 hover:text-ink transition-colors"
+                    className="text-ink-muted bg-card hover:bg-surface-2 hover:text-ink"
                   >
                     <Pencil className="w-3.5 h-3.5" />
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="button"
+                    variant="outline"
+                    size="icon"
                     onClick={() => {
                       if (window.confirm(`Delete "${project.title}"? This cannot be undone.`)) {
                         removeProject(project.id);
                       }
                     }}
                     title="Delete project"
-                    className="w-8 h-8 rounded-md flex items-center justify-center text-error bg-white border border-garden-border hover:bg-error/8 hover:border-error/30 transition-colors"
+                    className="text-error bg-card hover:bg-error/8 hover:border-error/30"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
-                  </button>
+                  </Button>
                 </div>
               </div>
             );

@@ -3,6 +3,7 @@
 import { CalendarDays } from "lucide-react";
 import { useState } from "react";
 
+import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
@@ -32,9 +33,10 @@ export function DatePickerInput({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
         render={
-          <button
+          <Button
             type="button"
-            className="flex h-8 w-full items-center gap-2 rounded-lg border border-input bg-transparent px-2.5 text-left text-sm transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+            variant="outline"
+            className="h-8 w-full justify-start gap-2 rounded-lg bg-transparent px-2.5 text-left text-sm font-normal"
           />
         }
       >

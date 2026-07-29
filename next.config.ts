@@ -12,6 +12,9 @@ const nextConfig: NextConfig = {
       { source: "/auth/:path*", destination: `${GATEWAY_URL}/auth/:path*` },
       { source: "/me/:path*", destination: `${GATEWAY_URL}/me/:path*` },
       { source: "/emails/:path*", destination: `${GATEWAY_URL}/emails/:path*` },
+      // /companies proxying is handled in src/proxy.ts (middleware) instead —
+      // it collides with real app pages (/companies, /companies/[slug]) in a
+      // way a declarative afterFiles rewrite can't resolve consistently.
     ];
   },
 };

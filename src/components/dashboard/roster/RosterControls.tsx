@@ -5,6 +5,7 @@ import { CalendarDays, LayoutGrid } from "lucide-react";
 import { AttendanceCalendarContent } from "@/components/dashboard/AttendanceCalendarContent";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 import { getPeriodLabel, getPeriodRange } from "./utils";
 
@@ -48,18 +49,21 @@ export function RosterControls({
       <div className="lg:hidden flex items-center gap-1.5 flex-nowrap">
         <div className="flex items-center rounded-md border border-garden-border bg-surface-2 p-0.5 shrink-0">
           {periodOptions.map((p) => (
-            <button
+            <Button
               key={p}
+              type="button"
+              variant="ghost"
+              size="sm"
               onClick={() => changePeriod(p)}
-              className={[
-                "px-2 py-0.5 rounded-md text-xs font-medium capitalize transition-all",
+              className={cn(
+                "h-auto rounded-md px-2 py-0.5 text-xs font-medium capitalize",
                 period === p
-                  ? "bg-white shadow-card text-ink border border-garden-border"
-                  : "text-ink-subtle hover:text-ink-muted",
-              ].join(" ")}
+                  ? "bg-card shadow-card text-ink border border-garden-border hover:bg-card"
+                  : "text-ink-subtle hover:text-ink-muted"
+              )}
             >
               {p}
-            </button>
+            </Button>
           ))}
         </div>
 
@@ -95,12 +99,14 @@ export function RosterControls({
         </Popover>
 
         {!isCurrentPeriod && (
-          <button
+          <Button
+            type="button"
+            variant="link"
             onClick={() => setSelectedDate(new Date())}
-            className="text-xs font-medium text-link hover:text-link-hover px-1 shrink-0 whitespace-nowrap"
+            className="h-auto text-xs font-medium text-link hover:text-link-hover px-1 shrink-0 whitespace-nowrap"
           >
             Today
-          </button>
+          </Button>
         )}
       </div>
     </div>

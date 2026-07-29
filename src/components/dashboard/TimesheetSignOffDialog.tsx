@@ -4,7 +4,7 @@ import { ScrollText } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { gardenColors } from "@/config/theme";
+import { getComplianceBgClass, getComplianceColorClass } from "@/config/theme";
 
 export interface PreviewProject {
   id: number;
@@ -16,8 +16,8 @@ export interface PreviewProject {
 
 function ProjectPreviewRow({ p }: { p: PreviewProject }) {
   const pct = p.targetHours > 0 ? Math.round((p.loggedMinutes / 60 / p.targetHours) * 100) : 0;
-  const color =
-    pct >= 115 ? gardenColors.error : pct >= 100 ? gardenColors.success : gardenColors.yellow;
+  const textCls = getComplianceColorClass(pct);
+  const bgCls = getComplianceBgClass(pct);
   const h = Math.floor(p.loggedMinutes / 60);
   const m = p.loggedMinutes % 60;
 
@@ -28,8 +28,8 @@ function ProjectPreviewRow({ p }: { p: PreviewProject }) {
         <p className="text-[10px] text-ink-subtle truncate">{p.company}</p>
         <div className="h-1 rounded-full bg-surface-3 mt-1.5 overflow-hidden">
           <div
-            className="h-full rounded-full"
-            style={{ width: `${Math.min(100, pct)}%`, backgroundColor: color }}
+            className={`h-full rounded-full ${bgCls}`}
+            style={{ width: `${Math.min(100, pct)}%` }}
           />
         </div>
       </div>
@@ -37,9 +37,7 @@ function ProjectPreviewRow({ p }: { p: PreviewProject }) {
         <p className="text-xs font-semibold text-ink tabular-nums">
           {m > 0 ? `${h}h ${m}m` : `${h}h`}
         </p>
-        <p className="text-[10px] font-bold tabular-nums" style={{ color }}>
-          {pct}%
-        </p>
+        <p className={`text-[10px] font-bold tabular-nums ${textCls}`}>{pct}%</p>
       </div>
     </div>
   );
@@ -61,8 +59,8 @@ function SignOffForm({
   onSubmit: () => void;
 }) {
   const pct = totalTarget > 0 ? Math.round((totalHours / totalTarget) * 100) : 0;
-  const pctColor =
-    pct >= 115 ? gardenColors.error : pct >= 100 ? gardenColors.success : gardenColors.yellow;
+  const pctTextCls = getComplianceColorClass(pct);
+  const pctBgCls = getComplianceBgClass(pct);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -92,13 +90,11 @@ function SignOffForm({
           </div>
           <div className="h-1.5 rounded-full bg-surface-3 overflow-hidden">
             <div
-              className="h-full rounded-full transition-all"
-              style={{ width: `${Math.min(100, pct)}%`, backgroundColor: pctColor }}
+              className={`h-full rounded-full transition-all ${pctBgCls}`}
+              style={{ width: `${Math.min(100, pct)}%` }}
             />
           </div>
-          <p className="text-[11px] font-semibold tabular-nums" style={{ color: pctColor }}>
-            {pct}%
-          </p>
+          <p className={`text-[11px] font-semibold tabular-nums ${pctTextCls}`}>{pct}%</p>
         </div>
 
         {/* Per-project breakdown */}

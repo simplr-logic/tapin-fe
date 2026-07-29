@@ -1,3 +1,5 @@
+import { ThemeProvider } from "next-themes";
+
 import { ProjectsProvider } from "@/components/providers/ProjectsProvider";
 import { TimesheetProvider } from "@/components/providers/TimesheetProvider";
 import { buildRootMetadata } from "@/lib/seo/metadata";
@@ -12,11 +14,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full antialiased">
+    <html lang="en" className="h-full antialiased" suppressHydrationWarning>
       <body className="min-h-full flex flex-col">
-        <ProjectsProvider>
-          <TimesheetProvider>{children}</TimesheetProvider>
-        </ProjectsProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ProjectsProvider>
+            <TimesheetProvider>{children}</TimesheetProvider>
+          </ProjectsProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

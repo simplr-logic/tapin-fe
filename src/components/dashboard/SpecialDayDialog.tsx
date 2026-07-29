@@ -14,13 +14,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { gardenColors } from "@/config/theme";
 
 import {
+  computeSpecialDayHours,
   DatePickerField,
   fromIsoDate,
   PeriodToggle,
-  startOfDay,
   toIsoDate,
 } from "./SpecialDayHelpers";
 
@@ -54,7 +53,11 @@ export const SPECIAL_DAY_TYPES: {
   value: SpecialDayType;
   icon: typeof Palmtree;
   label: string;
-  hex: string;
+  textClass: string;
+  dotClass: string;
+  iconBgClass: string;
+  borderTintClass: string;
+  badgeBgClass: string;
   activeClass: string;
   cardClass: string;
 }[] = [
@@ -62,7 +65,11 @@ export const SPECIAL_DAY_TYPES: {
     value: "holiday",
     icon: Palmtree,
     label: "Holiday",
-    hex: gardenColors.warning,
+    textClass: "text-warning",
+    dotClass: "bg-warning",
+    iconBgClass: "bg-warning/15",
+    borderTintClass: "border-warning/25",
+    badgeBgClass: "bg-warning/12",
     activeClass: "bg-warning/10 border-warning/35 text-warning",
     cardClass: "bg-warning/6 border-warning/20",
   },
@@ -70,37 +77,15 @@ export const SPECIAL_DAY_TYPES: {
     value: "leave",
     icon: Plane,
     label: "Leave",
-    hex: gardenColors.link,
+    textClass: "text-link",
+    dotClass: "bg-link",
+    iconBgClass: "bg-link/15",
+    borderTintClass: "border-link/25",
+    badgeBgClass: "bg-link/12",
     activeClass: "bg-link/10 border-link/35 text-link",
     cardClass: "bg-link/6 border-link/20",
   },
 ];
-
-// Standard half-day accounting: each day = 8h except first day (4h if starts at "noon") and last (4h if ends at "morning").
-export function computeSpecialDayHours(
-  startDate: Date,
-  startPeriod: DayPeriod,
-  endDate: Date,
-  endPeriod: DayPeriod
-): number {
-  const start = startOfDay(startDate);
-  const end = startOfDay(endDate);
-  if (end < start) return 0;
-
-  const totalDays = Math.round((end.getTime() - start.getTime()) / 86400000) + 1;
-
-  if (totalDays === 1) {
-    if (startPeriod === "morning" && endPeriod === "noon") return 8;
-    if (startPeriod === "noon" && endPeriod === "noon") return 4;
-    if (startPeriod === "morning" && endPeriod === "morning") return 4;
-    return 0; // starts in the afternoon but "ends" that same morning — invalid range
-  }
-
-  const firstDayHours = startPeriod === "morning" ? 8 : 4;
-  const lastDayHours = endPeriod === "noon" ? 8 : 4;
-  const middleDays = totalDays - 2;
-  return firstDayHours + lastDayHours + middleDays * 8;
-}
 
 function SpecialDayForm({
   editing,
@@ -165,20 +150,21 @@ function SpecialDayForm({
           </Label>
           <div className="grid grid-cols-2 gap-2">
             {SPECIAL_DAY_TYPES.map(({ value, icon: Icon, label, activeClass }) => (
-              <button
+              <Button
                 key={value}
                 type="button"
+                variant="outline"
                 onClick={() => setType(value)}
                 className={[
-                  "py-2 px-1 rounded-md border text-xs font-semibold flex flex-col items-center gap-1.5 transition-colors",
+                  "h-auto py-2 px-1 flex-col gap-1.5 text-xs font-semibold",
                   type === value
                     ? activeClass
-                    : "bg-surface-2 border-garden-border text-ink-subtle hover:text-ink-muted",
+                    : "bg-surface-2 text-ink-subtle hover:text-ink-muted",
                 ].join(" ")}
               >
                 <Icon className="w-4 h-4" />
                 {label}
-              </button>
+              </Button>
             ))}
           </div>
         </div>

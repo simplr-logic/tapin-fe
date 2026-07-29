@@ -2,6 +2,7 @@
 
 import { Plus, Trash2 } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -125,26 +126,29 @@ export function MonthlyTargetsEditor({ targets, startDate, onChange }: MonthlyTa
                 h
               </span>
             </div>
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="icon-sm"
               onClick={() => remove(i)}
               disabled={targets.length === 1}
-              className="text-ink-subtle hover:text-error transition-colors shrink-0 disabled:opacity-30 disabled:cursor-not-allowed"
+              className="text-ink-subtle hover:text-error shrink-0 disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <Trash2 className="w-3.5 h-3.5" />
-            </button>
+            </Button>
           </div>
         ))}
       </div>
 
-      <button
+      <Button
         type="button"
+        variant="link"
         onClick={add}
-        className="mt-2 flex items-center gap-1 text-xs font-medium text-link hover:text-link-hover transition-colors"
+        className="h-auto p-0 mt-2 gap-1 text-xs font-medium text-link hover:text-link-hover"
       >
         <Plus className="w-3.5 h-3.5" />
         Add month
-      </button>
+      </Button>
     </div>
   );
 }

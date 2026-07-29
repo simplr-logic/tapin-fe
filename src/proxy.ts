@@ -1,5 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 
+import { env } from "@/config/env";
+
 // Klong session cookie name — must match gateway's SESSION_COOKIE_NAME
 // (defaults to "klong_session"; see simplr.klong-be/deploy/.env).
 const SESSION_COOKIE_NAME = "klong_session";
@@ -26,6 +28,27 @@ function isPublicPath(pathname: string): boolean {
 export default function proxy(req: NextRequest) {
   const isLoggedIn = Boolean(req.cookies.get(SESSION_COOKIE_NAME)?.value);
   const pathname = req.nextUrl.pathname;
+
+  // /companies and /companies/{slug} are also app pages (list + detail).
+  // Next's rewrite precedence is: beforeFiles -> static filesystem routes ->
+  // afterFiles rewrites -> dynamic filesystem routes. A *static* route (bare
+  // /companies) wins over an afterFiles config rewrite, but a *dynamic* one
+  // ([slug]) does not — so a next.config.ts rewrite for "/companies/:path*"
+  // would hijack GET /companies/{slug} before the page ever runs, and a
+  // filesystem match would swallow POST /companies before it reaches the
+  // gateway. Handling all of it here, in middleware (which always wins),
+  // sidesteps that inconsistency entirely — see next.config.ts, which no
+  // longer rewrites /companies at all.
+  const companiesMatch = pathname.match(/^\/companies(?:\/([^/]+)(\/.*)?)?$/);
+  if (companiesMatch) {
+    const [, , rest] = companiesMatch;
+    // No `rest` means this is the bare "/companies" or "/companies/{slug}"
+    // page route — only proxy non-GET (create/mutate) requests to it.
+    if (rest || req.method !== "GET") {
+      const target = new URL(pathname + req.nextUrl.search, env.gatewayUrl);
+      return NextResponse.rewrite(target);
+    }
+  }
 
   if (!isLoggedIn && !isPublicPath(pathname)) {
     const loginUrl = new URL("/login", req.nextUrl);

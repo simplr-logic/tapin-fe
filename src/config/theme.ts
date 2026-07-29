@@ -31,16 +31,23 @@ export const gardenColors = {
   open: "#E34F32",
 } as const;
 
-export type GardenColorName = keyof typeof gardenColors;
-
 /**
  * Shared 3-tier status color used anywhere a percentage-of-target needs a
  * single representative color (project rows, timesheet summaries, ...).
  * The richer 5-tier tint+border treemap styling in WeeklyRoster is a
  * different, denser visual system and intentionally doesn't use this.
+ *
+ * Returns Tailwind classes (not raw hex) so callers stay dark-mode-aware —
+ * see `getHeatStyle` in `roster/utils.ts` for the same pattern.
  */
-export function getComplianceColor(pct: number): string {
-  if (pct >= 115) return gardenColors.error;
-  if (pct >= 100) return gardenColors.success;
-  return gardenColors.yellow;
+export function getComplianceColorClass(pct: number): string {
+  if (pct >= 115) return "text-error";
+  if (pct >= 100) return "text-success";
+  return "text-yellow";
+}
+
+export function getComplianceBgClass(pct: number): string {
+  if (pct >= 115) return "bg-error";
+  if (pct >= 100) return "bg-success";
+  return "bg-yellow";
 }

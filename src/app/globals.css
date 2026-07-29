@@ -13,25 +13,28 @@
 
   /* Zendesk Garden palette — kept in sync with src/config/theme.ts (JS-side
      color access for inline styles / runtime color logic). Update both if a
-     value changes. */
-  --color-canvas: #f8f9f9;
-  --color-surface-2: #f1f3f5;
-  --color-surface-3: #e9ebed;
-  --color-garden-border: #d8dcde;
-  --color-garden-border-strong: #c2c8cc;
-  --color-kale: #03363d;
-  --color-kale-hover: #022a2f;
-  --color-kale-accent: #17494d;
-  --color-link: #1f73b7;
-  --color-link-hover: #144a75;
-  --color-ink: #2f3941;
-  --color-ink-muted: #68737d;
-  --color-ink-subtle: #87929d;
-  --color-success: #038153;
-  --color-warning: #ad5918;
-  --color-yellow: #ca8a04;
-  --color-error: #cc3340;
-  --color-open: #e34f32;
+     value changes. Indirected through --garden-* variables (defined in
+     :root / .dark below) rather than literal hex, so every bg-canvas /
+     text-ink / border-garden-border usage in the app stays dark-mode aware
+     without per-component changes. */
+  --color-canvas: var(--garden-canvas);
+  --color-surface-2: var(--garden-surface-2);
+  --color-surface-3: var(--garden-surface-3);
+  --color-garden-border: var(--garden-border);
+  --color-garden-border-strong: var(--garden-border-strong);
+  --color-kale: var(--garden-kale);
+  --color-kale-hover: var(--garden-kale-hover);
+  --color-kale-accent: var(--garden-kale-accent);
+  --color-link: var(--garden-link);
+  --color-link-hover: var(--garden-link-hover);
+  --color-ink: var(--garden-ink);
+  --color-ink-muted: var(--garden-ink-muted);
+  --color-ink-subtle: var(--garden-ink-subtle);
+  --color-success: var(--garden-success);
+  --color-warning: var(--garden-warning);
+  --color-yellow: var(--garden-yellow);
+  --color-error: var(--garden-error);
+  --color-open: var(--garden-open);
 
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -75,6 +78,27 @@
 }
 
 :root {
+  /* Garden palette — light (default). See @theme inline above for how
+     these feed the bg-canvas / text-ink / etc. utilities. */
+  --garden-canvas: #f8f9f9;
+  --garden-surface-2: #f1f3f5;
+  --garden-surface-3: #e9ebed;
+  --garden-border: #d8dcde;
+  --garden-border-strong: #c2c8cc;
+  --garden-kale: #03363d;
+  --garden-kale-hover: #022a2f;
+  --garden-kale-accent: #17494d;
+  --garden-link: #1f73b7;
+  --garden-link-hover: #144a75;
+  --garden-ink: #2f3941;
+  --garden-ink-muted: #68737d;
+  --garden-ink-subtle: #87929d;
+  --garden-success: #038153;
+  --garden-warning: #ad5918;
+  --garden-yellow: #ca8a04;
+  --garden-error: #cc3340;
+  --garden-open: #e34f32;
+
   --background: #f8f9f9; /* canvas */
   --foreground: #2f3941; /* ink */
   --card: #ffffff;
@@ -111,6 +135,64 @@
   --landing-wave-ease: cubic-bezier(0.15, 0.85, 0.35, 1);
 }
 
+/* Garden palette — dark. Kale (the header/chrome brand color) is
+   deliberately unchanged: it's already a dark tone and reads as fixed
+   chrome in both themes, not a page surface. Everything else — canvas,
+   surfaces, borders, ink hierarchy, link, status colors, and the shadcn
+   semantic tokens derived from them — gets a dark-appropriate value. */
+.dark {
+  --garden-canvas: #14181a;
+  --garden-surface-2: #1c2224;
+  --garden-surface-3: #242b2d;
+  --garden-border: #2e3638;
+  --garden-border-strong: #3b4547;
+  --garden-kale: #03363d;
+  --garden-kale-hover: #022a2f;
+  --garden-kale-accent: #17494d;
+  --garden-link: #5aa9e6;
+  --garden-link-hover: #86c2ef;
+  --garden-ink: #edeff0;
+  --garden-ink-muted: #a6afb3;
+  --garden-ink-subtle: #7c8588;
+  --garden-success: #34c77f;
+  --garden-warning: #e2954b;
+  --garden-yellow: #f0c24d;
+  --garden-error: #ff6670;
+  --garden-open: #ff8a68;
+
+  --background: #14181a; /* canvas */
+  --foreground: #edeff0; /* ink */
+  --card: #1a1f21;
+  --card-foreground: #edeff0;
+  --popover: #1a1f21;
+  --popover-foreground: #edeff0;
+  --primary: #1f5b63; /* lightened kale for contrast against a dark canvas */
+  --primary-foreground: #ffffff;
+  --secondary: #1c2224; /* surface-2 */
+  --secondary-foreground: #edeff0;
+  --muted: #1c2224;
+  --muted-foreground: #a6afb3;
+  --accent: #1c2224;
+  --accent-foreground: #edeff0;
+  --destructive: #ff6670;
+  --border: #2e3638;
+  --input: #2e3638;
+  --ring: #5aa9e6;
+  --chart-1: #17494d;
+  --chart-2: #34c77f;
+  --chart-3: #e2954b;
+  --chart-4: #5aa9e6;
+  --chart-5: #ff6670;
+  --sidebar: #1a1f21;
+  --sidebar-foreground: #edeff0;
+  --sidebar-primary: #03363d;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1c2224;
+  --sidebar-accent-foreground: #edeff0;
+  --sidebar-border: #2e3638;
+  --sidebar-ring: #5aa9e6;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -122,7 +204,7 @@
     @apply font-sans;
   }
   :focus-visible {
-    outline: 3px solid #1f73b7;
+    outline: 3px solid var(--garden-link);
     outline-offset: 1px;
   }
 }

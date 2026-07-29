@@ -10,13 +10,14 @@ import {
 } from "@/components/dashboard/TimesheetSignOffDialog";
 import { sumLogs, useProjects } from "@/components/providers/ProjectsProvider";
 import { getMonthLabel, useTimesheets } from "@/components/providers/TimesheetProvider";
+import { Button } from "@/components/ui/button";
 import { TARGET_SCALE } from "@/config/constants";
-import { gardenColors } from "@/config/theme";
+import { getComplianceBgClass, getComplianceColorClass } from "@/config/theme";
 
 function MonthStats({ label, logged, target }: { label: string; logged: number; target: number }) {
   const pct = target > 0 ? Math.round((logged / target) * 100) : 0;
-  const color =
-    pct >= 115 ? gardenColors.error : pct >= 100 ? gardenColors.success : gardenColors.yellow;
+  const textCls = getComplianceColorClass(pct);
+  const bgCls = getComplianceBgClass(pct);
 
   return (
     <div className="rounded-md bg-surface-2 border border-garden-border p-3.5 space-y-2.5">
@@ -30,13 +31,11 @@ function MonthStats({ label, logged, target }: { label: string; logged: number; 
       <div className="space-y-1">
         <div className="h-1.5 rounded-full bg-surface-3 overflow-hidden">
           <div
-            className="h-full rounded-full transition-all"
-            style={{ width: `${Math.min(100, pct)}%`, backgroundColor: color }}
+            className={`h-full rounded-full transition-all ${bgCls}`}
+            style={{ width: `${Math.min(100, pct)}%` }}
           />
         </div>
-        <p className="text-[11px] font-semibold tabular-nums" style={{ color }}>
-          {pct}%
-        </p>
+        <p className={`text-[11px] font-semibold tabular-nums ${textCls}`}>{pct}%</p>
       </div>
     </div>
   );
@@ -92,7 +91,7 @@ export default function TimesheetSubmission() {
   const previewTotalTarget = previewProjects.reduce((s, p) => s + p.targetHours, 0);
 
   return (
-    <div className="bg-white rounded-lg border border-garden-border shadow-card">
+    <div className="bg-card rounded-lg border border-garden-border shadow-card">
       <div className="px-5 py-4 border-b border-garden-border flex items-center justify-between">
         <div className="flex items-center gap-2 text-ink-muted text-xs font-medium tracking-wide uppercase">
           <FileText className="w-3.5 h-3.5" />
@@ -136,12 +135,13 @@ export default function TimesheetSubmission() {
 
             <MonthStats label={lastMonthLabel} logged={lastMonthLogged} target={lastMonthTarget} />
 
-            <button
+            <Button
+              type="button"
               onClick={() => setIsSignOffOpen(true)}
-              className="w-full h-9 flex items-center justify-center gap-2 bg-error hover:bg-error/90 text-white rounded-md text-xs font-semibold uppercase tracking-wide transition-colors"
+              className="w-full h-9 gap-2 bg-error hover:bg-error/90 text-white text-xs font-semibold uppercase tracking-wide"
             >
               Submit {lastMonthLabel.split(" ")[0]} Timesheet
-            </button>
+            </Button>
           </>
         ) : (
           <>
@@ -156,21 +156,24 @@ export default function TimesheetSubmission() {
                     <span className="font-semibold">{currentMonthRecord.submittedBy}</span>
                   </p>
                 </div>
-                <button
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={() => unsubmitTimesheet(currentMonthRecord.monthKey)}
-                  className="w-full h-9 flex items-center justify-center gap-2 border border-error/40 hover:bg-error/8 text-error rounded-md text-xs font-semibold uppercase tracking-wide transition-colors"
+                  className="w-full h-9 gap-2 border-error/40 hover:bg-error/8 text-error text-xs font-semibold uppercase tracking-wide"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                   Revoke Submission
-                </button>
+                </Button>
               </div>
             ) : (
-              <button
+              <Button
+                type="button"
                 onClick={() => setIsSignOffOpen(true)}
-                className="w-full h-9 flex items-center justify-center gap-2 bg-kale hover:bg-kale-hover text-white rounded-md text-xs font-semibold uppercase tracking-wide transition-colors"
+                className="w-full h-9 gap-2 bg-kale hover:bg-kale-hover text-white text-xs font-semibold uppercase tracking-wide"
               >
                 Submit Timesheet
-              </button>
+              </Button>
             )}
           </>
         )}

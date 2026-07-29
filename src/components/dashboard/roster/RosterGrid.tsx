@@ -10,8 +10,6 @@ import {
 } from "@dnd-kit/core";
 import { useEffect, useRef, useState } from "react";
 
-import { gardenColors } from "@/config/theme";
-
 import { DragGhost } from "./DragGhost";
 import { ProjectGridTile } from "./ProjectGridTile";
 import { ProjectProgressRow } from "./ProjectProgressRow";
@@ -38,6 +36,7 @@ interface RosterGridProps {
   onTap: (id: number, sign: 1 | -1) => void;
   onOpenComments: (id: number) => void;
   onOpenAdjust: (id: number) => void;
+  onContainerResize?: (size: { w: number; h: number }) => void;
 }
 
 export function RosterGrid({
@@ -55,6 +54,7 @@ export function RosterGrid({
   onTap,
   onOpenComments,
   onOpenAdjust,
+  onContainerResize,
 }: RosterGridProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerSize, setContainerSize] = useState({ w: 0, h: 0 });
@@ -63,11 +63,13 @@ export function RosterGrid({
     const el = containerRef.current;
     if (!el) return;
     const ro = new ResizeObserver(([entry]) => {
-      setContainerSize({ w: entry.contentRect.width, h: entry.contentRect.height });
+      const size = { w: entry.contentRect.width, h: entry.contentRect.height };
+      setContainerSize(size);
+      onContainerResize?.(size);
     });
     ro.observe(el);
     return () => ro.disconnect();
-  }, []);
+  }, [onContainerResize]);
 
   return (
     <div className="space-y-2">
@@ -140,12 +142,12 @@ export function RosterGrid({
       {/* Legend */}
       <div className="flex items-center flex-wrap justify-start sm:justify-end gap-3 sm:gap-4 pt-1">
         {[
-          { label: "Under target", color: gardenColors.yellow },
-          { label: "On target", color: gardenColors.success },
-          { label: "Exceeded", color: gardenColors.error },
+          { label: "Under target", cls: "bg-yellow" },
+          { label: "On target", cls: "bg-success" },
+          { label: "Exceeded", cls: "bg-error" },
         ].map((l) => (
           <div key={l.label} className="flex items-center gap-1.5 text-[10px] text-ink-subtle">
-            <div className="w-2 h-2 rounded-sm" style={{ backgroundColor: l.color }} />
+            <div className={`w-2 h-2 rounded-sm ${l.cls}`} />
             {l.label}
           </div>
         ))}

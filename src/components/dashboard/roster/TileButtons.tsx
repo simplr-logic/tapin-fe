@@ -2,6 +2,8 @@
 
 import { ClipboardList, Clock, Pencil } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
+
 import type { Project } from "@/components/providers/ProjectsProvider";
 
 export interface TileActionsProps {
@@ -17,20 +19,19 @@ export function WorklogButton({
   className,
 }: Omit<TileActionsProps, "onOpenAdjust" | "onOpenEdit"> & { className: string }) {
   return (
-    <button
+    <Button
       type="button"
       onClick={(e) => {
         e.stopPropagation();
         onOpenComments(project.id);
       }}
       title="View worklog"
-      className={[
-        "rounded-md flex items-center justify-center text-white shrink-0 bg-kale hover:bg-kale-hover transition-colors",
-        className,
-      ].join(" ")}
+      className={["h-auto p-0 text-white shrink-0 bg-kale hover:bg-kale-hover", className].join(
+        " "
+      )}
     >
       <ClipboardList className="w-3 h-3" />
-    </button>
+    </Button>
   );
 }
 
@@ -44,8 +45,9 @@ export function AdjustHoursButton({
   disabled?: boolean;
 }) {
   return (
-    <button
+    <Button
       type="button"
+      variant="outline"
       disabled={disabled}
       onClick={(e) => {
         e.stopPropagation();
@@ -53,13 +55,13 @@ export function AdjustHoursButton({
       }}
       title={disabled ? "Not editable outside the current week" : "Log a custom hour / unlog hours"}
       className={[
-        "rounded-md flex items-center justify-center text-ink-muted bg-white border border-garden-border hover:bg-surface-2 hover:text-ink transition-colors shrink-0",
-        "disabled:opacity-40 disabled:hover:bg-white disabled:cursor-not-allowed",
+        "h-auto p-0 text-ink-muted bg-card hover:bg-surface-2 hover:text-ink shrink-0",
+        "disabled:opacity-40 disabled:hover:bg-card",
         className,
       ].join(" ")}
     >
       <Clock className="w-3 h-3" />
-    </button>
+    </Button>
   );
 }
 
@@ -71,19 +73,20 @@ export function EditProjectButton({
   className: string;
 }) {
   return (
-    <button
+    <Button
       type="button"
+      variant="outline"
       onClick={(e) => {
         e.stopPropagation();
         onOpenEdit(project.id);
       }}
       title="Edit project details"
       className={[
-        "rounded-md flex items-center justify-center text-ink-muted bg-white border border-garden-border hover:bg-surface-2 hover:text-ink transition-colors shrink-0",
+        "h-auto p-0 text-ink-muted bg-card hover:bg-surface-2 hover:text-ink shrink-0",
         className,
       ].join(" ")}
     >
       <Pencil className="w-3 h-3" />
-    </button>
+    </Button>
   );
 }

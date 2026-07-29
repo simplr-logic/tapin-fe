@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSyncExternalStore } from "react";
 
 import { landingNavLinkClass } from "@/components/landing/landing-ui";
+import { ThemeToggleButton } from "@/components/layout/ThemeToggleButton";
 import { Button } from "@/components/ui/button";
 import { APP_NAME } from "@/config/constants";
 import { cn } from "@/lib/utils";
@@ -102,6 +103,7 @@ export default function LandingHeader() {
           >
             Sign in
           </Button>
+          <ThemeToggleButton className="text-ink-muted hover:bg-surface-2 hover:text-ink" />
         </nav>
       </div>
     </header>

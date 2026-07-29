@@ -2,20 +2,21 @@ import { MAX_TILE_RATIO } from "@/config/constants";
 
 import type { GridKey } from "./types";
 
-// Binary-split treemap, same shape as a crypto market-cap heatmap: nested
-// proportional-area rectangles, not a uniform grid. The split *topology*
-// (which entries share a branch, and whether that branch cuts vertically or
-// horizontally) is frozen from the current order via buildTreeStructure, and
-// only rebuilt when the set of grid entries changes (add/remove). Every
-// render then only recomputes the ratio *within* each frozen split from live
-// weights (layoutTree) — so a tile can grow or shrink smoothly as it's
-// tapped without jumping to a different quadrant, and a manual drag-swap only
-// touches the two dragged tiles' geometry.
+// Squarified treemap (Bruls, Huizing & van Wijk, 1999) — same family of
+// layout used by market-cap / liquidation heatmaps (Finviz, CoinMarketCap,
+// etc). Items are laid out row by row along whichever side of the remaining
+// rectangle is currently shorter, greedily adding items to the current row
+// as long as doing so doesn't make the row's worst aspect ratio worse. This
+// keeps every tile close to square — no thin slivers, and no risk of an
+// axis choice that only makes sense in an abstract square coordinate space
+// (the old binary-split approach's failure mode). Must be called with the
+// *real* container width/height for the squareness optimization to mean
+// anything; pass percentages of a fake 100x100 space and it degenerates.
 //
 // Weights are scaled into [1, MAX_TILE_RATIO] (see computeBoundedWeights)
 // instead of used raw, so the biggest tile is never more than that ratio
 // bigger than the smallest — real proportional sizing, capped short of ever
-// looking like a 2:1 split.
+// looking like a market dominated by one entry.
 
 export interface TreemapNode {
   key: GridKey;
@@ -24,20 +25,6 @@ export interface TreemapNode {
   w: number;
   h: number;
 }
-
-export interface TreeLeaf {
-  type: "leaf";
-  slot: number;
-}
-export interface TreeSplit {
-  type: "split";
-  axis: "v" | "h";
-  leftSlots: number[];
-  rightSlots: number[];
-  left: TreeStruct;
-  right: TreeStruct;
-}
-export type TreeStruct = TreeLeaf | TreeSplit;
 
 export function computeBoundedWeights(
   values: { key: GridKey; raw: number }[]
@@ -57,73 +44,105 @@ export function computeBoundedWeights(
   return map;
 }
 
-export function splitByWeight<T extends { weight: number }>(items: T[]): [T[], T[]] {
-  const totalWeight = items.reduce((sum, item) => sum + item.weight, 0);
-  let accumulated = 0;
-  let splitIndex = 1;
-  for (let i = 0; i < items.length - 1; i++) {
-    accumulated += items[i].weight;
-    if (accumulated >= totalWeight / 2) {
-      splitIndex = i + 1;
-      break;
+interface AreaItem {
+  key: GridKey;
+  area: number;
+}
+
+// Worst aspect ratio achievable across a row of items (given as areas)
+// if laid out along a side of the given length — lower is better, 1 is a
+// perfect square. Formula from the original squarified-treemaps paper.
+function worstAspectRatio(row: AreaItem[], side: number): number {
+  if (row.length === 0 || side <= 0) return Infinity;
+  const sum = row.reduce((s, r) => s + r.area, 0);
+  if (sum <= 0) return Infinity;
+  const maxA = Math.max(...row.map((r) => r.area));
+  const minA = Math.min(...row.map((r) => r.area));
+  const side2 = side * side;
+  return Math.max((side2 * maxA) / (sum * sum), (sum * sum) / (side2 * minA));
+}
+
+// Places one completed row into the current remaining rectangle and returns
+// its tiles. The row always spans the full length of whichever side is
+// currently shorter (that's what "along the shorter side" means); its
+// thickness in the other dimension is derived from the row's total area.
+function layoutRow(row: AreaItem[], x: number, y: number, w: number, h: number): TreemapNode[] {
+  const rowArea = row.reduce((s, r) => s + r.area, 0);
+  const rects: TreemapNode[] = [];
+  if (w >= h) {
+    const bandWidth = h > 0 ? rowArea / h : 0;
+    let cy = y;
+    for (const item of row) {
+      const itemHeight = bandWidth > 0 ? item.area / bandWidth : 0;
+      rects.push({ key: item.key, x, y: cy, w: bandWidth, h: itemHeight });
+      cy += itemHeight;
+    }
+  } else {
+    const bandHeight = w > 0 ? rowArea / w : 0;
+    let cx = x;
+    for (const item of row) {
+      const itemWidth = bandHeight > 0 ? item.area / bandHeight : 0;
+      rects.push({ key: item.key, x: cx, y, w: itemWidth, h: bandHeight });
+      cx += itemWidth;
     }
   }
-  return [items.slice(0, splitIndex), items.slice(splitIndex)];
+  return rects;
 }
 
-export function buildTreeStructure(
-  items: { slot: number; weight: number }[],
-  w: number,
-  h: number
-): TreeStruct {
-  if (items.length <= 1) return { type: "leaf", slot: items[0]?.slot ?? 0 };
-
-  const [firstGroup, secondGroup] = splitByWeight(items);
-  const firstWeight = firstGroup.reduce((sum, item) => sum + item.weight, 0);
-  const secondWeight = secondGroup.reduce((sum, item) => sum + item.weight, 0);
-  const ratio = firstWeight / (firstWeight + secondWeight || 1);
-  const axis: "v" | "h" = w >= h ? "v" : "h";
-  const leftW = axis === "v" ? w * ratio : w;
-  const leftH = axis === "h" ? h * ratio : h;
-
-  return {
-    type: "split",
-    axis,
-    leftSlots: firstGroup.map((i) => i.slot),
-    rightSlots: secondGroup.map((i) => i.slot),
-    left: buildTreeStructure(firstGroup, leftW, leftH),
-    right: buildTreeStructure(
-      secondGroup,
-      w - (axis === "v" ? leftW : 0),
-      h - (axis === "h" ? leftH : 0)
-    ),
-  };
-}
-
-export function layoutTree(
-  node: TreeStruct,
-  weightBySlot: Map<number, number>,
+// Lays out `items` (any order in — sorted internally, largest weight
+// first, which is what the squarify algorithm expects for good results)
+// into the rectangle (x, y, w, h), in the SAME units as w/h — pass real
+// pixels for a real container, or percentages for an abstract one.
+export function squarify(
+  items: { key: GridKey; weight: number }[],
   x: number,
   y: number,
   w: number,
   h: number
-): { slot: number; x: number; y: number; w: number; h: number }[] {
-  if (node.type === "leaf") return [{ slot: node.slot, x, y, w, h }];
+): TreemapNode[] {
+  if (items.length === 0 || w <= 0 || h <= 0) return [];
+  const totalWeight = items.reduce((s, i) => s + i.weight, 0);
+  if (totalWeight <= 0) return [];
 
-  const leftWeight = node.leftSlots.reduce((sum, s) => sum + (weightBySlot.get(s) ?? 0), 0);
-  const rightWeight = node.rightSlots.reduce((sum, s) => sum + (weightBySlot.get(s) ?? 0), 0);
-  const ratio = leftWeight / (leftWeight + rightWeight || 1);
+  const scale = (w * h) / totalWeight;
+  let remaining: AreaItem[] = [...items]
+    .sort((a, b) => b.weight - a.weight)
+    .map((i) => ({ key: i.key, area: i.weight * scale }));
 
-  if (node.axis === "v") {
-    const leftW = w * ratio;
-    return [
-      ...layoutTree(node.left, weightBySlot, x, y, leftW, h),
-      ...layoutTree(node.right, weightBySlot, x + leftW, y, w - leftW, h),
-    ];
+  const nodes: TreemapNode[] = [];
+  let rx = x;
+  let ry = y;
+  let rw = w;
+  let rh = h;
+
+  while (remaining.length > 0) {
+    const side = Math.min(rw, rh);
+    let row: AreaItem[] = [remaining[0]];
+    let i = 1;
+    while (i < remaining.length) {
+      const nextRow = [...row, remaining[i]];
+      if (worstAspectRatio(nextRow, side) <= worstAspectRatio(row, side)) {
+        row = nextRow;
+        i++;
+      } else {
+        break;
+      }
+    }
+
+    nodes.push(...layoutRow(row, rx, ry, rw, rh));
+
+    const rowArea = row.reduce((s, r) => s + r.area, 0);
+    if (rw >= rh) {
+      const bandWidth = rh > 0 ? rowArea / rh : 0;
+      rx += bandWidth;
+      rw -= bandWidth;
+    } else {
+      const bandHeight = rw > 0 ? rowArea / rw : 0;
+      ry += bandHeight;
+      rh -= bandHeight;
+    }
+    remaining = remaining.slice(row.length);
   }
-  const leftH = h * ratio;
-  return [
-    ...layoutTree(node.left, weightBySlot, x, y, w, leftH),
-    ...layoutTree(node.right, weightBySlot, x, y + leftH, w, h - leftH),
-  ];
+
+  return nodes;
 }

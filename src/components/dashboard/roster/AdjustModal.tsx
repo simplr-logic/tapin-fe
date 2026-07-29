@@ -43,30 +43,32 @@ export function AdjustModal({
         </DialogHeader>
 
         <div className="grid grid-cols-2 gap-2 bg-surface-2 p-1 rounded-md border border-garden-border">
-          <button
+          <Button
             type="button"
+            variant="ghost"
             onClick={() => onSignChange("subtract")}
             className={[
-              "py-1.5 text-xs font-semibold rounded-md transition-all",
+              "h-auto py-1.5 text-xs font-semibold",
               sign === "subtract"
-                ? "bg-error/12 text-error border border-error/30"
+                ? "bg-error/12 text-error border border-error/30 hover:bg-error/12"
                 : "text-ink-subtle hover:text-ink-muted",
             ].join(" ")}
           >
             Unlog hours
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="ghost"
             onClick={() => onSignChange("add")}
             className={[
-              "py-1.5 text-xs font-semibold rounded-md transition-all",
+              "h-auto py-1.5 text-xs font-semibold",
               sign === "add"
-                ? "bg-success/12 text-success border border-success/30"
+                ? "bg-success/12 text-success border border-success/30 hover:bg-success/12"
                 : "text-ink-subtle hover:text-ink-muted",
             ].join(" ")}
           >
             Log custom hours
-          </button>
+          </Button>
         </div>
 
         <div className="grid grid-cols-2 gap-3">

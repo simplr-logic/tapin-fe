@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 
-import { buildTreeStructure, layoutTree } from "@/components/dashboard/roster/treemap";
+import { squarify } from "@/components/dashboard/roster/treemap";
 import { formatHours, getHeatStyle, getPct } from "@/components/dashboard/roster/utils";
 import { LANDING_WEEK_PROJECTS } from "@/components/landing/landing-mock-data";
 import { LandingCard } from "@/components/landing/landing-ui";
@@ -48,9 +48,9 @@ function TreemapTile({
       <p
         className={cn(
           "font-bold tabular-nums leading-none",
-          isSmall ? "text-sm mt-1" : "text-xl mt-2"
+          isSmall ? "text-sm mt-1" : "text-xl mt-2",
+          heat.text
         )}
-        style={{ color: heat.pctColor }}
       >
         {formatHours(minutes)}
       </p>
@@ -61,12 +61,23 @@ function TreemapTile({
 export default function LandingTreemapPreview() {
   const nodes = useMemo(() => {
     const items = LANDING_WEEK_PROJECTS.map((project) => ({
-      slot: project.slot,
+      key: `p-${project.slot}` as const,
       weight: project.minutes,
     }));
-    const tree = buildTreeStructure(items, 100, 100);
-    const weightBySlot = new Map(items.map((item) => [item.slot, item.weight]));
-    return layoutTree(tree, weightBySlot, 0, 0, 100, 100);
+    // Squarify against an abstract ~16:10 space (this card's desktop aspect)
+    // then normalize to 0-100 percentages — decorative only, no real
+    // container to measure, but this keeps tiles close to square instead of
+    // assuming a plain square space.
+    const w = 160;
+    const h = 100;
+    const rects = squarify(items, 0, 0, w, h);
+    return rects.map((r) => ({
+      slot: Number(r.key.slice(2)),
+      x: (r.x / w) * 100,
+      y: (r.y / h) * 100,
+      w: (r.w / w) * 100,
+      h: (r.h / h) * 100,
+    }));
   }, []);
 
   return (

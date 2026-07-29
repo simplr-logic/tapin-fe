@@ -26,6 +26,32 @@ export function fromIsoDate(iso: string): Date {
   return new Date(`${iso}T00:00:00`);
 }
 
+// Standard half-day accounting: each day = 8h except first day (4h if starts at "noon") and last (4h if ends at "morning").
+export function computeSpecialDayHours(
+  startDate: Date,
+  startPeriod: DayPeriod,
+  endDate: Date,
+  endPeriod: DayPeriod
+): number {
+  const start = startOfDay(startDate);
+  const end = startOfDay(endDate);
+  if (end < start) return 0;
+
+  const totalDays = Math.round((end.getTime() - start.getTime()) / 86400000) + 1;
+
+  if (totalDays === 1) {
+    if (startPeriod === "morning" && endPeriod === "noon") return 8;
+    if (startPeriod === "noon" && endPeriod === "noon") return 4;
+    if (startPeriod === "morning" && endPeriod === "morning") return 4;
+    return 0; // starts in the afternoon but "ends" that same morning — invalid range
+  }
+
+  const firstDayHours = startPeriod === "morning" ? 8 : 4;
+  const lastDayHours = endPeriod === "noon" ? 8 : 4;
+  const middleDays = totalDays - 2;
+  return firstDayHours + lastDayHours + middleDays * 8;
+}
+
 export function PeriodToggle({
   value,
   onChange,
@@ -45,19 +71,20 @@ export function PeriodToggle({
           ["noon", noonLabel],
         ] as [DayPeriod, string][]
       ).map(([period, label]) => (
-        <button
+        <Button
           key={period}
           type="button"
+          variant="outline"
           onClick={() => onChange(period)}
           className={[
-            "py-1.5 rounded-md border text-[11px] font-semibold transition-colors",
+            "h-auto py-1.5 text-[11px] font-semibold",
             value === period
-              ? "bg-kale/10 border-kale/35 text-kale"
-              : "bg-surface-2 border-garden-border text-ink-subtle hover:text-ink-muted",
+              ? "bg-kale/10 border-kale/35 text-kale hover:bg-kale/10"
+              : "bg-surface-2 text-ink-subtle hover:text-ink-muted",
           ].join(" ")}
         >
           {label}
-        </button>
+        </Button>
       ))}
     </div>
   );

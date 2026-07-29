@@ -1,5 +1,4 @@
 import { SPECIAL_DAY_TYPES, type SpecialDay } from "@/components/dashboard/SpecialDayDialog";
-import { gardenColors } from "@/config/theme";
 
 import type { PeriodView } from "@/config/constants";
 
@@ -98,16 +97,46 @@ export function getPeriodLabel(period: PeriodView, date: Date): string {
 // Project heat tiers deliberately never use "warning" (the brownish tone) —
 // that hue is reserved for Holiday special-day blocks. Projects only ever
 // read as success (on track), open (near/over target), or error (well over).
-export function getHeatStyle(pct: number): { bg: string; border: string; pctColor: string } {
+//
+// `text`/`fill` are Tailwind classes, not raw hex — they need to resolve
+// through the theme-aware color tokens (see globals.css's --garden-* vars)
+// so heat colors stay legible after a dark-mode switch instead of freezing
+// at whatever shade was right for light mode.
+export function getHeatStyle(pct: number): {
+  bg: string;
+  border: string;
+  text: string;
+  fill: string;
+} {
   if (pct >= 115)
-    return { bg: "bg-error/18", border: "border-error/45", pctColor: gardenColors.error };
+    return { bg: "bg-error/18", border: "border-error/45", text: "text-error", fill: "bg-error" };
   if (pct >= 100)
-    return { bg: "bg-success/14", border: "border-success/35", pctColor: gardenColors.success };
+    return {
+      bg: "bg-success/14",
+      border: "border-success/35",
+      text: "text-success",
+      fill: "bg-success",
+    };
   if (pct >= 50)
-    return { bg: "bg-yellow/12", border: "border-yellow/30", pctColor: gardenColors.yellow };
+    return {
+      bg: "bg-yellow/12",
+      border: "border-yellow/30",
+      text: "text-yellow",
+      fill: "bg-yellow",
+    };
   if (pct > 0)
-    return { bg: "bg-yellow/6", border: "border-yellow/18", pctColor: gardenColors.yellow };
-  return { bg: "bg-surface-2", border: "border-garden-border", pctColor: gardenColors.inkSubtle };
+    return {
+      bg: "bg-yellow/6",
+      border: "border-yellow/18",
+      text: "text-yellow",
+      fill: "bg-yellow",
+    };
+  return {
+    bg: "bg-surface-2",
+    border: "border-garden-border",
+    text: "text-ink-subtle",
+    fill: "bg-ink-subtle",
+  };
 }
 
 export function getPeriodRange(period: PeriodView, date: Date): { start: string; end: string } {

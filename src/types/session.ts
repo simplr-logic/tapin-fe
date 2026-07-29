@@ -26,6 +26,19 @@ export interface Person {
 
 export interface MeResponse {
   person: Person;
+  needs_onboarding: boolean;
+  suggested_display_name?: string;
+}
+
+export interface SessionInfo {
+  id: string;
+  created_at: string;
+  last_seen_at: string;
+  expires_at: string;
+  device_label?: string;
+  login_ip?: string;
+  last_seen_ip?: string;
+  is_current: boolean;
 }
 
 export function primaryEmail(person: Person): string | null {

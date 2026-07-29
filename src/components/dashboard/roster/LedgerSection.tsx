@@ -3,7 +3,7 @@
 import { ChevronDown, ClipboardList } from "lucide-react";
 import { useState, useSyncExternalStore } from "react";
 
-import { gardenColors } from "@/config/theme";
+import { Button } from "@/components/ui/button";
 
 import { PROJECT_ICONS } from "./constants";
 
@@ -31,10 +31,11 @@ export function LedgerSection({ ledger }: LedgerSectionProps) {
 
   return (
     <div className="space-y-2">
-      <button
+      <Button
         type="button"
+        variant="ghost"
         onClick={() => setManualOpen(!open)}
-        className="flex items-center justify-between w-full"
+        className="h-auto w-full justify-between p-0 hover:bg-transparent"
       >
         <div className="flex items-center gap-2 text-[10px] text-ink-subtle uppercase tracking-wide font-medium">
           <ClipboardList className="w-3.5 h-3.5" />
@@ -48,7 +49,7 @@ export function LedgerSection({ ledger }: LedgerSectionProps) {
             className={`w-3.5 h-3.5 text-ink-subtle transition-transform duration-150 ${open ? "rotate-180" : ""}`}
           />
         </div>
-      </button>
+      </Button>
 
       {open && (
         <>
@@ -57,19 +58,16 @@ export function LedgerSection({ ledger }: LedgerSectionProps) {
               No adjustments yet. Use the adjust panel on any project to log changes here.
             </div>
           ) : (
-            <div className="rounded-lg border border-garden-border bg-white divide-y divide-garden-border overflow-hidden">
+            <div className="rounded-lg border border-garden-border bg-card divide-y divide-garden-border overflow-hidden">
               {entries.map((entry) => {
                 const Icon = PROJECT_ICONS[entry.icon];
                 const isDeduction = entry.note.startsWith("−");
-                const color = isDeduction ? gardenColors.error : gardenColors.success;
+                const colorCls = isDeduction ? "bg-error" : "bg-success";
 
                 return (
                   <div key={entry.id}>
                     <div className="flex items-center gap-3 px-4 py-2.5">
-                      <div
-                        className="w-2 h-2 rounded-full shrink-0"
-                        style={{ backgroundColor: color }}
-                      />
+                      <div className={`w-2 h-2 rounded-full shrink-0 ${colorCls}`} />
                       <Icon className="w-3.5 h-3.5 text-ink-subtle shrink-0" />
                       <span className="text-xs font-semibold text-ink truncate flex-1">
                         {entry.projectTitle}

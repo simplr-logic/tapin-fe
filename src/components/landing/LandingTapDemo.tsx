@@ -100,13 +100,14 @@ export default function LandingTapDemo() {
       <div className="relative px-4 py-5 md:px-5 md:py-6">
         <div className="relative mx-auto flex max-w-xs flex-col items-center">
           <div className="relative">
-            <button
+            <Button
               type="button"
+              variant="outline"
               onClick={handleTap}
               aria-label={`Tap to log ${TAP_INCREMENT} minutes to ${DEMO_PROJECT}`}
               className={cn(
-                "relative z-10 flex size-28 md:size-32 items-center justify-center rounded-lg border border-garden-border",
-                "bg-surface-2/90 outline-none transition-colors duration-100",
+                "relative z-10 h-auto flex size-28 md:size-32 items-center justify-center rounded-lg border-garden-border",
+                "bg-surface-2/90 transition-colors duration-100",
                 "focus-visible:ring-3 focus-visible:ring-link/50",
                 "hover:bg-surface-2 active:scale-[0.98]",
                 tapping && "landing-hero-tap-fill"
@@ -121,7 +122,7 @@ export default function LandingTapDemo() {
               >
                 <Zap className="size-8 md:size-9" aria-hidden />
               </span>
-            </button>
+            </Button>
 
             {!reducedMotion ? (
               <LandingTapRipple

@@ -105,10 +105,7 @@ export function ProjectGridTile({
         ].join(" ")}
       >
         {/* heat bar */}
-        <div
-          className="absolute top-0 left-0 right-0 h-1"
-          style={{ backgroundColor: style.pctColor }}
-        />
+        <div className={`absolute top-0 left-0 right-0 h-1 ${style.fill}`} />
 
         {/* top row: title + pct% */}
         <div className="flex items-start justify-between gap-0.5">
@@ -126,19 +123,14 @@ export function ProjectGridTile({
               {project.company}
             </p>
           </div>
-          <span
-            className={`${metaCls} font-bold shrink-0 mt-0.5`}
-            style={{ color: style.pctColor }}
-          >
-            {pct}%
-          </span>
+          <span className={`${metaCls} font-bold shrink-0 mt-0.5 ${style.text}`}>{pct}%</span>
         </div>
 
         {/* center: hours */}
         <div className="flex-1 flex flex-col items-center justify-center min-h-0 py-0.5">
           <span
-            className="font-semibold tracking-tight tabular-nums leading-none"
-            style={{ color: style.pctColor, fontSize: `${hoursPx}px` }}
+            className={`font-semibold tracking-tight tabular-nums leading-none ${style.text}`}
+            style={{ fontSize: `${hoursPx}px` }}
           >
             {formatHours(project.loggedMinutes)}
           </span>

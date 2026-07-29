@@ -3,6 +3,7 @@
 import { CalendarDays, Palmtree, Pencil, Trash2 } from "lucide-react";
 
 import { SPECIAL_DAY_TYPES, type SpecialDay } from "@/components/dashboard/SpecialDayDialog";
+import { Button } from "@/components/ui/button";
 
 import { formatSpecialRange } from "./utils";
 
@@ -36,13 +37,14 @@ export function SpecialDaySection({
         <div className="rounded-lg border border-dashed border-garden-border bg-surface-2/50 px-5 py-6 text-center space-y-1.5">
           <Palmtree className="w-5 h-5 text-ink-subtle mx-auto" />
           <p className="text-xs text-ink-subtle">No holidays or leave logged this week.</p>
-          <button
+          <Button
             type="button"
+            variant="link"
             onClick={onAdd}
-            className="text-xs font-semibold text-link hover:text-link-hover hover:underline"
+            className="h-auto p-0 text-xs font-semibold text-link hover:text-link-hover hover:underline"
           >
             Log one now
-          </button>
+          </Button>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
@@ -59,30 +61,23 @@ export function SpecialDaySection({
                 )}
               >
                 {/* colour accent strip */}
-                <div
-                  className="absolute top-0 left-0 right-0 h-0.5"
-                  style={{ backgroundColor: typeInfo.hex }}
-                />
+                <div className={`absolute top-0 left-0 right-0 h-0.5 ${typeInfo.dotClass}`} />
 
                 <div className="px-3.5 pt-3.5 pb-3 space-y-2.5">
                   {/* top row */}
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center gap-2.5 min-w-0">
                       <div
-                        className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-                        style={{ backgroundColor: `${typeInfo.hex}18` }}
+                        className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${typeInfo.iconBgClass}`}
                       >
-                        <Icon className="w-4 h-4" style={{ color: typeInfo.hex }} />
+                        <Icon className={`w-4 h-4 ${typeInfo.textClass}`} />
                       </div>
                       <div className="min-w-0">
                         <p className="text-xs font-semibold text-ink leading-tight truncate">
                           {label}
                         </p>
                         <div className="flex items-center gap-1 mt-0.5">
-                          <CalendarDays
-                            className="w-2.5 h-2.5 shrink-0"
-                            style={{ color: typeInfo.hex }}
-                          />
+                          <CalendarDays className={`w-2.5 h-2.5 shrink-0 ${typeInfo.textClass}`} />
                           <p className="text-[10px] text-ink-subtle truncate">
                             {formatSpecialRange(day)}
                           </p>
@@ -91,22 +86,26 @@ export function SpecialDaySection({
                     </div>
 
                     <div className="flex items-center gap-0.5 shrink-0">
-                      <button
+                      <Button
                         type="button"
+                        variant="ghost"
+                        size="icon-xs"
                         onClick={() => onEdit(day.id)}
                         title="Edit"
-                        className="w-6 h-6 rounded-md flex items-center justify-center text-ink-subtle hover:text-ink hover:bg-white/70 transition-colors"
+                        className="text-ink-subtle hover:text-ink hover:bg-white/70"
                       >
                         <Pencil className="w-3 h-3" />
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         type="button"
+                        variant="ghost"
+                        size="icon-xs"
                         onClick={() => onRemove(day.id)}
                         title="Delete"
-                        className="w-6 h-6 rounded-md flex items-center justify-center text-ink-subtle hover:text-error hover:bg-white/70 transition-colors"
+                        className="text-ink-subtle hover:text-error hover:bg-white/70"
                       >
                         <Trash2 className="w-3 h-3" />
-                      </button>
+                      </Button>
                     </div>
                   </div>
 
@@ -118,15 +117,13 @@ export function SpecialDaySection({
 
                   {/* footer */}
                   <div
-                    className="flex items-center justify-between pt-2 border-t"
-                    style={{ borderColor: `${typeInfo.hex}28` }}
+                    className={`flex items-center justify-between pt-2 border-t ${typeInfo.borderTintClass}`}
                   >
                     <span className="text-[9px] text-ink-subtle uppercase tracking-wide font-medium">
                       Roster credit
                     </span>
                     <span
-                      className="text-xs font-bold px-2 py-0.5 rounded-full"
-                      style={{ color: typeInfo.hex, backgroundColor: `${typeInfo.hex}15` }}
+                      className={`text-xs font-bold px-2 py-0.5 rounded-full ${typeInfo.textClass} ${typeInfo.badgeBgClass}`}
                     >
                       {day.hours}h
                     </span>
