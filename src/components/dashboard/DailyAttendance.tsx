@@ -35,7 +35,7 @@ export default function DailyAttendance({
     <div className="bg-card rounded-lg border border-garden-border shadow-card overflow-hidden">
       <div className="px-5 py-4 border-b border-garden-border">
         <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2 text-ink-muted text-xs font-medium tracking-wide uppercase">
+          <div className="flex items-center gap-2 text-ink-muted text-xs font-medium tracking-wide">
             <CalendarIcon className="w-3.5 h-3.5" />
             Calendar
           </div>

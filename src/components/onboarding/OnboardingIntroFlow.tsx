@@ -19,8 +19,10 @@ import { cn } from "@/lib/utils";
 // reference flow this was modeled on.
 export default function OnboardingIntroFlow({
   suggestedDisplayName,
+  isNewAccount = false,
 }: {
   suggestedDisplayName?: string;
+  isNewAccount?: boolean;
 }) {
   const router = useRouter();
   const [name, setName] = useState(suggestedDisplayName ?? "");
@@ -37,7 +39,10 @@ export default function OnboardingIntroFlow({
       body: JSON.stringify({ display_name: name.trim() || "there" }),
     });
 
-    setTimeout(() => router.push("/dashboard"), 1400);
+    setTimeout(
+      () => router.push(isNewAccount ? "/dashboard?is_new_account=1" : "/dashboard"),
+      1400
+    );
   }
 
   return (

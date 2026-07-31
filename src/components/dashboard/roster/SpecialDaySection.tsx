@@ -23,7 +23,7 @@ export function SpecialDaySection({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 text-[10px] text-ink-subtle uppercase tracking-wide font-medium">
+        <div className="flex items-center gap-2 text-[10px] text-ink-subtle tracking-wide font-medium">
           <Palmtree className="w-3.5 h-3.5" />
           Special Day Blocks
           <span className="normal-case tracking-normal text-[10px] font-semibold bg-surface-2 border border-garden-border text-ink-muted px-1.5 py-0.5 rounded-full">
@@ -119,7 +119,7 @@ export function SpecialDaySection({
                   <div
                     className={`flex items-center justify-between pt-2 border-t ${typeInfo.borderTintClass}`}
                   >
-                    <span className="text-[9px] text-ink-subtle uppercase tracking-wide font-medium">
+                    <span className="text-[9px] text-ink-subtle tracking-wide font-medium">
                       Roster credit
                     </span>
                     <span

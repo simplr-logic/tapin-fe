@@ -71,7 +71,7 @@ function SignOffForm({
   return (
     <>
       <DialogHeader>
-        <span className="text-[10px] font-semibold text-link uppercase tracking-wide">
+        <span className="text-[10px] font-semibold text-link tracking-wide">
           Timesheet Submission
         </span>
         <DialogTitle>{monthLabel ?? "This Month"}</DialogTitle>
@@ -100,7 +100,7 @@ function SignOffForm({
         {/* Per-project breakdown */}
         {projects.length > 0 && (
           <div className="space-y-1.5">
-            <div className="flex items-center gap-1.5 text-[10px] text-ink-subtle uppercase tracking-wide font-medium px-0.5">
+            <div className="flex items-center gap-1.5 text-[10px] text-ink-subtle tracking-wide font-medium px-0.5">
               <ScrollText className="w-3 h-3" />
               Projects · {projects.length}
             </div>

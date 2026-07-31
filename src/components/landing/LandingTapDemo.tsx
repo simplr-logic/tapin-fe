@@ -81,12 +81,12 @@ export default function LandingTapDemo() {
     <LandingCard className="overflow-hidden text-left">
       <div className="flex items-start justify-between gap-3 border-b border-garden-border px-4 py-3 md:px-5">
         <div className="min-w-0">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-muted">Today</p>
+          <p className="text-[11px] font-semibold tracking-wide text-ink-muted">Today</p>
           <p className="text-sm font-semibold text-ink truncate">{DEMO_PROJECT}</p>
           <p className="text-xs text-ink-subtle truncate">{DEMO_COMPANY}</p>
         </div>
         <div className="text-right shrink-0">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-muted">Logged</p>
+          <p className="text-[11px] font-semibold tracking-wide text-ink-muted">Logged</p>
           <p
             className="text-2xl font-bold tabular-nums text-ink tracking-tight"
             aria-live="polite"

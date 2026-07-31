@@ -21,7 +21,7 @@ function MonthStats({ label, logged, target }: { label: string; logged: number; 
 
   return (
     <div className="rounded-md bg-surface-2 border border-garden-border p-3.5 space-y-2.5">
-      <p className="text-[10px] text-ink-subtle uppercase tracking-wide font-medium">{label}</p>
+      <p className="text-[10px] text-ink-subtle tracking-wide font-medium">{label}</p>
       <div className="flex items-end justify-between gap-2">
         <span className="text-2xl font-semibold text-ink tracking-tight tabular-nums">
           {logged.toFixed(1)}h
@@ -93,7 +93,7 @@ export default function TimesheetSubmission() {
   return (
     <div className="bg-card rounded-lg border border-garden-border shadow-card">
       <div className="px-5 py-4 border-b border-garden-border flex items-center justify-between">
-        <div className="flex items-center gap-2 text-ink-muted text-xs font-medium tracking-wide uppercase">
+        <div className="flex items-center gap-2 text-ink-muted text-xs font-medium tracking-wide">
           <FileText className="w-3.5 h-3.5" />
           Timesheet
         </div>
@@ -138,7 +138,7 @@ export default function TimesheetSubmission() {
             <Button
               type="button"
               onClick={() => setIsSignOffOpen(true)}
-              className="w-full h-9 gap-2 bg-error hover:bg-error/90 text-white text-xs font-semibold uppercase tracking-wide"
+              className="w-full h-9 gap-2 bg-error hover:bg-error/90 text-white text-xs font-semibold tracking-wide"
             >
               Submit {lastMonthLabel.split(" ")[0]} Timesheet
             </Button>
@@ -160,7 +160,7 @@ export default function TimesheetSubmission() {
                   type="button"
                   variant="outline"
                   onClick={() => unsubmitTimesheet(currentMonthRecord.monthKey)}
-                  className="w-full h-9 gap-2 border-error/40 hover:bg-error/8 text-error text-xs font-semibold uppercase tracking-wide"
+                  className="w-full h-9 gap-2 border-error/40 hover:bg-error/8 text-error text-xs font-semibold tracking-wide"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                   Revoke Submission
@@ -170,7 +170,7 @@ export default function TimesheetSubmission() {
               <Button
                 type="button"
                 onClick={() => setIsSignOffOpen(true)}
-                className="w-full h-9 gap-2 bg-kale hover:bg-kale-hover text-white text-xs font-semibold uppercase tracking-wide"
+                className="w-full h-9 gap-2 bg-kale hover:bg-kale-hover text-white text-xs font-semibold tracking-wide"
               >
                 Submit Timesheet
               </Button>

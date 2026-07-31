@@ -1,40 +1,19 @@
 "use client";
 
-import {
-  Building2,
-  Cloud,
-  FolderKanban,
-  LayoutGrid,
-  Lock,
-  Pencil,
-  Plus,
-  Trash2,
-  Truck,
-  Unlock,
-} from "lucide-react";
+import { FolderKanban, Lock, Pencil, Plus, Trash2, Unlock } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 
+import { PROJECT_ICONS } from "@/components/dashboard/roster/constants";
+import { formatHours } from "@/components/dashboard/roster/utils";
 import { ProjectFormDialog } from "@/components/projects/ProjectFormDialog";
-import { type Project, sumLogs, useProjects } from "@/components/providers/ProjectsProvider";
+import { sumLogs, useProjects } from "@/components/providers/ProjectsProvider";
 import { Button } from "@/components/ui/button";
 import { getComplianceColorClass } from "@/config/theme";
 import { cn } from "@/lib/utils";
 
-const PROJECT_ICONS = {
-  truck: Truck,
-  building: Building2,
-  grid: LayoutGrid,
-  cloud: Cloud,
-} as const;
-
 function getPct(loggedMinutes: number, targetHours: number): number {
   return Math.round((loggedMinutes / 60 / targetHours) * 100);
-}
-
-function formatHours(minutes: number): string {
-  const h = Math.floor(minutes / 60);
-  const m = Math.floor(minutes % 60);
-  return m > 0 ? `${h}h ${m}m` : `${h}h`;
 }
 
 function getStatusStyle(pct: number): { colorClass: string; label: string } {
@@ -45,12 +24,11 @@ function getStatusStyle(pct: number): { colorClass: string; label: string } {
 export function ProjectsTable() {
   const { projects, addProject, updateProject, removeProject } = useProjects();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [editingProject, setEditingProject] = useState<Project | null>(null);
 
   return (
     <div className="bg-card rounded-lg border border-garden-border shadow-card overflow-hidden">
       <div className="px-5 py-4 border-b border-garden-border flex items-center justify-between gap-4 flex-wrap">
-        <div className="flex items-center gap-2 text-ink-muted text-xs font-medium tracking-wide uppercase">
+        <div className="flex items-center gap-2 text-ink-muted text-xs font-medium tracking-wide">
           <FolderKanban className="w-3.5 h-3.5" />
           All Projects
           <span className="text-[10px] font-semibold text-ink-muted bg-surface-2 px-2 py-0.5 rounded-full normal-case tracking-normal">
@@ -107,7 +85,7 @@ export function ProjectsTable() {
                   <div className="flex items-center gap-1.5">
                     <p className="text-sm font-semibold text-ink truncate">{project.title}</p>
                     {project.locked && (
-                      <span className="flex items-center gap-1 text-[9px] font-semibold uppercase tracking-wide text-ink-subtle bg-surface-2 border border-garden-border-strong rounded-full px-1.5 py-0.5 shrink-0">
+                      <span className="flex items-center gap-1 text-[9px] font-semibold tracking-wide text-ink-subtle bg-surface-2 border border-garden-border-strong rounded-full px-1.5 py-0.5 shrink-0">
                         <Lock className="w-2.5 h-2.5" />
                         Locked
                       </span>
@@ -150,9 +128,10 @@ export function ProjectsTable() {
                     type="button"
                     variant="outline"
                     size="icon"
-                    onClick={() => setEditingProject(project)}
-                    title="Edit project"
+                    title="Manage project"
                     className="text-ink-muted bg-card hover:bg-surface-2 hover:text-ink"
+                    render={<Link href={`/projects/${project.id}`} />}
+                    nativeButton={false}
                   >
                     <Pencil className="w-3.5 h-3.5" />
                   </Button>
@@ -178,12 +157,6 @@ export function ProjectsTable() {
       )}
 
       <ProjectFormDialog open={isCreateOpen} onOpenChange={setIsCreateOpen} onCreate={addProject} />
-      <ProjectFormDialog
-        open={editingProject !== null}
-        onOpenChange={(open) => !open && setEditingProject(null)}
-        project={editingProject}
-        onSave={updateProject}
-      />
     </div>
   );
 }

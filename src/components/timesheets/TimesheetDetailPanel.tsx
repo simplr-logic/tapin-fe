@@ -135,7 +135,7 @@ export function TimesheetDetailPanel({
           {dayProjects !== null ? (
             <>
               <div className="flex items-center justify-between">
-                <p className="text-[10px] text-ink-subtle uppercase tracking-wide font-medium">
+                <p className="text-[10px] text-ink-subtle tracking-wide font-medium">
                   {selectedDate!.toLocaleDateString("en-US", {
                     weekday: "short",
                     month: "short",
@@ -166,7 +166,7 @@ export function TimesheetDetailPanel({
             </>
           ) : (
             <>
-              <p className="text-[10px] text-ink-subtle uppercase tracking-wide font-medium">
+              <p className="text-[10px] text-ink-subtle tracking-wide font-medium">
                 Projects · {record.projects.length}
               </p>
               <div className="space-y-4">

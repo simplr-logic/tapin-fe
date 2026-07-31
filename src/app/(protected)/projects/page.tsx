@@ -1,5 +1,5 @@
-import { ProjectsTable } from "@/components/projects/ProjectsTable";
+import DashboardShell from "@/components/dashboard/DashboardShell";
 
 export default function ProjectsPage() {
-  return <ProjectsTable />;
+  return <DashboardShell />;
 }

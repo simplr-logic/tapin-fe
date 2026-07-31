@@ -15,6 +15,19 @@ import { CountryCombobox } from "./CountryCombobox";
 
 export const COMPANY_SIZE_OPTIONS = ["1-10", "11-50", "51-200", "201-500", "500+"];
 
+export const INDUSTRY_OPTIONS = [
+  "Technology",
+  "Retail",
+  "Logistics",
+  "Healthcare",
+  "Finance",
+  "Manufacturing",
+  "Construction",
+  "Education",
+  "Hospitality",
+  "Professional Services",
+];
+
 // Every currency that appears in countries.json, so autofilling from a
 // country selection always lands on a value this list actually contains.
 export const CURRENCY_OPTIONS = Array.from(new Set(countries.map((c) => c.currency))).sort();
@@ -72,7 +85,7 @@ export function CompanyDetailsFields({
       <div className="space-y-1.5">
         <Label
           htmlFor="legalName"
-          className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide"
+          className="text-[10px] font-semibold text-ink-subtle tracking-wide"
         >
           Legal name
         </Label>
@@ -86,9 +99,7 @@ export function CompanyDetailsFields({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <Label className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide">
-            Country
-          </Label>
+          <Label className="text-[10px] font-semibold text-ink-subtle tracking-wide">Country</Label>
           <CountryCombobox
             value={details.country}
             onSelect={(country) =>
@@ -101,24 +112,27 @@ export function CompanyDetailsFields({
           />
         </div>
         <div className="space-y-1.5">
-          <Label
-            htmlFor="industry"
-            className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide"
-          >
+          <Label className="text-[10px] font-semibold text-ink-subtle tracking-wide">
             Industry
           </Label>
-          <Input
-            id="industry"
-            value={details.industry}
-            onChange={(e) => onChange({ industry: e.target.value })}
-            placeholder="Logistics"
-          />
+          <Select value={details.industry} onValueChange={(v) => onChange({ industry: v ?? "" })}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select industry" />
+            </SelectTrigger>
+            <SelectContent>
+              {INDUSTRY_OPTIONS.map((opt) => (
+                <SelectItem key={opt} value={opt}>
+                  {opt}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <Label className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide">
+          <Label className="text-[10px] font-semibold text-ink-subtle tracking-wide">
             Company size
           </Label>
           <Select
@@ -138,7 +152,7 @@ export function CompanyDetailsFields({
           </Select>
         </div>
         <div className="space-y-1.5">
-          <Label className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide">
+          <Label className="text-[10px] font-semibold text-ink-subtle tracking-wide">
             Currency
           </Label>
           <Select value={details.currency} onValueChange={(v) => onChange({ currency: v ?? "" })}>
@@ -159,7 +173,7 @@ export function CompanyDetailsFields({
       <div className="space-y-1.5">
         <Label
           htmlFor="timezone"
-          className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide"
+          className="text-[10px] font-semibold text-ink-subtle tracking-wide"
         >
           Timezone
         </Label>
@@ -174,7 +188,7 @@ export function CompanyDetailsFields({
       <div className="space-y-1.5">
         <Label
           htmlFor="websiteUrl"
-          className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide"
+          className="text-[10px] font-semibold text-ink-subtle tracking-wide"
         >
           Website
         </Label>
@@ -190,7 +204,7 @@ export function CompanyDetailsFields({
       <div className="space-y-1.5">
         <Label
           htmlFor="logoUrl"
-          className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide"
+          className="text-[10px] font-semibold text-ink-subtle tracking-wide"
         >
           Logo URL
         </Label>

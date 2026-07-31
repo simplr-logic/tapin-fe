@@ -40,7 +40,7 @@ export function CompanyAdminsTab({ companyId }: { companyId: string }) {
 
   return (
     <div className="bg-card rounded-lg border border-garden-border shadow-card overflow-hidden">
-      <div className="px-5 py-4 border-b border-garden-border flex items-center gap-2 text-ink-muted text-xs font-medium tracking-wide uppercase">
+      <div className="px-5 py-4 border-b border-garden-border flex items-center gap-2 text-ink-muted text-xs font-medium tracking-wide">
         <ShieldCheck className="w-3.5 h-3.5" />
         Admins
       </div>

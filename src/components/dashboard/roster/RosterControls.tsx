@@ -1,6 +1,7 @@
 "use client";
 
-import { CalendarDays, LayoutGrid } from "lucide-react";
+import { CalendarDays, FolderKanban, LayoutGrid } from "lucide-react";
+import Link from "next/link";
 
 import { AttendanceCalendarContent } from "@/components/dashboard/AttendanceCalendarContent";
 import { Button } from "@/components/ui/button";
@@ -40,9 +41,22 @@ export function RosterControls({
   return (
     <div className="px-3 py-2.5 lg:px-5 lg:py-3 border-b border-garden-border space-y-2">
       {/* Title — always visible */}
-      <div className="flex items-center gap-2 text-ink-muted text-xs font-medium tracking-wide uppercase">
-        <LayoutGrid className="w-3.5 h-3.5" />
-        Project Roster
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 text-ink-muted text-xs font-medium tracking-wide">
+          <LayoutGrid className="w-3.5 h-3.5" />
+          Project Roster
+        </div>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          render={<Link href="/projects/list" />}
+          nativeButton={false}
+          className="h-auto gap-1.5 px-2.5 py-1 text-[10px] font-semibold normal-case tracking-normal text-ink-muted hover:bg-surface-2 hover:text-ink"
+        >
+          <FolderKanban className="w-3 h-3" />
+          Projects
+        </Button>
       </div>
 
       {/* Mobile only: period pills + date picker on same row */}

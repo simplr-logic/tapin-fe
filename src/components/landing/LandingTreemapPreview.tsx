@@ -84,7 +84,7 @@ export default function LandingTreemapPreview() {
     <LandingCard className="overflow-hidden">
       <div className="flex items-center justify-between border-b border-garden-border px-4 py-3 md:px-5">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Your week</p>
+          <p className="text-xs font-semibold tracking-wide text-ink-muted">Your week</p>
           <p className="text-sm text-ink-subtle">Mon 7 Jul – Sun 13 Jul</p>
         </div>
         <p className="text-sm font-semibold text-ink tabular-nums">43h logged</p>

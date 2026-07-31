@@ -78,7 +78,7 @@ function PricingPlanCard({
           <span className="flex size-9 items-center justify-center rounded-md bg-surface-2">
             <PlanIcon className="size-4 text-kale" aria-hidden />
           </span>
-          <p className="text-sm font-semibold uppercase tracking-wide text-ink">{planLabel}</p>
+          <p className="text-sm font-semibold tracking-wide text-ink">{planLabel}</p>
         </div>
         <div className="mt-4 min-h-16">
           <p className="text-2xl font-bold text-ink tracking-tight text-balance">{priceTitle}</p>
@@ -101,7 +101,7 @@ function PricingPlanCard({
           render={<Link href="#signup" />}
           nativeButton={false}
           variant={ctaVariant}
-          className="h-11 w-full rounded-md font-semibold uppercase tracking-wide text-xs"
+          className="h-11 w-full rounded-md font-semibold tracking-wide text-xs"
         >
           {ctaLabel}
         </Button>

@@ -137,7 +137,7 @@ function SpecialDayForm({
   return (
     <>
       <DialogHeader>
-        <span className="text-[10px] font-semibold text-link uppercase tracking-wide">
+        <span className="text-[10px] font-semibold text-link tracking-wide">
           Special Day Logger
         </span>
         <DialogTitle>{editing ? "Edit Off-Day Block" : "Log Holiday / Leave"}</DialogTitle>
@@ -145,7 +145,7 @@ function SpecialDayForm({
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <Label className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide mb-1">
+          <Label className="text-[10px] font-semibold text-ink-subtle tracking-wide mb-1">
             Off-day type
           </Label>
           <div className="grid grid-cols-2 gap-2">
@@ -171,7 +171,7 @@ function SpecialDayForm({
 
         {type === "leave" && (
           <div>
-            <Label className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide mb-1">
+            <Label className="text-[10px] font-semibold text-ink-subtle tracking-wide mb-1">
               Leave type
             </Label>
             <Select value={leaveType} onValueChange={(v) => setLeaveType(v as LeaveType)}>
@@ -191,9 +191,7 @@ function SpecialDayForm({
 
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
-            <Label className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide">
-              From
-            </Label>
+            <Label className="text-[10px] font-semibold text-ink-subtle tracking-wide">From</Label>
             <DatePickerField label="Start date" date={startDate} onChange={setStartDate} />
             <PeriodToggle
               value={startPeriod}
@@ -203,9 +201,7 @@ function SpecialDayForm({
             />
           </div>
           <div className="space-y-1.5">
-            <Label className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide">
-              To
-            </Label>
+            <Label className="text-[10px] font-semibold text-ink-subtle tracking-wide">To</Label>
             <DatePickerField label="End date" date={endDate} onChange={setEndDate} />
             <PeriodToggle
               value={endPeriod}
@@ -232,7 +228,7 @@ function SpecialDayForm({
         )}
 
         <div>
-          <Label className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide mb-1">
+          <Label className="text-[10px] font-semibold text-ink-subtle tracking-wide mb-1">
             Reason / Notes
           </Label>
           <Input
@@ -246,7 +242,7 @@ function SpecialDayForm({
         <Button
           type="submit"
           disabled={!canSave}
-          className="w-full h-9 text-xs font-semibold uppercase tracking-wide gap-1.5"
+          className="w-full h-9 text-xs font-semibold tracking-wide gap-1.5"
         >
           <Palmtree className="w-3.5 h-3.5" />
           {editing ? "Save Changes" : "Save Off-Day Block"}

@@ -37,7 +37,7 @@ export function LedgerSection({ ledger }: LedgerSectionProps) {
         onClick={() => setManualOpen(!open)}
         className="h-auto w-full justify-between p-0 hover:bg-transparent"
       >
-        <div className="flex items-center gap-2 text-[10px] text-ink-subtle uppercase tracking-wide font-medium">
+        <div className="flex items-center gap-2 text-[10px] text-ink-subtle tracking-wide font-medium">
           <ClipboardList className="w-3.5 h-3.5" />
           Recent Adjustments
         </div>

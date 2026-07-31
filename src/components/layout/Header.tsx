@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { useKlongSession } from "@/components/providers/SessionProvider";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -19,18 +19,10 @@ import {
 import { APP_NAME } from "@/config/constants";
 import { useLogout } from "@/hooks/useLogout";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
+import { getInitials } from "@/lib/utils";
 import { displayName, primaryEmail } from "@/types/session";
 
 import { ThemeToggleButton } from "./ThemeToggleButton";
-
-function getInitials(name: string): string {
-  const parts = name.trim().split(/\s+/);
-  return parts
-    .slice(0, 2)
-    .map((p) => p[0])
-    .join("")
-    .toUpperCase();
-}
 
 export default function Header({ onMenuToggle }: { onMenuToggle?: () => void }) {
   const { person } = useKlongSession();
@@ -77,6 +69,7 @@ export default function Header({ onMenuToggle }: { onMenuToggle?: () => void }) 
           <DropdownMenu>
             <DropdownMenuTrigger className="flex items-center gap-2 rounded-md px-1.5 py-1 hover:bg-white/10 transition-colors outline-none shrink-0 group">
               <Avatar size="sm">
+                {person.avatar_url && <AvatarImage src={person.avatar_url} alt="" />}
                 <AvatarFallback className="bg-white/20 text-white text-[10px] font-bold ring-1 ring-white/25">
                   {getInitials(name)}
                 </AvatarFallback>
@@ -90,6 +83,7 @@ export default function Header({ onMenuToggle }: { onMenuToggle?: () => void }) 
                 <DropdownMenuLabel>
                   <div className="flex items-center gap-2.5 py-0.5">
                     <Avatar size="sm">
+                      {person.avatar_url && <AvatarImage src={person.avatar_url} alt="" />}
                       <AvatarFallback className="bg-kale/10 text-kale text-[10px] font-bold">
                         {getInitials(name)}
                       </AvatarFallback>

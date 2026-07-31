@@ -43,9 +43,7 @@ export function WorklogModal({
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent>
         <DialogHeader>
-          <span className="text-[10px] font-semibold text-link uppercase tracking-wide">
-            Worklog
-          </span>
+          <span className="text-[10px] font-semibold text-link tracking-wide">Worklog</span>
           <DialogTitle className="truncate max-w-[240px]">{project.title}</DialogTitle>
           {periodLabel && <p className="text-[11px] text-ink-muted">{periodLabel}</p>}
         </DialogHeader>

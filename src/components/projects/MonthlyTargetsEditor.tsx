@@ -82,7 +82,7 @@ export function MonthlyTargetsEditor({ targets, startDate, onChange }: MonthlyTa
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <Label className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide">
+        <Label className="text-[10px] font-semibold text-ink-subtle tracking-wide">
           Target hours
         </Label>
         {targets.length > 1 && (

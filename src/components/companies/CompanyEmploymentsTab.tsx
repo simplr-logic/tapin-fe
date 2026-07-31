@@ -41,7 +41,7 @@ export function CompanyEmploymentsTab({ companyId }: { companyId: string }) {
 
   return (
     <div className="bg-card rounded-lg border border-garden-border shadow-card overflow-hidden">
-      <div className="px-5 py-4 border-b border-garden-border flex items-center gap-2 text-ink-muted text-xs font-medium tracking-wide uppercase">
+      <div className="px-5 py-4 border-b border-garden-border flex items-center gap-2 text-ink-muted text-xs font-medium tracking-wide">
         <Users className="w-3.5 h-3.5" />
         Employments
       </div>
@@ -62,7 +62,7 @@ export function CompanyEmploymentsTab({ companyId }: { companyId: string }) {
               </div>
               <span
                 className={[
-                  "text-[9px] font-semibold uppercase tracking-wide rounded-full px-1.5 py-0.5 border shrink-0",
+                  "text-[9px] font-semibold tracking-wide rounded-full px-1.5 py-0.5 border shrink-0",
                   e.status === "active"
                     ? "text-success bg-success/8 border-success/25"
                     : e.status === "frozen"

@@ -7,9 +7,12 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  /* Indirected through --font-sans-stack (defined in :root, overridden per
+     [data-font="…"] below) the same way colors indirect through --garden-*,
+     so a font-family pick changes body + heading in one place. */
+  --font-sans: var(--font-sans-stack);
   --font-mono: "SF Mono", "Roboto Mono", Menlo, monospace;
-  --font-heading: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-heading: var(--font-sans-stack);
 
   /* Zendesk Garden palette — kept in sync with src/config/theme.ts (JS-side
      color access for inline styles / runtime color logic). Update both if a
@@ -133,6 +136,11 @@
   --sidebar-ring: #1f73b7;
 
   --landing-wave-ease: cubic-bezier(0.15, 0.85, 0.35, 1);
+
+  /* Appearance settings (profile page) — font family/size are independent
+     of the --garden-* palette axis below. Defaults: system sans, 1x scale. */
+  --font-sans-stack: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-scale: 1;
 }
 
 /* Garden palette — dark. Kale (the header/chrome brand color) is
@@ -193,6 +201,404 @@
   --sidebar-ring: #5aa9e6;
 }
 
+/* ------------------------------------------------------------------ */
+/* Theme presets (profile → Appearance → Theme). Each block overrides   */
+/* only the vars that vary by palette: --garden-canvas/surface/border/  */
+/* kale/link/ink family, plus the shadcn tokens shadcn/ui primitives    */
+/* read directly (--background, --card, --primary, --ring, etc). Status */
+/* colors (success/warning/yellow/error/open) and --destructive/        */
+/* --chart-2/3/5 are intentionally NOT redeclared here — they inherit   */
+/* from the plain :root/.dark blocks above, since status hues stay      */
+/* constant across every theme. "Garden" itself has no block: it IS     */
+/* the :root/.dark values above.                                        */
+/* ------------------------------------------------------------------ */
+
+[data-palette="midnight"] {
+  --garden-canvas: #f4fafa;
+  --garden-surface-2: #e8f3f2;
+  --garden-surface-3: #dcedeb;
+  --garden-border: #c7dedc;
+  --garden-border-strong: #afccc9;
+  --garden-kale: #0e3a3f;
+  --garden-kale-hover: #0a2c30;
+  --garden-kale-accent: #1c565d;
+  --garden-link: #0f766e;
+  --garden-link-hover: #0b5c56;
+  --garden-ink: #10231f;
+  --garden-ink-muted: #4b6864;
+  --garden-ink-subtle: #7a9490;
+
+  --background: #f4fafa;
+  --foreground: #10231f;
+  --card: #ffffff;
+  --card-foreground: #10231f;
+  --popover: #ffffff;
+  --popover-foreground: #10231f;
+  --primary: #0e3a3f;
+  --primary-foreground: #ffffff;
+  --secondary: #e8f3f2;
+  --secondary-foreground: #10231f;
+  --muted: #e8f3f2;
+  --muted-foreground: #4b6864;
+  --accent: #e8f3f2;
+  --accent-foreground: #10231f;
+  --border: #c7dedc;
+  --input: #c7dedc;
+  --ring: #0f766e;
+  --chart-1: #0e3a3f;
+  --chart-4: #0f766e;
+}
+
+[data-palette="midnight"].dark {
+  --garden-canvas: #0b1416;
+  --garden-surface-2: #101c1e;
+  --garden-surface-3: #16262a;
+  --garden-border: #1f3336;
+  --garden-border-strong: #2b4448;
+  --garden-kale: #0e3a3f;
+  --garden-kale-hover: #0a2c30;
+  --garden-kale-accent: #1c565d;
+  --garden-link: #4fd1c5;
+  --garden-link-hover: #7ee0d6;
+  --garden-ink: #e7f1f0;
+  --garden-ink-muted: #9fbfbb;
+  --garden-ink-subtle: #6e8d89;
+
+  --background: #0b1416;
+  --foreground: #e7f1f0;
+  --card: #101c1e;
+  --card-foreground: #e7f1f0;
+  --popover: #101c1e;
+  --popover-foreground: #e7f1f0;
+  --primary: #0e3a3f;
+  --primary-foreground: #ffffff;
+  --secondary: #101c1e;
+  --secondary-foreground: #e7f1f0;
+  --muted: #101c1e;
+  --muted-foreground: #9fbfbb;
+  --accent: #101c1e;
+  --accent-foreground: #e7f1f0;
+  --border: #1f3336;
+  --input: #1f3336;
+  --ring: #4fd1c5;
+  --chart-1: #1c565d;
+  --chart-4: #4fd1c5;
+}
+
+[data-palette="slate-amber"] {
+  --garden-canvas: #f5f6f8;
+  --garden-surface-2: #eaecef;
+  --garden-surface-3: #dfe3e7;
+  --garden-border: #d3d8dd;
+  --garden-border-strong: #bcc3ca;
+  --garden-kale: #1e293b;
+  --garden-kale-hover: #0f172a;
+  --garden-kale-accent: #334155;
+  --garden-link: #b45309;
+  --garden-link-hover: #92400e;
+  --garden-ink: #1e2530;
+  --garden-ink-muted: #5b6472;
+  --garden-ink-subtle: #8991a0;
+
+  --background: #f5f6f8;
+  --foreground: #1e2530;
+  --card: #ffffff;
+  --card-foreground: #1e2530;
+  --popover: #ffffff;
+  --popover-foreground: #1e2530;
+  --primary: #1e293b;
+  --primary-foreground: #ffffff;
+  --secondary: #eaecef;
+  --secondary-foreground: #1e2530;
+  --muted: #eaecef;
+  --muted-foreground: #5b6472;
+  --accent: #eaecef;
+  --accent-foreground: #1e2530;
+  --border: #d3d8dd;
+  --input: #d3d8dd;
+  --ring: #b45309;
+  --chart-1: #1e293b;
+  --chart-4: #b45309;
+}
+
+[data-palette="slate-amber"].dark {
+  --garden-canvas: #11151c;
+  --garden-surface-2: #171c25;
+  --garden-surface-3: #1e2530;
+  --garden-border: #2a3140;
+  --garden-border-strong: #384153;
+  --garden-kale: #1e293b;
+  --garden-kale-hover: #0f172a;
+  --garden-kale-accent: #334155;
+  --garden-link: #f59e0b;
+  --garden-link-hover: #fbbf24;
+  --garden-ink: #eef1f5;
+  --garden-ink-muted: #a7afbd;
+  --garden-ink-subtle: #767f8e;
+
+  --background: #11151c;
+  --foreground: #eef1f5;
+  --card: #171c25;
+  --card-foreground: #eef1f5;
+  --popover: #171c25;
+  --popover-foreground: #eef1f5;
+  --primary: #334155;
+  --primary-foreground: #ffffff;
+  --secondary: #171c25;
+  --secondary-foreground: #eef1f5;
+  --muted: #171c25;
+  --muted-foreground: #a7afbd;
+  --accent: #171c25;
+  --accent-foreground: #eef1f5;
+  --border: #2a3140;
+  --input: #2a3140;
+  --ring: #f59e0b;
+  --chart-1: #334155;
+  --chart-4: #f59e0b;
+}
+
+[data-palette="sepia"] {
+  --garden-canvas: #f5efe6;
+  --garden-surface-2: #ede3d3;
+  --garden-surface-3: #e4d6c0;
+  --garden-border: #d8c6a8;
+  --garden-border-strong: #c4ac84;
+  --garden-kale: #4a3728;
+  --garden-kale-hover: #3a2a1e;
+  --garden-kale-accent: #6b5138;
+  --garden-link: #6e4a26;
+  --garden-link-hover: #55330f;
+  --garden-ink: #3a2e22;
+  --garden-ink-muted: #7a6a55;
+  --garden-ink-subtle: #9c8c77;
+
+  --background: #f5efe6;
+  --foreground: #3a2e22;
+  --card: #ffffff;
+  --card-foreground: #3a2e22;
+  --popover: #ffffff;
+  --popover-foreground: #3a2e22;
+  --primary: #4a3728;
+  --primary-foreground: #ffffff;
+  --secondary: #ede3d3;
+  --secondary-foreground: #3a2e22;
+  --muted: #ede3d3;
+  --muted-foreground: #7a6a55;
+  --accent: #ede3d3;
+  --accent-foreground: #3a2e22;
+  --border: #d8c6a8;
+  --input: #d8c6a8;
+  --ring: #6e4a26;
+  --chart-1: #4a3728;
+  --chart-4: #6e4a26;
+}
+
+[data-palette="sepia"].dark {
+  --garden-canvas: #211b14;
+  --garden-surface-2: #2a2219;
+  --garden-surface-3: #332a1f;
+  --garden-border: #403526;
+  --garden-border-strong: #524332;
+  --garden-kale: #4a3728;
+  --garden-kale-hover: #3a2a1e;
+  --garden-kale-accent: #6b5138;
+  --garden-link: #d9a15c;
+  --garden-link-hover: #e8b87a;
+  --garden-ink: #f0e6d8;
+  --garden-ink-muted: #c2b39e;
+  --garden-ink-subtle: #8e7f6b;
+
+  --background: #211b14;
+  --foreground: #f0e6d8;
+  --card: #2a2219;
+  --card-foreground: #f0e6d8;
+  --popover: #2a2219;
+  --popover-foreground: #f0e6d8;
+  --primary: #6b5138;
+  --primary-foreground: #ffffff;
+  --secondary: #2a2219;
+  --secondary-foreground: #f0e6d8;
+  --muted: #2a2219;
+  --muted-foreground: #c2b39e;
+  --accent: #2a2219;
+  --accent-foreground: #f0e6d8;
+  --border: #403526;
+  --input: #403526;
+  --ring: #d9a15c;
+  --chart-1: #6b5138;
+  --chart-4: #d9a15c;
+}
+
+[data-palette="orchid"] {
+  --garden-canvas: #f8f5fa;
+  --garden-surface-2: #efe8f5;
+  --garden-surface-3: #e5daef;
+  --garden-border: #d9c9e8;
+  --garden-border-strong: #c3acda;
+  --garden-kale: #3b2354;
+  --garden-kale-hover: #2d1a40;
+  --garden-kale-accent: #553372;
+  --garden-link: #9333ea;
+  --garden-link-hover: #7e22ce;
+  --garden-ink: #2c1f38;
+  --garden-ink-muted: #6b5c7a;
+  --garden-ink-subtle: #94849f;
+
+  --background: #f8f5fa;
+  --foreground: #2c1f38;
+  --card: #ffffff;
+  --card-foreground: #2c1f38;
+  --popover: #ffffff;
+  --popover-foreground: #2c1f38;
+  --primary: #3b2354;
+  --primary-foreground: #ffffff;
+  --secondary: #efe8f5;
+  --secondary-foreground: #2c1f38;
+  --muted: #efe8f5;
+  --muted-foreground: #6b5c7a;
+  --accent: #efe8f5;
+  --accent-foreground: #2c1f38;
+  --border: #d9c9e8;
+  --input: #d9c9e8;
+  --ring: #9333ea;
+  --chart-1: #3b2354;
+  --chart-4: #9333ea;
+}
+
+[data-palette="orchid"].dark {
+  --garden-canvas: #170f1f;
+  --garden-surface-2: #1e1428;
+  --garden-surface-3: #261a33;
+  --garden-border: #332440;
+  --garden-border-strong: #443255;
+  --garden-kale: #3b2354;
+  --garden-kale-hover: #2d1a40;
+  --garden-kale-accent: #553372;
+  --garden-link: #c084fc;
+  --garden-link-hover: #d8b4fe;
+  --garden-ink: #f1e9f7;
+  --garden-ink-muted: #c1afd1;
+  --garden-ink-subtle: #8b7a9c;
+
+  --background: #170f1f;
+  --foreground: #f1e9f7;
+  --card: #1e1428;
+  --card-foreground: #f1e9f7;
+  --popover: #1e1428;
+  --popover-foreground: #f1e9f7;
+  --primary: #553372;
+  --primary-foreground: #ffffff;
+  --secondary: #1e1428;
+  --secondary-foreground: #f1e9f7;
+  --muted: #1e1428;
+  --muted-foreground: #c1afd1;
+  --accent: #1e1428;
+  --accent-foreground: #f1e9f7;
+  --border: #332440;
+  --input: #332440;
+  --ring: #c084fc;
+  --chart-1: #553372;
+  --chart-4: #c084fc;
+}
+
+/* High Contrast intentionally breaks the "chrome stays fixed across
+   light/dark" convention the other themes follow — its whole point is
+   maximum contrast against the *current* canvas, so chrome inverts
+   black-on-white / white-on-black rather than staying a fixed brand hex. */
+[data-palette="high-contrast"] {
+  --garden-canvas: #ffffff;
+  --garden-surface-2: #f2f2f2;
+  --garden-surface-3: #e5e5e5;
+  --garden-border: #000000;
+  --garden-border-strong: #000000;
+  --garden-kale: #000000;
+  --garden-kale-hover: #262626;
+  --garden-kale-accent: #000000;
+  --garden-link: #0645ad;
+  --garden-link-hover: #003399;
+  --garden-ink: #000000;
+  --garden-ink-muted: #262626;
+  --garden-ink-subtle: #404040;
+
+  --background: #ffffff;
+  --foreground: #000000;
+  --card: #ffffff;
+  --card-foreground: #000000;
+  --popover: #ffffff;
+  --popover-foreground: #000000;
+  --primary: #000000;
+  --primary-foreground: #ffffff;
+  --secondary: #f2f2f2;
+  --secondary-foreground: #000000;
+  --muted: #f2f2f2;
+  --muted-foreground: #262626;
+  --accent: #f2f2f2;
+  --accent-foreground: #000000;
+  --border: #000000;
+  --input: #000000;
+  --ring: #0645ad;
+  --chart-1: #000000;
+  --chart-4: #0645ad;
+}
+
+[data-palette="high-contrast"].dark {
+  --garden-canvas: #000000;
+  --garden-surface-2: #0d0d0d;
+  --garden-surface-3: #1a1a1a;
+  --garden-border: #ffffff;
+  --garden-border-strong: #ffffff;
+  --garden-kale: #ffffff;
+  --garden-kale-hover: #e5e5e5;
+  --garden-kale-accent: #ffffff;
+  --garden-link: #66b2ff;
+  --garden-link-hover: #99ccff;
+  --garden-ink: #ffffff;
+  --garden-ink-muted: #e5e5e5;
+  --garden-ink-subtle: #cccccc;
+
+  --background: #000000;
+  --foreground: #ffffff;
+  --card: #0d0d0d;
+  --card-foreground: #ffffff;
+  --popover: #0d0d0d;
+  --popover-foreground: #ffffff;
+  --primary: #ffffff;
+  --primary-foreground: #000000;
+  --secondary: #0d0d0d;
+  --secondary-foreground: #ffffff;
+  --muted: #0d0d0d;
+  --muted-foreground: #e5e5e5;
+  --accent: #0d0d0d;
+  --accent-foreground: #ffffff;
+  --border: #ffffff;
+  --input: #ffffff;
+  --ring: #66b2ff;
+  --chart-1: #ffffff;
+  --chart-4: #66b2ff;
+}
+
+/* Font family/size axes (profile → Appearance → Font/Size) — independent
+   of palette. All stacks are OS-native, no next/font, no webfont fetch. */
+[data-font="serif"] {
+  --font-sans-stack: ui-serif, Georgia, Cambria, "Times New Roman", serif;
+}
+[data-font="mono"] {
+  --font-sans-stack: ui-monospace, "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
+}
+[data-font="rounded"] {
+  /* ui-rounded/SF Pro Rounded only resolve on Apple platforms — Trebuchet
+     MS/Verdana give Windows/Linux a genuinely different look instead of
+     silently collapsing to the same rendered font as [data-font="sans"]. */
+  --font-sans-stack: ui-rounded, "SF Pro Rounded", "Trebuchet MS", Verdana, sans-serif;
+}
+
+[data-font-size="compact"] {
+  --font-scale: 0.9375;
+}
+[data-font-size="large"] {
+  --font-scale: 1.125;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -202,6 +608,7 @@
   }
   html {
     @apply font-sans;
+    font-size: calc(16px * var(--font-scale));
   }
   :focus-visible {
     outline: 3px solid var(--garden-link);

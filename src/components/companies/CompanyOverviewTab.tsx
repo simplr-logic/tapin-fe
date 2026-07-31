@@ -109,7 +109,7 @@ export function CompanyOverviewTab({
             </div>
           )}
           <div className="space-y-1.5">
-            <Label className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide">
+            <Label className="text-[10px] font-semibold text-ink-subtle tracking-wide">
               Company name
             </Label>
             <Input
@@ -120,7 +120,7 @@ export function CompanyOverviewTab({
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide">
+              <Label className="text-[10px] font-semibold text-ink-subtle tracking-wide">
                 Legal name
               </Label>
               <Input
@@ -129,7 +129,7 @@ export function CompanyOverviewTab({
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide">
+              <Label className="text-[10px] font-semibold text-ink-subtle tracking-wide">
                 Country
               </Label>
               <Input
@@ -138,7 +138,7 @@ export function CompanyOverviewTab({
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide">
+              <Label className="text-[10px] font-semibold text-ink-subtle tracking-wide">
                 Industry
               </Label>
               <Input
@@ -147,7 +147,7 @@ export function CompanyOverviewTab({
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide">
+              <Label className="text-[10px] font-semibold text-ink-subtle tracking-wide">
                 Company size
               </Label>
               <Select
@@ -167,7 +167,7 @@ export function CompanyOverviewTab({
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide">
+              <Label className="text-[10px] font-semibold text-ink-subtle tracking-wide">
                 Timezone
               </Label>
               <Input
@@ -177,7 +177,7 @@ export function CompanyOverviewTab({
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide">
+              <Label className="text-[10px] font-semibold text-ink-subtle tracking-wide">
                 Currency
               </Label>
               <Select
@@ -198,7 +198,7 @@ export function CompanyOverviewTab({
             </div>
           </div>
           <div className="space-y-1.5">
-            <Label className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide">
+            <Label className="text-[10px] font-semibold text-ink-subtle tracking-wide">
               Website
             </Label>
             <Input
@@ -209,7 +209,7 @@ export function CompanyOverviewTab({
             />
           </div>
           <div className="space-y-1.5">
-            <Label className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide">
+            <Label className="text-[10px] font-semibold text-ink-subtle tracking-wide">
               Logo URL
             </Label>
             <Input
@@ -238,13 +238,13 @@ export function CompanyOverviewTab({
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2 flex-wrap">
           {adminRoles.length > 0 && (
-            <span className="flex items-center gap-1 text-[9px] font-semibold uppercase tracking-wide text-primary bg-primary/8 border border-primary/20 rounded-full px-1.5 py-0.5">
+            <span className="flex items-center gap-1 text-[9px] font-semibold tracking-wide text-primary bg-primary/8 border border-primary/20 rounded-full px-1.5 py-0.5">
               <ShieldCheck className="w-2.5 h-2.5" />
               {adminRoles.join(", ")}
             </span>
           )}
           {employment && (
-            <span className="text-[9px] font-semibold uppercase tracking-wide text-ink-subtle bg-surface-2 border border-garden-border-strong rounded-full px-1.5 py-0.5">
+            <span className="text-[9px] font-semibold tracking-wide text-ink-subtle bg-surface-2 border border-garden-border-strong rounded-full px-1.5 py-0.5">
               {employment.employment_type} · {employment.status}
             </span>
           )}
@@ -265,9 +265,7 @@ export function CompanyOverviewTab({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {DISPLAY_FIELDS.map(({ key, label }) => (
           <div key={key}>
-            <p className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide">
-              {label}
-            </p>
+            <p className="text-[10px] font-semibold text-ink-subtle tracking-wide">{label}</p>
             <p className="text-sm text-ink mt-0.5">{company[key] ?? "—"}</p>
           </div>
         ))}

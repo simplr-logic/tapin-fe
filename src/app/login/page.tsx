@@ -132,7 +132,7 @@ function LoginForm() {
               <div className="space-y-1.5">
                 <Label
                   htmlFor="email"
-                  className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide"
+                  className="text-[10px] font-semibold text-ink-subtle tracking-wide"
                 >
                   Work email
                 </Label>
@@ -154,7 +154,7 @@ function LoginForm() {
               <Button
                 type="submit"
                 disabled={loading || !email}
-                className="w-full h-11 gap-1.5 rounded-md text-xs font-semibold uppercase tracking-wide focus-visible:ring-3 focus-visible:ring-link/50"
+                className="w-full h-11 gap-1.5 rounded-md text-xs font-semibold tracking-wide focus-visible:ring-3 focus-visible:ring-link/50"
               >
                 {loading ? "Sending…" : "Send magic link"}
                 {!loading && <ArrowRight className="size-3.5" />}
@@ -164,7 +164,7 @@ function LoginForm() {
 
           <div className="mt-7 flex items-center gap-3">
             <Separator className="flex-1" />
-            <span className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide">
+            <span className="text-[10px] font-semibold text-ink-subtle tracking-wide">
               How it works
             </span>
             <Separator className="flex-1" />

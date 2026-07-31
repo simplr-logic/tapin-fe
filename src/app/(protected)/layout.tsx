@@ -24,14 +24,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const ownedCompanies = companies
     .filter((pc) => isCompanyAdmin(pc) && pc.admin_roles.includes("owner"))
     .map((pc) => ({ slug: pc.company.slug, name: pc.company.name }));
-  const isSolo = companies.length === 0;
 
   return (
     <SessionProvider person={me.person}>
       <div className="flex flex-col min-h-dvh lg:h-screen lg:overflow-hidden">
-        <AppShell ownedCompanies={ownedCompanies} isSolo={isSolo}>
-          {children}
-        </AppShell>
+        <AppShell ownedCompanies={ownedCompanies}>{children}</AppShell>
       </div>
     </SessionProvider>
   );

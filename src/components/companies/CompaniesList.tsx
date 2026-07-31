@@ -27,13 +27,13 @@ function CompanyRow({ company, admin_roles, employment }: PersonCompany) {
 
       <div className="hidden sm:flex items-center gap-1.5 shrink-0">
         {admin_roles.length > 0 && (
-          <span className="flex items-center gap-1 text-[9px] font-semibold uppercase tracking-wide text-primary bg-primary/8 border border-primary/20 rounded-full px-1.5 py-0.5">
+          <span className="flex items-center gap-1 text-[9px] font-semibold tracking-wide text-primary bg-primary/8 border border-primary/20 rounded-full px-1.5 py-0.5">
             <ShieldCheck className="w-2.5 h-2.5" />
             {admin_roles.join(", ")}
           </span>
         )}
         {employment && (
-          <span className="text-[9px] font-semibold uppercase tracking-wide text-ink-subtle bg-surface-2 border border-garden-border-strong rounded-full px-1.5 py-0.5">
+          <span className="text-[9px] font-semibold tracking-wide text-ink-subtle bg-surface-2 border border-garden-border-strong rounded-full px-1.5 py-0.5">
             {employment.status}
           </span>
         )}
@@ -56,7 +56,7 @@ export function CompaniesList({ initialCompanies }: { initialCompanies: PersonCo
   return (
     <div className="bg-card rounded-lg border border-garden-border shadow-card overflow-hidden">
       <div className="px-5 py-4 border-b border-garden-border flex items-center justify-between gap-4 flex-wrap">
-        <div className="flex items-center gap-2 text-ink-muted text-xs font-medium tracking-wide uppercase">
+        <div className="flex items-center gap-2 text-ink-muted text-xs font-medium tracking-wide">
           <Building2 className="w-3.5 h-3.5" />
           Companies
           <span className="text-[10px] font-semibold text-ink-muted bg-surface-2 px-2 py-0.5 rounded-full normal-case tracking-normal">
@@ -90,7 +90,7 @@ export function CompaniesList({ initialCompanies }: { initialCompanies: PersonCo
         <>
           {owned.length > 0 && (
             <div>
-              <p className="px-5 pt-3.5 pb-1 text-[10px] font-semibold text-ink-subtle uppercase tracking-wide">
+              <p className="px-5 pt-3.5 pb-1 text-[10px] font-semibold text-ink-subtle tracking-wide">
                 Owned by you
                 <span className="ml-1.5 text-ink-subtle/70">({owned.length})</span>
               </p>
@@ -104,7 +104,7 @@ export function CompaniesList({ initialCompanies }: { initialCompanies: PersonCo
 
           {other.length > 0 && (
             <div>
-              <p className="px-5 pt-3.5 pb-1 text-[10px] font-semibold text-ink-subtle uppercase tracking-wide border-t border-garden-border">
+              <p className="px-5 pt-3.5 pb-1 text-[10px] font-semibold text-ink-subtle tracking-wide border-t border-garden-border">
                 Other companies
                 <span className="ml-1.5 text-ink-subtle/70">({other.length})</span>
               </p>

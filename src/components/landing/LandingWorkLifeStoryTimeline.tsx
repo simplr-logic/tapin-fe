@@ -32,7 +32,7 @@ export default function LandingWorkLifeStoryTimeline() {
                       <span className="absolute bottom-2.5 left-2.5 right-2.5 h-px bg-garden-border-strong/80" />
                     </>
                   ) : null}
-                  <p className="text-[10px] font-semibold uppercase tracking-wide text-ink-muted leading-snug break-words sm:text-[11px]">
+                  <p className="text-[10px] font-semibold tracking-wide text-ink-muted leading-snug break-words sm:text-[11px]">
                     {chapter.company}
                   </p>
                   <p className="mt-1 text-[11px] text-ink-subtle leading-snug sm:text-xs md:text-sm">

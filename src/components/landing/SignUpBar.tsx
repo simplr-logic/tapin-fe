@@ -92,7 +92,7 @@ export default function SignUpBar() {
                   type="submit"
                   disabled={loading || !email}
                   className={cn(
-                    "h-11 shrink-0 rounded-md px-6 text-xs font-semibold uppercase tracking-wide",
+                    "h-11 shrink-0 rounded-md px-6 text-xs font-semibold tracking-wide",
                     "bg-white text-kale hover:bg-white/90"
                   )}
                 >

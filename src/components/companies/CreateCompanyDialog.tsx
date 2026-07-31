@@ -102,7 +102,7 @@ export function CreateCompanyDialog({
           <div className="space-y-1.5">
             <Label
               htmlFor="companyName"
-              className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide"
+              className="text-[10px] font-semibold text-ink-subtle tracking-wide"
             >
               Company name
             </Label>
@@ -117,7 +117,7 @@ export function CreateCompanyDialog({
           <div className="space-y-1.5">
             <Label
               htmlFor="companySlug"
-              className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide"
+              className="text-[10px] font-semibold text-ink-subtle tracking-wide"
             >
               Company URL
             </Label>

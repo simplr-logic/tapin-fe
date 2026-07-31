@@ -96,7 +96,7 @@ export function SessionsList() {
 
   return (
     <div className="bg-card rounded-lg border border-garden-border shadow-card overflow-hidden">
-      <div className="px-5 py-4 border-b border-garden-border flex items-center gap-2 text-ink-muted text-xs font-medium tracking-wide uppercase">
+      <div className="px-5 py-4 border-b border-garden-border flex items-center gap-2 text-ink-muted text-xs font-medium tracking-wide">
         <Monitor className="w-3.5 h-3.5" />
         Active sessions
       </div>
@@ -119,7 +119,7 @@ export function SessionsList() {
                   <div className="flex items-center gap-1.5">
                     <p className="text-sm font-semibold text-ink truncate">{device.label}</p>
                     {s.is_current && (
-                      <span className="text-[9px] font-semibold uppercase tracking-wide text-success bg-success/8 border border-success/25 rounded-full px-1.5 py-0.5 shrink-0">
+                      <span className="text-[9px] font-semibold tracking-wide text-success bg-success/8 border border-success/25 rounded-full px-1.5 py-0.5 shrink-0">
                         This device
                       </span>
                     )}

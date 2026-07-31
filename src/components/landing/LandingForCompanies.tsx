@@ -99,7 +99,7 @@ export default function LandingForCompanies() {
             render={<Link href="#signup" />}
             nativeButton={false}
             variant="outline"
-            className="h-11 rounded-md px-6 text-xs font-semibold uppercase tracking-wide"
+            className="h-11 rounded-md px-6 text-xs font-semibold tracking-wide"
           >
             Set up your company
           </Button>

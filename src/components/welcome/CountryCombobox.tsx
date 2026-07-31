@@ -1,21 +1,19 @@
 "use client";
 
-import { Check, ChevronsUpDown } from "lucide-react";
-import { useState } from "react";
-
-import { Button } from "@/components/ui/button";
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import countries from "@/data/countries.json";
-import { cn } from "@/lib/utils";
 
+// Same Select primitive as the Company size / Currency fields right next to
+// this one (see CompanyDetailsFields.tsx) — was previously a Popover+Command
+// combobox, which handled anchor-width positioning differently and caused a
+// visible jump when opened. Countries are pre-sorted alphabetically, so
+// Select's built-in typeahead (type a letter to jump) covers search.
 export function CountryCombobox({
   value,
   onSelect,
@@ -25,49 +23,24 @@ export function CountryCombobox({
   onSelect: (country: (typeof countries)[number]) => void;
   placeholder?: string;
 }) {
-  const [open, setOpen] = useState(false);
-
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger
-        render={
-          <Button
-            type="button"
-            variant="outline"
-            className="h-9 w-full justify-between rounded-md bg-transparent px-3 text-left text-sm font-normal"
-          />
-        }
-      >
-        <span className={cn("truncate", !value && "text-muted-foreground")}>
-          {value || placeholder}
-        </span>
-        <ChevronsUpDown className="size-3.5 shrink-0 text-muted-foreground" />
-      </PopoverTrigger>
-      <PopoverContent align="start" className="w-(--anchor-width) p-0">
-        <Command>
-          <CommandInput placeholder="Search countries…" />
-          <CommandList>
-            <CommandEmpty>No country found.</CommandEmpty>
-            <CommandGroup>
-              {countries.map((country) => (
-                <CommandItem
-                  key={country.code}
-                  value={country.name}
-                  onSelect={() => {
-                    onSelect(country);
-                    setOpen(false);
-                  }}
-                >
-                  <Check
-                    className={cn("size-3.5", value === country.name ? "opacity-100" : "opacity-0")}
-                  />
-                  {country.name}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+    <Select
+      value={value}
+      onValueChange={(name) => {
+        const country = countries.find((c) => c.name === name);
+        if (country) onSelect(country);
+      }}
+    >
+      <SelectTrigger className="w-full">
+        <SelectValue placeholder={placeholder} />
+      </SelectTrigger>
+      <SelectContent>
+        {countries.map((country) => (
+          <SelectItem key={country.code} value={country.name}>
+            {country.name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }

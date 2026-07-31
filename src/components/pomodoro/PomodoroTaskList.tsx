@@ -22,9 +22,7 @@ export function PomodoroTaskList({ tasks }: { tasks: PomodoroTask[] }) {
 
   return (
     <div className="w-full space-y-2">
-      <p className="text-[10px] font-semibold uppercase tracking-wide text-ink-subtle">
-        Session tasks
-      </p>
+      <p className="text-[10px] font-semibold tracking-wide text-ink-subtle">Session tasks</p>
 
       <div className="flex gap-2">
         <Input

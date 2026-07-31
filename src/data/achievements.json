@@ -1,0 +1,128 @@
+[
+  {
+    "id": "first_tap",
+    "key": "first_tap",
+    "title": "First Tap",
+    "description": "Log your very first time entry.",
+    "category": "volume"
+  },
+  {
+    "id": "streak_7_day",
+    "key": "streak_7_day",
+    "title": "On Fire",
+    "description": "Log time 7 working days in a row.",
+    "category": "streak"
+  },
+  {
+    "id": "streak_perfect_month",
+    "key": "streak_perfect_month",
+    "title": "Perfect Month",
+    "description": "Hit your target hours for a full month.",
+    "category": "streak"
+  },
+  {
+    "id": "early_bird",
+    "key": "early_bird",
+    "title": "Early Bird",
+    "description": "Log time before 9am, 5 times.",
+    "category": "streak"
+  },
+  {
+    "id": "night_owl",
+    "key": "night_owl",
+    "title": "Night Owl",
+    "description": "Log time after 8pm, 5 times.",
+    "category": "streak"
+  },
+  {
+    "id": "century_club",
+    "key": "century_club",
+    "title": "Century Club",
+    "description": "Log time on 100 different days.",
+    "category": "volume"
+  },
+  {
+    "id": "1000_hours",
+    "key": "1000_hours",
+    "title": "1000 Hours",
+    "description": "Reach 1,000 cumulative logged hours.",
+    "category": "volume"
+  },
+  {
+    "id": "overachiever",
+    "key": "overachiever",
+    "title": "Overachiever",
+    "description": "Exceed a weekly target by 20%.",
+    "category": "volume"
+  },
+  {
+    "id": "project_starter",
+    "key": "project_starter",
+    "title": "Project Starter",
+    "description": "Create your first project.",
+    "category": "project"
+  },
+  {
+    "id": "juggler",
+    "key": "juggler",
+    "title": "Juggler",
+    "description": "Log time across 5+ projects in one week.",
+    "category": "project"
+  },
+  {
+    "id": "project_closer",
+    "key": "project_closer",
+    "title": "Closer",
+    "description": "Complete and lock a project with an end date.",
+    "category": "project"
+  },
+  {
+    "id": "on_time_quarter",
+    "key": "on_time_quarter",
+    "title": "On Time",
+    "description": "100% on-time submissions this month.",
+    "category": "compliance"
+  },
+  {
+    "id": "audit_ready",
+    "key": "audit_ready",
+    "title": "Audit Ready",
+    "description": "Keep yearly on-time compliance at 90%+.",
+    "category": "compliance"
+  },
+  {
+    "id": "compliance_star",
+    "key": "compliance_star",
+    "title": "Compliance Star",
+    "description": "Reach 95%+ on-time compliance for the year.",
+    "category": "compliance"
+  },
+  {
+    "id": "team_player",
+    "key": "team_player",
+    "title": "Team Player",
+    "description": "Log time alongside teammates in the roster, often.",
+    "category": "social"
+  },
+  {
+    "id": "top_contributor",
+    "key": "top_contributor",
+    "title": "Top Contributor",
+    "description": "Log the most hours company-wide in a month.",
+    "category": "social"
+  },
+  {
+    "id": "drag_master",
+    "key": "drag_master",
+    "title": "Drag Master",
+    "description": "Rearrange the roster grid 20 times.",
+    "category": "meta"
+  },
+  {
+    "id": "onboarded",
+    "key": "onboarded",
+    "title": "Onboarded",
+    "description": "Complete the welcome flow.",
+    "category": "meta"
+  }
+]

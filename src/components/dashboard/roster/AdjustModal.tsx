@@ -36,9 +36,7 @@ export function AdjustModal({
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent>
         <DialogHeader>
-          <span className="text-[10px] font-semibold text-link uppercase tracking-wide">
-            Adjust Hours
-          </span>
+          <span className="text-[10px] font-semibold text-link tracking-wide">Adjust Hours</span>
           <DialogTitle className="truncate max-w-[240px]">{project.title}</DialogTitle>
         </DialogHeader>
 
@@ -73,7 +71,7 @@ export function AdjustModal({
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <Label className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide mb-1">
+            <Label className="text-[10px] font-semibold text-ink-subtle tracking-wide mb-1">
               Hours
             </Label>
             <Input
@@ -85,7 +83,7 @@ export function AdjustModal({
             />
           </div>
           <div>
-            <Label className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide mb-1">
+            <Label className="text-[10px] font-semibold text-ink-subtle tracking-wide mb-1">
               Minutes
             </Label>
             <Input
@@ -102,7 +100,7 @@ export function AdjustModal({
         </div>
 
         <div>
-          <Label className="text-[10px] font-semibold text-ink-subtle uppercase tracking-wide mb-1">
+          <Label className="text-[10px] font-semibold text-ink-subtle tracking-wide mb-1">
             Note (optional)
           </Label>
           <Input
@@ -118,7 +116,7 @@ export function AdjustModal({
           onClick={onSave}
           disabled={hours === 0 && minutes === 0}
           className={[
-            "w-full text-xs font-semibold uppercase tracking-wide h-9",
+            "w-full text-xs font-semibold tracking-wide h-9",
             sign === "subtract" ? "bg-error hover:brightness-90 text-white" : "",
           ].join(" ")}
         >

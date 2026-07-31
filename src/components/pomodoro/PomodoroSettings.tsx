@@ -91,7 +91,7 @@ export function PomodoroSettings({
         </DialogHeader>
 
         <div className="space-y-3 pt-1">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-subtle">
+          <p className="text-[11px] font-semibold tracking-wide text-ink-subtle">
             Durations (minutes)
           </p>
           <NumField label="Focus" field="workMinutes" min={1} max={120} settings={settings} />
@@ -121,9 +121,7 @@ export function PomodoroSettings({
         <Separator />
 
         <div className="space-y-3">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-subtle">
-            Behavior
-          </p>
+          <p className="text-[11px] font-semibold tracking-wide text-ink-subtle">Behavior</p>
           <ToggleField
             label="Auto-start next phase"
             description="Immediately starts the next phase when one ends"
@@ -135,9 +133,7 @@ export function PomodoroSettings({
         <Separator />
 
         <div className="space-y-3">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-subtle">
-            Feedback
-          </p>
+          <p className="text-[11px] font-semibold tracking-wide text-ink-subtle">Feedback</p>
           <ToggleField
             label="Sound on complete"
             description="Plays a beep when a phase ends"

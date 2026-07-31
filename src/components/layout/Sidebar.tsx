@@ -6,6 +6,7 @@ import {
   FileText,
   FolderKanban,
   LayoutDashboard,
+  Lock,
   Timer,
   UserCircle,
 } from "lucide-react";
@@ -20,6 +21,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useWelcomePending } from "@/hooks/useWelcomeGate";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -30,18 +32,23 @@ const NAV_ITEMS = [
   { href: "/profile", label: "Profile", icon: UserCircle },
 ];
 
+// Reachable while welcome setup is still pending — everything else is
+// visually disabled here (see AppShell.tsx for the matching route-level
+// redirect guard, since a disabled nav item alone doesn't stop a direct
+// URL visit).
+const UNGATED_HREFS = new Set(["/dashboard", "/profile"]);
+
 export default function Sidebar({
   open,
   onClose,
   ownedCompanies = [],
-  isSolo = false,
 }: {
   open: boolean;
   onClose: () => void;
   ownedCompanies?: { slug: string; name: string }[];
-  isSolo?: boolean;
 }) {
   const pathname = usePathname();
+  const welcomePending = useWelcomePending();
   const activeCompany = ownedCompanies.find((c) => {
     const href = `/companies/${c.slug}`;
     return pathname === href || pathname.startsWith(`${href}/`);
@@ -63,7 +70,7 @@ export default function Sidebar({
         ].join(" ")}
       >
         <nav className="flex-1 p-2 space-y-0.5 pt-3">
-          {ownedCompanies.length > 0 && (
+          {ownedCompanies.length > 0 && !welcomePending && (
             <div className="pb-2 mb-2 border-b border-garden-border">
               <DropdownMenu>
                 <DropdownMenuTrigger
@@ -106,7 +113,23 @@ export default function Sidebar({
           {NAV_ITEMS.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
             const Icon = item.icon;
-            const label = item.href === "/dashboard" && isSolo ? "Homepage" : item.label;
+            const disabled = welcomePending && !UNGATED_HREFS.has(item.href);
+
+            if (disabled) {
+              return (
+                <div
+                  key={item.href}
+                  title="Finish setup first"
+                  aria-disabled="true"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-ink-subtle/50 cursor-not-allowed"
+                >
+                  <Icon className="w-4 h-4 shrink-0" />
+                  {item.label}
+                  <Lock className="w-3 h-3 shrink-0 ml-auto" />
+                </div>
+              );
+            }
+
             return (
               <Link
                 key={item.href}
@@ -125,15 +148,13 @@ export default function Sidebar({
                     isActive ? "text-primary" : "text-ink-subtle",
                   ].join(" ")}
                 />
-                {label}
+                {item.label}
               </Link>
             );
           })}
         </nav>
         <div className="px-4 py-3 border-t border-garden-border">
-          <p className="text-[10px] text-ink-subtle/60 font-medium tracking-wide uppercase">
-            v0.1.0 · Demo
-          </p>
+          <p className="text-[10px] text-ink-subtle/60 font-medium tracking-wide">v0.1.0 · Demo</p>
         </div>
       </aside>
     </>

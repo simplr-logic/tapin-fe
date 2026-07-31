@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { bumpDragCount } from "@/lib/achievementEvents";
+
 import type { GridKey, ViewMode } from "./types";
 import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 
@@ -40,6 +42,7 @@ export function useRosterDrag({
       const next = [...effectiveSlots];
       [next[fromSlot], next[toSlot]] = [next[toSlot], next[fromSlot]];
       setSlotAssignment(next);
+      bumpDragCount();
     } else {
       const fromId = Number(active.id);
       const toId = Number(over.id);
@@ -51,6 +54,7 @@ export function useRosterDrag({
       next.splice(from, 1);
       next.splice(to, 0, fromId);
       setListOrder(next);
+      bumpDragCount();
     }
   }
 

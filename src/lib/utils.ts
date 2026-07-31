@@ -14,3 +14,13 @@ export function slugify(input: string): string {
     .replace(/^-+|-+$/g, "")
     .slice(0, 50);
 }
+
+export function getInitials(name: string): string {
+  return name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((p) => p[0])
+    .join("")
+    .toUpperCase();
+}

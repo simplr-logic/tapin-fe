@@ -97,7 +97,7 @@ export default function LandingHeader() {
             render={<Link href="/login" />}
             nativeButton={false}
             className={cn(
-              "rounded-md font-semibold uppercase tracking-wide focus-visible:ring-3 focus-visible:ring-link/50",
+              "rounded-md font-semibold tracking-wide focus-visible:ring-3 focus-visible:ring-link/50",
               scrolled ? "h-9 min-w-11 px-4 text-xs" : "h-11 min-w-11 px-5 text-xs md:text-sm"
             )}
           >

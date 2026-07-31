@@ -77,7 +77,7 @@ export function ProjectProgressRow({
             <div className="flex items-center gap-1.5">
               <p className="text-sm font-semibold text-ink truncate">{project.title}</p>
               {project.locked && (
-                <span className="flex items-center gap-1 text-[9px] font-semibold uppercase tracking-wide text-ink-subtle bg-surface-2 border border-garden-border-strong rounded-full px-1.5 py-0.5 shrink-0">
+                <span className="flex items-center gap-1 text-[9px] font-semibold tracking-wide text-ink-subtle bg-surface-2 border border-garden-border-strong rounded-full px-1.5 py-0.5 shrink-0">
                   <Lock className="w-2.5 h-2.5" />
                   Locked
                 </span>

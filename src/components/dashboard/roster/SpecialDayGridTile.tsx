@@ -57,7 +57,7 @@ export function SpecialDayGridTile({ node, days }: { node: TreemapNode; days: Sp
             </div>
             <div className="flex items-center gap-1.5">
               <Palmtree className="w-3.5 h-3.5 text-warning" />
-              <span className="text-[10px] font-semibold uppercase tracking-wide text-warning">
+              <span className="text-[10px] font-semibold tracking-wide text-warning">
                 Special Day Block
               </span>
             </div>

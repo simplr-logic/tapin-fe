@@ -148,7 +148,7 @@ export function PomodoroTimer() {
       <div className="flex flex-col items-center gap-8 px-6 py-10">
         <div className="w-full flex items-center justify-between">
           <span
-            className={`px-3 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wider ${styles.badge}`}
+            className={`px-3 py-1 rounded-full text-[11px] font-semibold tracking-wider ${styles.badge}`}
           >
             {PHASE_LABELS[phase]}
           </span>

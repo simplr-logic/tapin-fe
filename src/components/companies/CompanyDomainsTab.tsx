@@ -105,7 +105,7 @@ export function CompanyDomainsTab({ companyId }: { companyId: string }) {
               <p className="text-sm text-ink flex-1 truncate">{d.domain}</p>
               <span
                 className={[
-                  "text-[9px] font-semibold uppercase tracking-wide rounded-full px-1.5 py-0.5 border shrink-0",
+                  "text-[9px] font-semibold tracking-wide rounded-full px-1.5 py-0.5 border shrink-0",
                   d.verified
                     ? "text-success bg-success/8 border-success/25"
                     : "text-warning bg-warning/8 border-warning/25",
