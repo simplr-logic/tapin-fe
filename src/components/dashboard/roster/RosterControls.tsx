@@ -39,7 +39,7 @@ export function RosterControls({
   const weekRange = period === "week" ? getPeriodRange("week", selectedDate) : undefined;
 
   return (
-    <div className="px-3 py-2.5 lg:px-5 lg:py-3 border-b border-garden-border space-y-2">
+    <div className="px-3 pt-2.5 pb-2.5 lg:px-5 lg:pt-3 lg:pb-0 border-b border-garden-border space-y-2">
       {/* Title — always visible */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 text-ink-muted text-xs font-medium tracking-wide">
@@ -55,7 +55,7 @@ export function RosterControls({
           className="h-auto gap-1.5 px-2.5 py-1 text-[10px] font-semibold normal-case tracking-normal text-ink-muted hover:bg-surface-2 hover:text-ink"
         >
           <FolderKanban className="w-3 h-3" />
-          Projects
+          Project Listing
         </Button>
       </div>
 

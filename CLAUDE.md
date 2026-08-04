@@ -209,7 +209,18 @@ Rules:
 
 - **Kale is chrome-only** — the top app bar and primary buttons. Never use it for
   ticket/status color. (Applies per-theme: use that theme's chrome slot, never
-  hardcode Garden's `#03363D` in a new component.)
+  hardcode Garden's `#03363D` in a new component.) **Concretely: never use
+  `text-kale`/`ring-kale`/`bg-kale/NN` as a foreground accent on a content
+  surface** (badges, icons, selected-state rings, progress fills). Kale is
+  deliberately mode-invariant — same hex in light and dark — because it's
+  meant to read as fixed chrome, not a page surface. Used as foreground
+  color on a card/dialog, it's a dark teal on a dark background in dark
+  mode and disappears (this shipped as a real bug in the achievements grid,
+  the welcome-flow stepper, and several other spots — all fixed by
+  switching to `link`, which has real light/dark contrast built into its
+  tokens). For "selected/active/unlocked" accents, reach for `link` (or
+  `success`/`warning`/`error` when it's genuinely a status, not decoration)
+  instead of `kale`.
 - **Functional status colors are the only place** red/orange/green appear, and
   always pair with a text label — never color alone. Always use the
   `success`/`warning`/`error`/`open`/`yellow` tokens (fixed across themes),
@@ -249,7 +260,7 @@ before inventing new patterns.
   - `projects/list/page.tsx` — project management table (`ProjectsTable`)
   - `projects/[id]/page.tsx` — project detail/edit page (`ProjectDetailView`) — replaced the old edit-dialog pattern; see "Project form" below
   - `timesheets/page.tsx` — timesheet history
-  - `profile/page.tsx` — `ProfileHeaderCard` (avatar/banner, upload-on-hover) + `AppearanceSettings` + `AchievementsGrid` + `SessionsList`
+  - `profile/page.tsx` — `ProfileHeaderCard` (avatar/banner, upload-on-hover) + `EmailsManagement` + `AppearanceSettings` + `AchievementsGrid` + `SessionsList`
   - `pomodoro/page.tsx`, `companies/page.tsx`, `companies/[slug]/page.tsx` — see their own component folders
 - `onboarding/page.tsx` — short name-confirm + practice-tap intro (`OnboardingIntroFlow`), always runs first for any account with `needs_onboarding: true`, regardless of new-vs-invited
 - `login/page.tsx` — magic-link request form (email only, no password)
@@ -267,7 +278,8 @@ opaque session cookie, no NextAuth, no passwords.
 - **Logout**: `useLogout()` (`src/hooks/useLogout.ts`) `POST`s `/me/logout` (same-origin rewrite) so the gateway's cookie-clearing `Set-Cookie` applies directly to the browser, then routes to `/login`.
 - Session/person response shapes are typed in `src/types/session.ts` (mirrors gateway's `meResponse`/`personResponse` — see `simplr.klong-be/gateway/internal/handlers/person_json.go`).
 - `callbackUrl` preservation on redirect-to-login is best-effort only — the gateway's post-login redirect target is currently a fixed configured path (`POST_LOGIN_REDIRECT_PATH`), not per-request, so deep-link return isn't wired end-to-end yet.
-- Company-invite acceptance, domain-claim prompts, and email management (add/remove/set-primary) are **not built yet** — see `docs/FE_LOGIN_FLOW_TASKS.md` for the full backlog against `Klong_Login_Flow.docx`. Session-list UI **is** built (`SessionsList.tsx`, `GET/DELETE /me/sessions`). Company _creation_ (as part of onboarding) is also built — see "Onboarding & welcome flow" below.
+- Company-invite acceptance and domain-claim prompts are **not built yet** — see `docs/FE_LOGIN_FLOW_TASKS.md` for the full backlog against `Klong_Login_Flow.docx`. Session-list UI **is** built (`SessionsList.tsx`, `GET/DELETE /me/sessions`), and so is company _creation_ (as part of onboarding) — see "Onboarding & welcome flow" below.
+- **Email management** (add/remove/set-primary) is built — `EmailsManagement.tsx` on `/profile`, see `src/lib/emailManagement.ts`. Note: `display_name`/`bio`/`timezone`/`locale`/`handle`/`gamification_enabled`/appearance-sync fields are still write-once-at-onboarding-only — `POST /me` supports updating all of them but nothing calls it yet outside onboarding. See `docs/LOGIN_ONBOARDING_PROFILE_GAPS.md`.
 - **Avatar/banner upload** is real, not mocked — `POST /me/media/uploads` (presigned PUT) → `PUT` to storage → `POST /me/media/uploads/confirm`. See "Person media upload" below.
 
 ### State management — client-side only (no backend yet, except auth)
@@ -374,14 +386,15 @@ Both solo and company success funnel into the **same** `WelcomeUnlockOverlay` �
 
 Neither the solo nor company screen asks for a display name — `OnboardingIntroFlow` already collected and saved it via `POST /me/onboarding/complete` before either of these ever renders.
 
-### Person media upload (`src/lib/mediaUpload.ts`, `src/lib/cropImage.ts`, `src/components/profile/MediaUploadZone.tsx`, `ImageCropDialog.tsx`, `ProfileHeaderCard.tsx`)
+### Person media upload (`src/lib/mediaUpload.ts`, `src/lib/cropImage.ts`, `src/components/profile/MediaUploadZone.tsx`, `ImageCropDialog.tsx`, `ImagePreviewDialog.tsx`, `ProfileHeaderCard.tsx`)
 
-Real, gateway-backed — not mocked, unlike most other app state. Hover the avatar or banner on `/profile` → camera icon overlay → pick a file → crop → upload.
+Real, gateway-backed — not mocked, unlike most other app state. Hover the avatar or banner on `/profile` → camera icon overlay → click.
 
+- **Click behavior branches on whether an image already exists** (`MediaUploadZone`'s `currentImageUrl` prop): if one does, click opens `ImagePreviewDialog` (large preview + "Change image"/"Remove image"); if not, click skips straight to the file picker. "Remove image" is **permanently disabled** with a tooltip — the backend has no delete endpoint for avatar/banner (`POST /me` doesn't accept `avatar_url`/`banner_url` either, only `POST /me/media/uploads[/confirm]` to _set_ one), so there's nothing for it to call. Don't enable that button without adding the backend endpoint first — see `docs/DATA_AND_BACKEND_GAPS.md`.
 - **Crop step**: `react-easy-crop` inside a shadcn `Dialog` (`ImageCropDialog.tsx`) — avatar crops to a circle at 1:1, banner to a 4:1 rectangle, both matching how each is actually displayed. `cropImage.ts` renders the selected region to a canvas and reads it back as a `Blob`, which gets wrapped into a `File` and uploaded — the crop happens client-side, entirely before any network call.
 - **Upload flow** (`mediaUpload.ts`, `uploadPersonMedia(kind, file)`) — the real 3-step presigned flow against `simplr.klong-be`'s media system: `POST /me/media/uploads` (initiate) → `PUT` bytes directly to the presigned storage URL → `POST /me/media/uploads/confirm` (returns the updated `Person` with the new `avatar_url`/`banner_url` already set). Client-side validates type (jpeg/png/webp) and size (avatar 2MB, banner 5MB) first, mirroring the backend's own limits — fails fast instead of round-tripping. On a non-2xx response, the real backend error message is read from the gateway's `{error:{code,message}}` body (`errorMessage()` helper) rather than shown a generic string.
-- **`MediaUploadZone.tsx`** — the reusable hover-overlay (Camera icon, dims + spinner while uploading) wrapping either visual; owns the picked-file → crop-dialog → upload sequence.
-- **`ProfileHeaderCard.tsx`** — client component owning the current `Person` (seeded from the server-fetched value); on successful upload updates its own state **and** calls `SessionProvider`'s `setPerson()` so `Header.tsx`'s avatar updates immediately too, without a full page reload.
+- **`MediaUploadZone.tsx`** — the reusable hover-overlay (Camera icon, dims + spinner while uploading) wrapping either visual; owns the picked-file → crop-dialog → upload sequence, plus the preview-first gate above.
+- **`ProfileHeaderCard.tsx`** reads/writes `Person` through `useKlongSession()` directly (no local state of its own) — so it and `EmailsManagement.tsx` (same card family, different card) share one source of truth and stay in sync automatically; an upload here updates the "N emails" badge context and vice versa with zero prop plumbing between them.
 - **Backend gotcha worth knowing if this breaks again**: the presigned PUT URL's SigV4 signature can bind `Content-Length` to an _exact_ byte count, not a ceiling — if the backend ever signs with a fixed max-size constant instead of the client's actual declared size, every upload that isn't precisely that many bytes gets a 403 from storage. Real bug, hit and fixed in `identity/internal/media/service.go` / `employment/internal/media/service.go` in the backend repo — not something client-side code can work around.
 
 ### Seed data (`src/data/`)

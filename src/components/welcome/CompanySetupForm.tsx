@@ -64,7 +64,7 @@ function StepIndicator({ step }: { step: Step }) {
                   isDone
                     ? "bg-kale text-white"
                     : isActive
-                      ? "bg-kale/10 text-kale ring-1 ring-kale"
+                      ? "bg-link/10 text-link ring-1 ring-link"
                       : "bg-surface-2 text-ink-subtle"
                 )}
               >

@@ -1,0 +1,36 @@
+// No backend-provided locale list exists (unlike countries.json's currency/
+// timezone data, which comes from a real source used for company
+// onboarding) — this is a hand-curated set of common BCP-47 tags, kept
+// deliberately short. Extend as needed rather than trying to be exhaustive.
+export const LOCALES: { code: string; label: string }[] = [
+  { code: "en-US", label: "English (United States)" },
+  { code: "en-GB", label: "English (United Kingdom)" },
+  { code: "en-AU", label: "English (Australia)" },
+  { code: "en-CA", label: "English (Canada)" },
+  { code: "en-MY", label: "English (Malaysia)" },
+  { code: "en-SG", label: "English (Singapore)" },
+  { code: "en-IN", label: "English (India)" },
+  { code: "en-NZ", label: "English (New Zealand)" },
+  { code: "en-IE", label: "English (Ireland)" },
+  { code: "en-ZA", label: "English (South Africa)" },
+  { code: "fr-FR", label: "French (France)" },
+  { code: "fr-CA", label: "French (Canada)" },
+  { code: "de-DE", label: "German (Germany)" },
+  { code: "es-ES", label: "Spanish (Spain)" },
+  { code: "es-MX", label: "Spanish (Mexico)" },
+  { code: "pt-BR", label: "Portuguese (Brazil)" },
+  { code: "pt-PT", label: "Portuguese (Portugal)" },
+  { code: "it-IT", label: "Italian (Italy)" },
+  { code: "ja-JP", label: "Japanese (Japan)" },
+  { code: "ko-KR", label: "Korean (South Korea)" },
+  { code: "zh-CN", label: "Chinese (Simplified)" },
+  { code: "zh-TW", label: "Chinese (Traditional)" },
+  { code: "nl-NL", label: "Dutch (Netherlands)" },
+  { code: "ru-RU", label: "Russian (Russia)" },
+  { code: "hi-IN", label: "Hindi (India)" },
+  { code: "id-ID", label: "Indonesian (Indonesia)" },
+  { code: "th-TH", label: "Thai (Thailand)" },
+  { code: "vi-VN", label: "Vietnamese (Vietnam)" },
+  { code: "tr-TR", label: "Turkish (Turkey)" },
+  { code: "ar-SA", label: "Arabic (Saudi Arabia)" },
+];

@@ -46,7 +46,7 @@ export default function WeeklyRoster({
   // rect — updates to the real size almost immediately after mount.
   const [gridSize, setGridSize] = useState({ w: 800, h: 440 });
   const [view, setView] = useState<ViewMode>("grid");
-  const [period, setPeriod] = useState<PeriodView>("week");
+  const [period, setPeriod] = useState<PeriodView>("day");
   const [selectedDate, setSelectedDate] = useState<Date>(() => externalDate ?? new Date());
   const isMounted = useRef(false);
   useEffect(() => {
@@ -110,7 +110,10 @@ export default function WeeklyRoster({
 
   const liveKeys: GridKey[] = [
     ...displayProjects.map((p) => toGridKey(p.id)),
-    ...(!periodLocked && periodSpecialDays.length > 0 ? [SPECIAL_DAY_AGG_KEY] : []),
+    // Shows even when periodLocked — SpecialDayGridTile is always
+    // read-only/non-tappable on its own regardless, so there's no reason to
+    // hide it entirely just because the timesheet period is locked.
+    ...(periodSpecialDays.length > 0 ? [SPECIAL_DAY_AGG_KEY] : []),
   ];
   const isValidSlotAssignment =
     slotAssignment.length === liveKeys.length && liveKeys.every((k) => slotAssignment.includes(k));

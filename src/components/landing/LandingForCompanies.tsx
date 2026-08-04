@@ -30,8 +30,8 @@ const TEAM_FEATURES: TeamFeature[] = [
   },
   {
     icon: Workflow,
-    iconBoxClassName: "bg-kale-accent/12",
-    iconClassName: "text-kale-accent",
+    iconBoxClassName: "bg-warning/10",
+    iconClassName: "text-warning",
     title: "Approvals that never bottleneck the team",
     description:
       "Managers review and approve on their own schedule — but your team never waits on them. Submitting a period is enough to unblock the next one, so a slow approval never becomes a slow team.",

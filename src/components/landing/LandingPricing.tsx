@@ -76,7 +76,7 @@ function PricingPlanCard({
       <CardHeader className="px-6 pt-3 pb-0">
         <div className="flex items-center gap-2.5">
           <span className="flex size-9 items-center justify-center rounded-md bg-surface-2">
-            <PlanIcon className="size-4 text-kale" aria-hidden />
+            <PlanIcon className="size-4 text-link" aria-hidden />
           </span>
           <p className="text-sm font-semibold tracking-wide text-ink">{planLabel}</p>
         </div>

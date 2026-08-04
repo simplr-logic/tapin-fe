@@ -37,9 +37,9 @@ const ICON_TONE_CLASSES: Record<FeatureIconTone, { box: string; boxHover: string
       icon: "text-warning",
     },
     accent: {
-      box: "bg-kale-accent/12",
-      boxHover: "group-hover:bg-kale-accent/18",
-      icon: "text-kale-accent",
+      box: "bg-link/10",
+      boxHover: "group-hover:bg-link/15",
+      icon: "text-link",
     },
     open: {
       box: "bg-open/10",

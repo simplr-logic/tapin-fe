@@ -79,7 +79,7 @@ export function PeriodToggle({
           className={[
             "h-auto py-1.5 text-[11px] font-semibold",
             value === period
-              ? "bg-kale/10 border-kale/35 text-kale hover:bg-kale/10"
+              ? "bg-link/10 border-link/35 text-link hover:bg-link/10"
               : "bg-surface-2 text-ink-subtle hover:text-ink-muted",
           ].join(" ")}
         >

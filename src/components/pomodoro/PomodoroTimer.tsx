@@ -164,6 +164,10 @@ export function PomodoroTimer() {
         </div>
 
         <Select
+          items={{
+            none: "No project",
+            ...Object.fromEntries(projects.map((p) => [p.id, p.title])),
+          }}
           value={selectedProjectId ?? "none"}
           onValueChange={(v) => timerStore.setProject(v === "none" ? null : v)}
         >

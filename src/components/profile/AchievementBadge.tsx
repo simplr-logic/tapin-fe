@@ -25,14 +25,14 @@ export function AchievementBadge({
       className={cn(
         "h-auto flex-col gap-1.5 rounded-lg border p-3 text-center",
         unlocked
-          ? "bg-card border-garden-border shadow-card ring-1 ring-kale/20 hover:bg-surface-2"
+          ? "bg-card border-garden-border shadow-card ring-1 ring-link/25 hover:bg-surface-2"
           : "bg-surface-2 border-garden-border hover:bg-surface-3"
       )}
     >
       <div
         className={cn(
           "flex h-10 w-10 items-center justify-center rounded-full",
-          unlocked ? "bg-kale/10 text-kale" : "bg-surface-3 text-ink-subtle opacity-40"
+          unlocked ? "bg-link/10 text-link" : "bg-surface-3 text-ink-subtle opacity-40"
         )}
       >
         <Icon className="h-5 w-5" />

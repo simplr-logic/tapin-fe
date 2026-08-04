@@ -14,6 +14,7 @@ import { DragGhost } from "./DragGhost";
 import { ProjectGridTile } from "./ProjectGridTile";
 import { ProjectProgressRow } from "./ProjectProgressRow";
 import { SpecialDayGridTile } from "./SpecialDayGridTile";
+import { SpecialDayProgressRow } from "./SpecialDayProgressRow";
 
 import type { TreemapNode } from "./treemap";
 import type { DisplayProject, ViewMode } from "./types";
@@ -118,6 +119,9 @@ export function RosterGrid({
           </div>
         ) : (
           <div className="space-y-2.5">
+            {/* Shows even when periodLocked — this row is always a static,
+                read-only summary regardless (see WeeklyRoster.tsx). */}
+            {specialDays.length > 0 && <SpecialDayProgressRow days={specialDays} />}
             {orderedProjects.map((p) => (
               <ProjectProgressRow
                 key={p.id}

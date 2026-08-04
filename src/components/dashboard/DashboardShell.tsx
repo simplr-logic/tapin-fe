@@ -11,7 +11,7 @@ import type { PeriodView } from "@/config/constants";
 
 export default function DashboardShell() {
   const [selectedDate, setSelectedDate] = useState<Date>(() => new Date());
-  const [period, setPeriod] = useState<PeriodView>("week");
+  const [period, setPeriod] = useState<PeriodView>("day");
 
   const isCurrentPeriod = isSamePeriod(selectedDate, new Date(), period);
   const weekRange = period === "week" ? getPeriodRange("week", selectedDate) : undefined;

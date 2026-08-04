@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 
 import { AchievementBadge } from "@/components/profile/AchievementBadge";
 import { AchievementDetailDialog } from "@/components/profile/AchievementDetailDialog";
+import { CollapsibleCard } from "@/components/profile/CollapsibleCard";
 import { useAchievements } from "@/hooks/useAchievements";
 
 import type { EvaluatedAchievement } from "@/types/achievements";
@@ -23,17 +24,20 @@ export function AchievementsGrid({ hasOnboarded }: { hasOnboarded: boolean }) {
   );
 
   return (
-    <div className="bg-card rounded-lg border border-garden-border shadow-card p-5">
-      <div className="flex items-center justify-between gap-3">
-        <p className="flex items-center gap-2 text-sm font-semibold text-ink">
-          <Trophy className="w-3.5 h-3.5 text-ink-subtle" />
+    <CollapsibleCard
+      title={
+        <>
+          <Trophy className="w-3.5 h-3.5" />
           Achievements
-        </p>
+        </>
+      }
+      rightContent={
         <span className="text-[10px] font-semibold text-ink-subtle tabular-nums">
           {unlockedCount}/{achievements.length}
         </span>
-      </div>
-      <div className="mt-3 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2.5">
+      }
+    >
+      <div className="p-5 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2.5">
         {sorted.map((achievement) => (
           <AchievementBadge
             key={achievement.id}
@@ -47,6 +51,6 @@ export function AchievementsGrid({ hasOnboarded }: { hasOnboarded: boolean }) {
         achievement={selected}
         onOpenChange={(open) => !open && setSelected(null)}
       />
-    </div>
+    </CollapsibleCard>
   );
 }

@@ -4,6 +4,7 @@ import { LogOut, Monitor, Smartphone } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { CollapsibleCard } from "@/components/profile/CollapsibleCard";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -95,12 +96,14 @@ export function SessionsList() {
   }
 
   return (
-    <div className="bg-card rounded-lg border border-garden-border shadow-card overflow-hidden">
-      <div className="px-5 py-4 border-b border-garden-border flex items-center gap-2 text-ink-muted text-xs font-medium tracking-wide">
-        <Monitor className="w-3.5 h-3.5" />
-        Active sessions
-      </div>
-
+    <CollapsibleCard
+      title={
+        <>
+          <Monitor className="w-3.5 h-3.5" />
+          Active sessions
+        </>
+      }
+    >
       {loading ? (
         <div className="px-5 py-10 text-center text-xs text-ink-subtle">Loading…</div>
       ) : sessions.length === 0 ? (
@@ -173,6 +176,6 @@ export function SessionsList() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </CollapsibleCard>
   );
 }

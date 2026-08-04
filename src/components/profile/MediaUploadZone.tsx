@@ -4,6 +4,7 @@ import { Camera, Loader2 } from "lucide-react";
 import { useRef, useState } from "react";
 
 import { ImageCropDialog } from "@/components/profile/ImageCropDialog";
+import { ImagePreviewDialog } from "@/components/profile/ImagePreviewDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getCroppedImageBlob } from "@/lib/cropImage";
@@ -19,12 +20,17 @@ const ASPECT: Record<MediaKind, number> = { avatar: 1, banner: 4 };
 
 export function MediaUploadZone({
   kind,
+  currentImageUrl,
   onUploaded,
   rounded = false,
   className,
   children,
 }: {
   kind: MediaKind;
+  /** When set, clicking opens a preview (Change/Remove) instead of the file
+   * picker directly — nothing to preview yet, so a first-time upload skips
+   * straight to picking a file. */
+  currentImageUrl?: string | null;
   onUploaded: (person: Person) => void;
   rounded?: boolean;
   className?: string;
@@ -34,6 +40,15 @@ export function MediaUploadZone({
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState<{ file: File; objectUrl: string } | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+
+  function handleTriggerClick() {
+    if (currentImageUrl) {
+      setPreviewOpen(true);
+    } else {
+      inputRef.current?.click();
+    }
+  }
 
   function handleSelect(file: File) {
     setError(null);
@@ -68,7 +83,7 @@ export function MediaUploadZone({
       <Button
         type="button"
         variant="ghost"
-        onClick={() => inputRef.current?.click()}
+        onClick={handleTriggerClick}
         disabled={uploading}
         aria-label={kind === "avatar" ? "Change profile picture" : "Change banner"}
         className={cn(
@@ -95,6 +110,18 @@ export function MediaUploadZone({
         <p className="absolute left-1/2 top-full z-10 mt-1 w-max max-w-48 -translate-x-1/2 text-center text-[10px] font-medium text-error">
           {error}
         </p>
+      )}
+
+      {previewOpen && currentImageUrl && (
+        <ImagePreviewDialog
+          kind={kind}
+          imageUrl={currentImageUrl}
+          onChangeImage={() => {
+            setPreviewOpen(false);
+            inputRef.current?.click();
+          }}
+          onClose={() => setPreviewOpen(false)}
+        />
       )}
 
       {pending && (

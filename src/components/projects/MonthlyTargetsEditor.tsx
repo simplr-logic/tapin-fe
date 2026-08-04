@@ -97,6 +97,7 @@ export function MonthlyTargetsEditor({ targets, startDate, onChange }: MonthlyTa
         {targets.map((mt, i) => (
           <div key={i} className="flex items-center gap-2">
             <Select
+              items={MONTH_OPTIONS}
               value={mt.month}
               onValueChange={(val) => val !== null && update(i, { month: val })}
             >

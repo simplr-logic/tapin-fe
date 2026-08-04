@@ -26,7 +26,7 @@ export function AchievementDetailDialog({
                 className={cn(
                   "flex h-16 w-16 items-center justify-center rounded-full",
                   achievement.unlocked
-                    ? "bg-kale/10 text-kale ring-1 ring-kale/20"
+                    ? "bg-link/10 text-link ring-1 ring-link/25"
                     : "bg-surface-3 text-ink-subtle opacity-60"
                 )}
               >
@@ -37,7 +37,7 @@ export function AchievementDetailDialog({
                 variant="secondary"
                 className={cn(
                   "gap-1",
-                  achievement.unlocked ? "bg-kale/10 text-kale" : "bg-surface-2 text-ink-subtle"
+                  achievement.unlocked ? "bg-link/10 text-link" : "bg-surface-2 text-ink-subtle"
                 )}
               >
                 {achievement.unlocked ? (
@@ -60,7 +60,7 @@ export function AchievementDetailDialog({
               <div className="space-y-1.5">
                 <div className="h-1.5 w-full rounded-full bg-surface-2 overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-kale transition-all"
+                    className="h-full rounded-full bg-link transition-all"
                     style={{
                       width: `${Math.min(100, (achievement.progress.current / achievement.progress.target) * 100)}%`,
                     }}

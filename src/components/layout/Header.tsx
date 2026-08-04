@@ -84,7 +84,7 @@ export default function Header({ onMenuToggle }: { onMenuToggle?: () => void }) 
                   <div className="flex items-center gap-2.5 py-0.5">
                     <Avatar size="sm">
                       {person.avatar_url && <AvatarImage src={person.avatar_url} alt="" />}
-                      <AvatarFallback className="bg-kale/10 text-kale text-[10px] font-bold">
+                      <AvatarFallback className="bg-link/10 text-link text-[10px] font-bold">
                         {getInitials(name)}
                       </AvatarFallback>
                     </Avatar>

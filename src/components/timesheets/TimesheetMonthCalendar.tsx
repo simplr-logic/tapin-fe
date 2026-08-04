@@ -46,7 +46,7 @@ function TimesheetDayBtn({ day: _day, modifiers, className, ...props }: DayButto
         paletteClass,
         modifiers.outside && "opacity-30",
         modifiers.disabled && "pointer-events-none opacity-30",
-        modifiers.selected ? "ring-2 ring-kale" : "",
+        modifiers.selected ? "ring-2 ring-link" : "",
         className
       )}
     />

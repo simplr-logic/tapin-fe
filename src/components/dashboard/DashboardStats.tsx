@@ -9,15 +9,6 @@ import { getComplianceBgClass, getComplianceColorClass } from "@/config/theme";
 import { useAchievements } from "@/hooks/useAchievements";
 import { cn } from "@/lib/utils";
 
-const HOURS_PER_LEVEL = 25;
-
-function levelFromHours(totalHours: number) {
-  const level = Math.floor(totalHours / HOURS_PER_LEVEL) + 1;
-  const intoLevel = totalHours % HOURS_PER_LEVEL;
-  const pct = Math.min(100, Math.round((intoLevel / HOURS_PER_LEVEL) * 100));
-  return { level, pct, remaining: Math.max(0, Math.ceil(HOURS_PER_LEVEL - intoLevel)) };
-}
-
 export function DashboardStats({ hasOnboarded }: { hasOnboarded: boolean }) {
   const { projects, streak } = useProjects();
   const achievements = useAchievements(hasOnboarded);
@@ -34,7 +25,6 @@ export function DashboardStats({ hasOnboarded }: { hasOnboarded: boolean }) {
   const weekTarget = projects.reduce((sum, p) => sum + p.targetHours, 0);
   const weekPct = weekTarget > 0 ? Math.round((weekLogged / weekTarget) * 100) : 0;
   const totalHours = projects.reduce((sum, p) => sum + sumLogs(p.logs) / 60, 0);
-  const { level, pct: xpPct, remaining } = levelFromHours(totalHours);
   const unlockedCount = achievements.filter((a) => a.unlocked).length;
 
   const pctBg = getComplianceBgClass(weekPct);
@@ -45,19 +35,14 @@ export function DashboardStats({ hasOnboarded }: { hasOnboarded: boolean }) {
       <div className="relative overflow-hidden rounded-lg border border-garden-border shadow-elevated bg-linear-to-r from-kale via-kale-accent to-link/70 px-5 py-5 text-white">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white/15 ring-2 ring-white/40 text-base font-bold tabular-nums">
-              Lv {level}
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white/15 ring-2 ring-white/40">
+              <Clock className="h-6 w-6" />
             </div>
-            <div className="min-w-[160px]">
+            <div>
+              <p className="text-xl font-bold tabular-nums">{totalHours.toFixed(1)}h</p>
               <p className="text-[10px] font-semibold tracking-wide text-white/70">
-                {remaining}h to level {level + 1}
+                Total hours logged
               </p>
-              <div className="mt-1.5 h-1.5 w-40 max-w-full rounded-full bg-white/20 overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-white/90 transition-all"
-                  style={{ width: `${xpPct}%` }}
-                />
-              </div>
             </div>
           </div>
 
@@ -81,18 +66,21 @@ export function DashboardStats({ hasOnboarded }: { hasOnboarded: boolean }) {
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <StatTile
+          href="/projects/list"
           icon={FolderKanban}
           label="Active Projects"
           value={String(projects.length)}
           accentClass="bg-link/10 text-link"
         />
         <StatTile
+          href="/projects"
           icon={Clock}
           label="Logged This Week"
           value={`${weekLogged.toFixed(1)}h`}
-          accentClass="bg-kale/10 text-kale"
+          accentClass="bg-kale-accent/15 text-ink"
         />
         <StatTile
+          href="/timesheets"
           icon={TrendingUp}
           label="Of Weekly Target"
           value={`${weekPct}%`}
@@ -105,13 +93,14 @@ export function DashboardStats({ hasOnboarded }: { hasOnboarded: boolean }) {
   );
 }
 
-function StatTile({
+export function StatTile({
   icon: Icon,
   label,
   value,
   accentClass,
   progress,
   progressBgClass,
+  href,
 }: {
   icon: typeof FolderKanban;
   label: string;
@@ -119,9 +108,10 @@ function StatTile({
   accentClass: string;
   progress?: number;
   progressBgClass?: string;
+  href?: string;
 }) {
-  return (
-    <div className="bg-card rounded-lg border border-garden-border shadow-card p-4">
+  const content = (
+    <>
       <div
         className={cn(
           "mb-2 inline-flex h-8 w-8 items-center justify-center rounded-full",
@@ -130,7 +120,7 @@ function StatTile({
       >
         <Icon className="w-4 h-4" />
       </div>
-      <p className="text-lg font-semibold text-ink tracking-tight">{value}</p>
+      <p className="text-lg font-semibold text-ink tracking-tight truncate">{value}</p>
       <p className="text-[10px] text-ink-subtle tracking-wide mt-0.5">{label}</p>
       {progress !== undefined && (
         <div className="mt-2 h-1 w-full rounded-full bg-surface-2 overflow-hidden">
@@ -140,6 +130,21 @@ function StatTile({
           />
         </div>
       )}
-    </div>
+    </>
   );
+
+  const className = cn(
+    "bg-card rounded-lg border border-garden-border shadow-card p-4",
+    href && "block transition-shadow hover:shadow-elevated hover:border-link/40"
+  );
+
+  if (href) {
+    return (
+      <Link href={href} className={className}>
+        {content}
+      </Link>
+    );
+  }
+
+  return <div className={className}>{content}</div>;
 }

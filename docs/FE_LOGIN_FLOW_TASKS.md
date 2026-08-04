@@ -49,19 +49,33 @@ Files that own the current mock and will change: `src/auth.ts`,
 6. Escalation styling as an offboarding date approaches (needs `employments[]`
    end-date data from `GET /me` or `GET /employments` — backend-dependent).
 
-## Phase 3 — Email management UI (doc §6, §9.2/§10.2)
+## Phase 3 — Email management UI (doc §6, §9.2/§10.2) — ✅ Done (2026-08-01)
 
-7. New settings surface (doesn't exist yet — likely `/profile` section or new
-   `/settings` route) listing `GET /emails`: email, `isPrimary`,
-   `addedViaDomainClaim`, `verifiedAt`.
-8. "Add email" flow: calls `POST /emails/link/initiate` → shows "check new
-   inbox" state → user clicks magic link → `GET /emails/link/callback` lands
-   back in-app → list refreshes via `GET /emails`.
-9. "Set primary" action → `PATCH /emails/:id/primary` (shadcn `DropdownMenu`
-   item per row, per CLAUDE.md primitive rules).
-10. "Remove email" action → `DELETE /emails/:id`, with a shadcn `Dialog`
-    confirm (blocked cases per doc: last remaining email, or primary without a
-    new one set — surface those 409s as inline errors, not silent failures).
+Built as `src/components/profile/EmailsManagement.tsx` on `/profile`, right
+below `ProfileHeaderCard`. The actual contract turned out slightly different
+from the original plan above (corrected here for the record — verified
+directly against `gateway/internal/handlers/emails.go` /
+`email_link.go` in `simplr.klong-be`):
+
+- No separate `GET /emails` list endpoint — the email list is just
+  `person.emails[]`, already present on `GET /me` (and therefore already in
+  `SessionProvider`'s state — no extra fetch needed).
+- "Set primary" is `POST /me/emails/:id/primary` (not `PATCH /emails/:id/primary`).
+- "Remove" is `DELETE /me/emails/:id` (not `DELETE /emails/:id`) — backend
+  rejects removing the primary email itself, so the remove button is simply
+  disabled on the primary row rather than needing 409 handling.
+- "Add email" (`POST /emails/link/initiate`) needs **no callback page**
+  client-side — the gateway embeds the linking token into the magic link's
+  own redirect URL, so clicking it lands on `GET /emails/link/callback`
+  (proxied same-origin, same as the login callback) and the gateway
+  redirects the browser straight back into the app after linking. The FE
+  only shows a "check your inbox" state after `initiate` succeeds; there's
+  nothing to build for the click-through itself.
+- `ProfileHeaderCard` was refactored to read/write `Person` through
+  `useKlongSession()` directly instead of local state, so it and
+  `EmailsManagement` share one source of truth and stay in sync
+  automatically (e.g. the "N emails" badge updates the moment an email is
+  added/removed, no prop plumbing between the two components).
 
 ## Phase 4 — Company invite acceptance (doc §5.2, §9.3/§10.3)
 

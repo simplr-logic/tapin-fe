@@ -41,7 +41,15 @@ export default function AppShell({
           ownedCompanies={ownedCompanies}
         />
         <main className="flex-1 min-w-0 overflow-y-auto bg-canvas">
-          <div className="p-2 lg:p-4 max-w-[1500px] mx-auto w-full lg:h-full">{children}</div>
+          {pathname === "/pomodoro" ? (
+            // Pomodoro's ambient theme background needs to fill this whole
+            // region edge-to-edge — the padded/max-width wrapper every other
+            // page gets would box it in, so it opts out here instead of
+            // faking full-bleed with `position: fixed` + z-index games.
+            children
+          ) : (
+            <div className="p-2 lg:p-4 max-w-[1500px] mx-auto w-full lg:h-full">{children}</div>
+          )}
         </main>
       </div>
     </>

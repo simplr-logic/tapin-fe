@@ -216,7 +216,9 @@ function SpecialDayForm({
           <span className="text-xs text-ink-muted">
             Each day counts as a Half-Day (4h) or Full-Day (8h)
           </span>
-          <span className={["text-sm font-bold", canSave ? "text-kale" : "text-error"].join(" ")}>
+          <span
+            className={["text-sm font-bold", canSave ? "text-success" : "text-error"].join(" ")}
+          >
             {hours}h
           </span>
         </div>
